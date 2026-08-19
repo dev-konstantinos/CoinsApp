@@ -13,8 +13,5 @@
         PRIMARY KEY ([UserId]),
 
     CONSTRAINT [UQ_Users_Username]
-        UNIQUE ([Username]),
-
-    CONSTRAINT [UQ_Users_Email]
-        UNIQUE ([Email])
+        UNIQUE ([Username])
 );

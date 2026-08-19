@@ -10,7 +10,6 @@
     [MaterialId] INT NULL,
 
     [Year] SMALLINT NULL,
-    [CatalogNumber] NVARCHAR(50) NULL,
     [MintMark] NVARCHAR(10) NULL,
 
     [Fineness] DECIMAL(7,4) NULL,
@@ -26,6 +25,9 @@
     [Mintage] BIGINT NULL,
 
     [Condition] NVARCHAR(50) NULL,
+    [Grade] NVARCHAR(20) NULL,
+    [GradingCompany] NVARCHAR(100) NULL,
+    [GradingCertificateNumber] NVARCHAR(100) NULL,
 
     [CurrentPrice] DECIMAL(19,4) NULL,
     [CurrentPriceCurrencyId] INT NULL,

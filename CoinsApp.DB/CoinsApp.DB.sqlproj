@@ -66,6 +66,7 @@
     <Folder Include="Install" />
     <Folder Include="Reset" />
     <Folder Include="Scripts" />
+    <Folder Include="Indexes" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
@@ -84,5 +85,20 @@
     <Build Include="Tables\Purchases.sql" />
     <Build Include="Tables\Sales.sql" />
     <Build Include="Tables\PriceHistory.sql" />
+    <Build Include="Tables\Catalogs.sql" />
+    <Build Include="Tables\CatalogEntries.sql" />
+    <Build Include="Tables\CoinImages.sql" />
+    <Build Include="Indexes\UX_Users_Email.sql" />
+    <Build Include="Indexes\UX_Countries_IsoCode.sql" />
+    <Build Include="Indexes\IX_Collections_UserId.sql" />
+    <Build Include="Indexes\IX_Coins_CountryId.sql" />
+    <Build Include="Indexes\IX_Coins_IssuingAuthorityId.sql" />
+    <Build Include="Indexes\IX_Coins_CurrencyId.sql" />
+    <Build Include="Indexes\IX_Coins_DenominationId.sql" />
+    <Build Include="Indexes\IX_Coins_MintId.sql" />
+    <Build Include="Indexes\IX_Coins_MaterialId.sql" />
+    <Build Include="Indexes\IX_Purchases_CoinId.sql" />
+    <Build Include="Indexes\IX_Sales_CoinId.sql" />
+    <Build Include="Indexes\IX_PriceHistory_CoinId.sql" />
   </ItemGroup>
 </Project>
