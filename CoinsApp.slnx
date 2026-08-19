@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="CoinsApp.BLL/CoinsApp.BLL.csproj" />
+  <Project Path="CoinsApp.DAL/CoinsApp.DAL.csproj" />
+  <Project Path="CoinsApp.DB/CoinsApp.DB.sqlproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="CoinsApp.UI/CoinsApp.UI.csproj" />
+</Solution>
