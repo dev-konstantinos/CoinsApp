@@ -56,5 +56,33 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="Tables" />
+    <Folder Include="Views" />
+    <Folder Include="StoredProcedures" />
+    <Folder Include="Functions" />
+    <Folder Include="Schemas" />
+    <Folder Include="Security" />
+    <Folder Include="Seed" />
+    <Folder Include="Install" />
+    <Folder Include="Reset" />
+    <Folder Include="Scripts" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CoinsApp.DB.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Countries.sql" />
+    <Build Include="Tables\IssuingAuthorities.sql" />
+    <Build Include="Tables\Currencies.sql" />
+    <Build Include="Tables\Denominations.sql" />
+    <Build Include="Tables\Mints.sql" />
+    <Build Include="Tables\Materials.sql" />
+    <Build Include="Tables\Users.sql" />
+    <Build Include="Tables\Collections.sql" />
+    <Build Include="Tables\Coins.sql" />
+    <Build Include="Tables\Contacts.sql" />
+    <Build Include="Tables\Purchases.sql" />
+    <Build Include="Tables\Sales.sql" />
+    <Build Include="Tables\PriceHistory.sql" />
   </ItemGroup>
 </Project>
