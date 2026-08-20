@@ -41,7 +41,7 @@ BEGIN
         N'DEM',
         N'Deutsche Mark',
         N'DM',
-        1
+        0
     );
 END;
 
