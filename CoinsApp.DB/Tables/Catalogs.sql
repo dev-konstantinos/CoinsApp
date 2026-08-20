@@ -7,8 +7,6 @@
     [Description] NVARCHAR(1000) NULL,
     [IsActive] BIT NOT NULL
         CONSTRAINT [DF_Catalogs_IsActive] DEFAULT (1),
-    [CreatedAt] DATETIME2(0) NOT NULL
-        CONSTRAINT [DF_Catalogs_CreatedAt] DEFAULT (SYSUTCDATETIME()),
 
     CONSTRAINT [PK_Catalogs]
         PRIMARY KEY ([CatalogId]),

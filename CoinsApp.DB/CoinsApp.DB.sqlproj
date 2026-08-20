@@ -67,9 +67,23 @@
     <Folder Include="Reset" />
     <Folder Include="Scripts" />
     <Folder Include="Indexes" />
+    <Folder Include="Seed\Global" />
+    <Folder Include="Development" />
+    <Folder Include="Development\Seed" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
+    <PreDeploy Include="Scripts\PreDeploy.sql" />
+    <PostDeploy Include="Scripts\PostDeploy.sql" />
+    <None Include="Development\Seed\DevelopmentSeed.sql" />
+    <None Include="Seed\Global\Countries.sql" />
+    <None Include="Seed\Global\Currencies.sql" />
+    <None Include="Seed\Global\Materials.sql" />
+    <None Include="Seed\Global\Mints.sql" />
+    <None Include="Seed\Global\IssuingAuthorities.sql" />
+    <None Include="Seed\Global\Denominations.sql" />
+    <None Include="Seed\Global\Catalogs.sql" />
+    <None Include="Scripts\GlobalSeed.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Countries.sql" />
@@ -89,7 +103,6 @@
     <Build Include="Tables\CatalogEntries.sql" />
     <Build Include="Tables\CoinImages.sql" />
     <Build Include="Indexes\UX_Users_Email.sql" />
-    <Build Include="Indexes\UX_Countries_IsoCode.sql" />
     <Build Include="Indexes\IX_Collections_UserId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId.sql" />
     <Build Include="Indexes\IX_Coins_IssuingAuthorityId.sql" />
@@ -100,5 +113,7 @@
     <Build Include="Indexes\IX_Purchases_CoinId.sql" />
     <Build Include="Indexes\IX_Sales_CoinId.sql" />
     <Build Include="Indexes\IX_PriceHistory_CoinId.sql" />
+    <Build Include="Indexes\IX_Coins_CollectionId.sql" />
+    <Build Include="Indexes\IX_CoinImages_CoinId.sql" />
   </ItemGroup>
 </Project>

@@ -5,8 +5,6 @@
     [Symbol] NVARCHAR(20) NULL,
     [IsPreciousMetal] BIT NOT NULL
         CONSTRAINT [DF_Materials_IsPreciousMetal] DEFAULT (0),
-    [IsActive] BIT NOT NULL
-        CONSTRAINT [DF_Materials_IsActive] DEFAULT (1),
 
     CONSTRAINT [PK_Materials]
         PRIMARY KEY ([MaterialId]),

@@ -1,7 +1,7 @@
 <Solution>
   <Project Path="CoinsApp.BLL/CoinsApp.BLL.csproj" />
   <Project Path="CoinsApp.DAL/CoinsApp.DAL.csproj" />
-  <Project Path="CoinsApp.DB/CoinsApp.DB.sqlproj">
+  <Project Path="CoinsApp.DB/CoinsApp.DB.sqlproj" Id="c5788a63-7152-4f6c-8ef5-f22bf013ccd1">
     <Build />
     <Deploy />
   </Project>
