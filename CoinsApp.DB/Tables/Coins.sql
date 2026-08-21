@@ -35,7 +35,8 @@
     [Notes] NVARCHAR(2000) NULL,
 
     [CreatedAt] DATETIME2(0) NOT NULL
-        CONSTRAINT [DF_Coins_CreatedAt] DEFAULT (SYSUTCDATETIME()),
+        CONSTRAINT [DF_Coins_CreatedAt]
+        DEFAULT (SYSUTCDATETIME()),
 
     CONSTRAINT [PK_Coins]
         PRIMARY KEY ([CoinId]),
@@ -69,20 +70,49 @@
         REFERENCES [dbo].[Currencies] ([CurrencyId]),
 
     CONSTRAINT [CK_Coins_Fineness]
-        CHECK ([Fineness] IS NULL OR [Fineness] >= 0 AND [Fineness] <= 1000),
+        CHECK
+        (
+            [Fineness] IS NULL
+            OR ([Fineness] >= 0 AND [Fineness] <= 1000)
+        ),
 
     CONSTRAINT [CK_Coins_Weight]
-        CHECK ([Weight] IS NULL OR [Weight] > 0),
+        CHECK
+        (
+            [Weight] IS NULL
+            OR [Weight] > 0
+        ),
 
     CONSTRAINT [CK_Coins_Diameter]
-        CHECK ([Diameter] IS NULL OR [Diameter] > 0),
+        CHECK
+        (
+            [Diameter] IS NULL
+            OR [Diameter] > 0
+        ),
 
     CONSTRAINT [CK_Coins_Thickness]
-        CHECK ([Thickness] IS NULL OR [Thickness] > 0),
+        CHECK
+        (
+            [Thickness] IS NULL
+            OR [Thickness] > 0
+        ),
 
     CONSTRAINT [CK_Coins_Mintage]
-        CHECK ([Mintage] IS NULL OR [Mintage] >= 0),
+        CHECK
+        (
+            [Mintage] IS NULL
+            OR [Mintage] >= 0
+        ),
 
     CONSTRAINT [CK_Coins_CurrentPrice]
-        CHECK ([CurrentPrice] IS NULL OR [CurrentPrice] >= 0)
+        CHECK
+        (
+            [CurrentPrice] IS NULL
+            OR
+            (
+                [CurrentPrice] >= 0
+                AND [CurrentPriceCurrencyId] IS NOT NULL
+                AND [CurrentPriceDate] IS NOT NULL
+            )
+        )
 );
