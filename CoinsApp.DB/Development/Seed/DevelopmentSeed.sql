@@ -44,6 +44,16 @@ DECLARE @USAPhiladelphiaMintId INT;
 DECLARE @SilverId INT;
 DECLARE @CopperId INT;
 
+DECLARE @DECoinId INT;
+DECLARE @FRGCoinId INT;
+DECLARE @GDRCoinId INT;
+DECLARE @USSRCoinId INT;
+DECLARE @RECoinId INT;
+DECLARE @RUCoinId INT;
+DECLARE @USCoinId INT;
+
+DECLARE @PriceDate DATETIME2(0) = '2026-08-21 00:00:00';
+
 
 ------------------------------------------------------------
 -- User
@@ -266,6 +276,7 @@ WHERE [Name] = N'Copper';
 
 
 ------------------------------------------------------------
+-- Coin 1
 -- Germany
 -- 2 Euro, 2024
 ------------------------------------------------------------
@@ -320,15 +331,16 @@ BEGIN
         N'Round',
         N'German 2 Euro circulation coin.',
         N'UNC',
-        2.00,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 2
 -- Federal Republic of Germany
 -- 5 Deutsche Mark, 1975
 ------------------------------------------------------------
@@ -381,15 +393,16 @@ BEGIN
         N'Round',
         N'West German 5 Deutsche Mark silver coin.',
         N'VF',
-        8.50,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Historical issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 3
 -- German Democratic Republic
 -- 5 Mark, 1975
 ------------------------------------------------------------
@@ -442,15 +455,16 @@ BEGIN
         N'Round',
         N'East German 5 Mark coin.',
         N'VF',
-        5.00,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Historical issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 4
 -- Soviet Union
 -- 5 Soviet Rubles, 1987
 ------------------------------------------------------------
@@ -503,15 +517,16 @@ BEGIN
         N'Round',
         N'Soviet 5 Rubles commemorative coin.',
         N'XF',
-        4.00,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Historical issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 5
 -- Russian Empire
 -- 5 Rubles, 1899
 ------------------------------------------------------------
@@ -564,15 +579,16 @@ BEGIN
         N'Round',
         N'Russian Empire 5 Rubles silver coin.',
         N'VF',
-        500.00,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Historical issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 6
 -- Russian Federation
 -- 10 Rubles, 2024
 ------------------------------------------------------------
@@ -625,15 +641,16 @@ BEGIN
         N'Round',
         N'Russian Federation 10 Rubles coin.',
         N'UNC',
-        0.15,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Current issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
+-- Coin 7
 -- United States
 -- 1 Dollar, 2024
 ------------------------------------------------------------
@@ -686,9 +703,498 @@ BEGIN
         N'Round',
         N'United States 1 Dollar coin.',
         N'UNC',
-        1.00,
-        @EURId,
-        SYSUTCDATETIME(),
+        NULL,
+        NULL,
+        NULL,
         N'Development test coin.'
     );
 END;
+
+
+------------------------------------------------------------
+-- Resolve Coin IDs
+------------------------------------------------------------
+
+SELECT @DECoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @GermanyId
+  AND [CurrencyId] = @EURId
+  AND [DenominationId] = @EUR2Id
+  AND [Year] = 2024;
+
+SELECT @FRGCoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @FRGId
+  AND [CurrencyId] = @DEMId
+  AND [DenominationId] = @DEM5Id
+  AND [Year] = 1975;
+
+SELECT @GDRCoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @GDRId
+  AND [CurrencyId] = @DDMId
+  AND [DenominationId] = @DDM5Id
+  AND [Year] = 1975;
+
+SELECT @USSRCoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @USSRId
+  AND [CurrencyId] = @SURId
+  AND [DenominationId] = @SUR5Id
+  AND [Year] = 1987;
+
+SELECT @RECoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @RussianEmpireId
+  AND [CurrencyId] = @RURId
+  AND [DenominationId] = @RUR5Id
+  AND [Year] = 1899;
+
+SELECT @RUCoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @RussiaId
+  AND [CurrencyId] = @RUBId
+  AND [DenominationId] = @RUB10Id
+  AND [Year] = 2024;
+
+SELECT @USCoinId = [CoinId]
+FROM [dbo].[Coins]
+WHERE [CollectionId] = @CollectionId
+  AND [CountryId] = @USAId
+  AND [CurrencyId] = @USDId
+  AND [DenominationId] = @USD1Id
+  AND [Year] = 2024;
+
+
+------------------------------------------------------------
+-- Purchases
+------------------------------------------------------------
+
+IF @DECoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @DECoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @DECoinId,
+        '2026-01-10',
+        2.00,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @FRGCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @FRGCoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @FRGCoinId,
+        '2026-01-11',
+        6.00,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @GDRCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @GDRCoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @GDRCoinId,
+        '2026-01-12',
+        3.00,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @USSRCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @USSRCoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @USSRCoinId,
+        '2026-01-13',
+        3.00,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @RECoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @RECoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @RECoinId,
+        '2026-01-14',
+        400.00,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @RUCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @RUCoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @RUCoinId,
+        '2026-01-15',
+        0.20,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+IF @USCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Purchases]
+    WHERE [CoinId] = @USCoinId
+)
+BEGIN
+    INSERT INTO [dbo].[Purchases]
+    (
+        [CoinId],
+        [PurchaseDate],
+        [PurchasePrice],
+        [CurrencyId],
+        [Notes]
+    )
+    VALUES
+    (
+        @USCoinId,
+        '2026-01-16',
+        0.90,
+        @EURId,
+        N'Development purchase.'
+    );
+END;
+
+
+------------------------------------------------------------
+-- Price History
+------------------------------------------------------------
+
+IF @DECoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @DECoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @DECoinId,
+        2.00,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @FRGCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @FRGCoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @FRGCoinId,
+        8.50,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @GDRCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @GDRCoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @GDRCoinId,
+        5.00,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @USSRCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @USSRCoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @USSRCoinId,
+        4.00,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @RECoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @RECoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @RECoinId,
+        500.00,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @RUCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @RUCoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @RUCoinId,
+        0.15,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+IF @USCoinId IS NOT NULL
+AND NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[PriceHistory]
+    WHERE [CoinId] = @USCoinId
+      AND [PriceDate] = @PriceDate
+)
+BEGIN
+    INSERT INTO [dbo].[PriceHistory]
+    (
+        [CoinId],
+        [Price],
+        [CurrencyId],
+        [PriceDate],
+        [Source],
+        [Notes]
+    )
+    VALUES
+    (
+        @USCoinId,
+        1.00,
+        @EURId,
+        @PriceDate,
+        N'Development',
+        N'Development valuation.'
+    );
+END;
+
+
+------------------------------------------------------------
+-- Synchronize CurrentPrice from PriceHistory
+------------------------------------------------------------
+
+UPDATE c
+SET
+    [CurrentPrice] = ph.[Price],
+    [CurrentPriceCurrencyId] = ph.[CurrencyId],
+    [CurrentPriceDate] = ph.[PriceDate]
+FROM [dbo].[Coins] c
+JOIN [dbo].[PriceHistory] ph
+    ON ph.[CoinId] = c.[CoinId]
+WHERE c.[CollectionId] = @CollectionId
+  AND ph.[PriceDate] = @PriceDate;
+
+
+------------------------------------------------------------
+-- Sales intentionally not seeded.
+------------------------------------------------------------

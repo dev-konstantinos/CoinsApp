@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Mints]
 (
     [MintId] INT IDENTITY(1,1) NOT NULL,
-    [CountryId] INT NULL,
+    [CountryId] INT NOT NULL,
     [Name] NVARCHAR(150) NOT NULL,
     [Code] NVARCHAR(10) NULL,
     [City] NVARCHAR(100) NULL,

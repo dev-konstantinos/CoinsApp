@@ -68,6 +68,14 @@
     CONSTRAINT [FK_Coins_CurrentPriceCurrency]
         FOREIGN KEY ([CurrentPriceCurrencyId])
         REFERENCES [dbo].[Currencies] ([CurrencyId]),
+    
+    CONSTRAINT [FK_Coins_CountryCurrencies]
+    FOREIGN KEY ([CountryId], [CurrencyId])
+    REFERENCES [dbo].[CountryCurrencies]
+    (
+        [CountryId],
+        [CurrencyId]
+    ),
 
     CONSTRAINT [CK_Coins_Fineness]
         CHECK
