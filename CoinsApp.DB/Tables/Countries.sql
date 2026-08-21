@@ -7,10 +7,7 @@
         CONSTRAINT [DF_Countries_IsActive] DEFAULT (1),
 
     CONSTRAINT [PK_Countries]
-        PRIMARY KEY ([CountryId]),
-
-    CONSTRAINT [UQ_Countries_Name]
-        UNIQUE ([Name]),
+        PRIMARY KEY CLUSTERED ([CountryId]),
 
     CONSTRAINT [UQ_Countries_Code]
         UNIQUE ([Code])

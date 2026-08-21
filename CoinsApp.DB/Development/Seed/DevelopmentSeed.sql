@@ -3,50 +3,58 @@
     Development Seed
 
     Development/test data only.
-    This script is NOT executed by the normal PostDeploy.
+    This script is NOT executed by PostDeploy.
 */
 
 DECLARE @UserId INT;
 DECLARE @CollectionId INT;
 
 DECLARE @GermanyId INT;
+DECLARE @FRGId INT;
+DECLARE @GDRId INT;
+DECLARE @USSRId INT;
+DECLARE @RussianEmpireId INT;
 DECLARE @RussiaId INT;
+DECLARE @USAId INT;
 
 DECLARE @EURId INT;
 DECLARE @DEMId INT;
+DECLARE @DDMId INT;
+DECLARE @SURId INT;
+DECLARE @RURId INT;
 DECLARE @RUBId INT;
+DECLARE @USDId INT;
 
 DECLARE @EUR2Id INT;
 DECLARE @DEM5Id INT;
-DECLARE @RUB5Id INT;
+DECLARE @DDM5Id INT;
+DECLARE @SUR5Id INT;
+DECLARE @RUR5Id INT;
+DECLARE @RUB10Id INT;
+DECLARE @USD1Id INT;
 
-DECLARE @BerlinMintId INT;
-DECLARE @MoscowMintId INT;
+DECLARE @GermanyBerlinMintId INT;
+DECLARE @FRGBerlinMintId INT;
+DECLARE @GDRBerlinMintId INT;
+DECLARE @USSRMoscowMintId INT;
+DECLARE @RussianEmpireStPetersburgMintId INT;
+DECLARE @RussiaMoscowMintId INT;
+DECLARE @USAPhiladelphiaMintId INT;
 
 DECLARE @SilverId INT;
 DECLARE @CopperId INT;
-
-DECLARE @FederalGermanyId INT;
-DECLARE @SovietUnionId INT;
-
-DECLARE @KMId INT;
-DECLARE @JId INT;
-
-DECLARE @Coin2EuroId INT;
-DECLARE @Coin5DEMId INT;
-DECLARE @Coin5RUBId INT;
 
 
 ------------------------------------------------------------
 -- User
 ------------------------------------------------------------
 
-IF NOT EXISTS
-(
-    SELECT 1
-    FROM [dbo].[Users]
-    WHERE [Username] = N'dev.user'
-)
+SELECT @UserId = [UserId]
+FROM [dbo].[Users]
+WHERE [Username] = N'dev.user';
+
+
+IF @UserId IS NULL
 BEGIN
     INSERT INTO [dbo].[Users]
     (
@@ -62,24 +70,22 @@ BEGIN
         N'dev.user@coinsapp.local',
         1
     );
+
+    SET @UserId = SCOPE_IDENTITY();
 END;
 
-SELECT @UserId = [UserId]
-FROM [dbo].[Users]
-WHERE [Username] = N'dev.user';
-
 
 ------------------------------------------------------------
--- Private Collection
+-- Collection
 ------------------------------------------------------------
 
-IF NOT EXISTS
-(
-    SELECT 1
-    FROM [dbo].[Collections]
-    WHERE [UserId] = @UserId
-      AND [Name] = N'My Coin Collection'
-)
+SELECT @CollectionId = [CollectionId]
+FROM [dbo].[Collections]
+WHERE [UserId] = @UserId
+  AND [Name] = N'My Coin Collection';
+
+
+IF @CollectionId IS NULL
 BEGIN
     INSERT INTO [dbo].[Collections]
     (
@@ -95,25 +101,42 @@ BEGIN
         N'Development collection for testing.',
         1
     );
-END;
 
-SELECT @CollectionId = [CollectionId]
-FROM [dbo].[Collections]
-WHERE [UserId] = @UserId
-  AND [Name] = N'My Coin Collection';
+    SET @CollectionId = SCOPE_IDENTITY();
+END;
 
 
 ------------------------------------------------------------
--- Countries
+-- Countries / Issuers
 ------------------------------------------------------------
 
 SELECT @GermanyId = [CountryId]
 FROM [dbo].[Countries]
 WHERE [Code] = N'DE';
 
+SELECT @FRGId = [CountryId]
+FROM [dbo].[Countries]
+WHERE [Code] = N'FRG';
+
+SELECT @GDRId = [CountryId]
+FROM [dbo].[Countries]
+WHERE [Code] = N'GDR';
+
+SELECT @USSRId = [CountryId]
+FROM [dbo].[Countries]
+WHERE [Code] = N'USSR';
+
+SELECT @RussianEmpireId = [CountryId]
+FROM [dbo].[Countries]
+WHERE [Code] = N'RE';
+
 SELECT @RussiaId = [CountryId]
 FROM [dbo].[Countries]
 WHERE [Code] = N'RU';
+
+SELECT @USAId = [CountryId]
+FROM [dbo].[Countries]
+WHERE [Code] = N'US';
 
 
 ------------------------------------------------------------
@@ -128,9 +151,25 @@ SELECT @DEMId = [CurrencyId]
 FROM [dbo].[Currencies]
 WHERE [Code] = N'DEM';
 
+SELECT @DDMId = [CurrencyId]
+FROM [dbo].[Currencies]
+WHERE [Code] = N'DDM';
+
+SELECT @SURId = [CurrencyId]
+FROM [dbo].[Currencies]
+WHERE [Code] = N'SUR';
+
+SELECT @RURId = [CurrencyId]
+FROM [dbo].[Currencies]
+WHERE [Code] = N'RUR';
+
 SELECT @RUBId = [CurrencyId]
 FROM [dbo].[Currencies]
 WHERE [Code] = N'RUB';
+
+SELECT @USDId = [CurrencyId]
+FROM [dbo].[Currencies]
+WHERE [Code] = N'USD';
 
 
 ------------------------------------------------------------
@@ -147,25 +186,70 @@ FROM [dbo].[Denominations]
 WHERE [CurrencyId] = @DEMId
   AND [Value] = 5;
 
-SELECT @RUB5Id = [DenominationId]
+SELECT @DDM5Id = [DenominationId]
+FROM [dbo].[Denominations]
+WHERE [CurrencyId] = @DDMId
+  AND [Value] = 5;
+
+SELECT @SUR5Id = [DenominationId]
+FROM [dbo].[Denominations]
+WHERE [CurrencyId] = @SURId
+  AND [Value] = 5;
+
+SELECT @RUR5Id = [DenominationId]
+FROM [dbo].[Denominations]
+WHERE [CurrencyId] = @RURId
+  AND [Value] = 5;
+
+SELECT @RUB10Id = [DenominationId]
 FROM [dbo].[Denominations]
 WHERE [CurrencyId] = @RUBId
-  AND [Value] = 5;
+  AND [Value] = 10;
+
+SELECT @USD1Id = [DenominationId]
+FROM [dbo].[Denominations]
+WHERE [CurrencyId] = @USDId
+  AND [Value] = 1;
 
 
 ------------------------------------------------------------
 -- Mints
 ------------------------------------------------------------
 
-SELECT @BerlinMintId = [MintId]
+SELECT @GermanyBerlinMintId = [MintId]
 FROM [dbo].[Mints]
 WHERE [CountryId] = @GermanyId
   AND [Name] = N'Berlin';
 
-SELECT @MoscowMintId = [MintId]
+SELECT @FRGBerlinMintId = [MintId]
+FROM [dbo].[Mints]
+WHERE [CountryId] = @FRGId
+  AND [Name] = N'Berlin';
+
+SELECT @GDRBerlinMintId = [MintId]
+FROM [dbo].[Mints]
+WHERE [CountryId] = @GDRId
+  AND [Name] = N'Berlin';
+
+SELECT @USSRMoscowMintId = [MintId]
+FROM [dbo].[Mints]
+WHERE [CountryId] = @USSRId
+  AND [Name] = N'Moscow';
+
+SELECT @RussianEmpireStPetersburgMintId = [MintId]
+FROM [dbo].[Mints]
+WHERE [CountryId] = @RussianEmpireId
+  AND [Name] = N'St. Petersburg';
+
+SELECT @RussiaMoscowMintId = [MintId]
 FROM [dbo].[Mints]
 WHERE [CountryId] = @RussiaId
   AND [Name] = N'Moscow';
+
+SELECT @USAPhiladelphiaMintId = [MintId]
+FROM [dbo].[Mints]
+WHERE [CountryId] = @USAId
+  AND [Name] = N'Philadelphia';
 
 
 ------------------------------------------------------------
@@ -182,35 +266,8 @@ WHERE [Name] = N'Copper';
 
 
 ------------------------------------------------------------
--- Issuing Authorities
-------------------------------------------------------------
-
-SELECT @FederalGermanyId = [IssuingAuthorityId]
-FROM [dbo].[IssuingAuthorities]
-WHERE [CountryId] = @GermanyId
-  AND [Name] = N'Federal Republic of Germany';
-
-SELECT @SovietUnionId = [IssuingAuthorityId]
-FROM [dbo].[IssuingAuthorities]
-WHERE [CountryId] = @RussiaId
-  AND [Name] = N'Soviet Union';
-
-
-------------------------------------------------------------
--- Catalogs
-------------------------------------------------------------
-
-SELECT @KMId = [CatalogId]
-FROM [dbo].[Catalogs]
-WHERE [ShortName] = N'KM';
-
-SELECT @JId = [CatalogId]
-FROM [dbo].[Catalogs]
-WHERE [ShortName] = N'J';
-
-
-------------------------------------------------------------
--- Coin 1: Germany - 2 Euro
+-- Germany
+-- 2 Euro, 2024
 ------------------------------------------------------------
 
 IF NOT EXISTS
@@ -218,23 +275,23 @@ IF NOT EXISTS
     SELECT 1
     FROM [dbo].[Coins]
     WHERE [CollectionId] = @CollectionId
-      AND [Year] = 2024
       AND [CountryId] = @GermanyId
       AND [CurrencyId] = @EURId
       AND [DenominationId] = @EUR2Id
+      AND [Year] = 2024
 )
 BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
         [CountryId],
-        [IssuingAuthorityId],
         [CurrencyId],
         [DenominationId],
         [MintId],
         [MaterialId],
         [Year],
         [MintMark],
+        [Fineness],
         [Weight],
         [Diameter],
         [Thickness],
@@ -250,13 +307,13 @@ BEGIN
     (
         @CollectionId,
         @GermanyId,
-        @FederalGermanyId,
         @EURId,
         @EUR2Id,
-        @BerlinMintId,
+        @GermanyBerlinMintId,
         NULL,
         2024,
         N'A',
+        NULL,
         8.50,
         25.75,
         2.20,
@@ -272,7 +329,8 @@ END;
 
 
 ------------------------------------------------------------
--- Coin 2: Germany - 5 Deutsche Mark
+-- Federal Republic of Germany
+-- 5 Deutsche Mark, 1975
 ------------------------------------------------------------
 
 IF NOT EXISTS
@@ -280,17 +338,16 @@ IF NOT EXISTS
     SELECT 1
     FROM [dbo].[Coins]
     WHERE [CollectionId] = @CollectionId
-      AND [Year] = 1975
-      AND [CountryId] = @GermanyId
+      AND [CountryId] = @FRGId
       AND [CurrencyId] = @DEMId
       AND [DenominationId] = @DEM5Id
+      AND [Year] = 1975
 )
 BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
         [CountryId],
-        [IssuingAuthorityId],
         [CurrencyId],
         [DenominationId],
         [MintId],
@@ -311,11 +368,10 @@ BEGIN
     VALUES
     (
         @CollectionId,
-        @GermanyId,
-        @FederalGermanyId,
+        @FRGId,
         @DEMId,
         @DEM5Id,
-        @BerlinMintId,
+        @FRGBerlinMintId,
         @SilverId,
         1975,
         N'A',
@@ -323,18 +379,19 @@ BEGIN
         11.20,
         29.00,
         N'Round',
-        N'Historical German 5 Deutsche Mark coin.',
+        N'West German 5 Deutsche Mark silver coin.',
         N'VF',
         8.50,
         @EURId,
         SYSUTCDATETIME(),
-        N'Historical currency test case.'
+        N'Historical issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
--- Coin 3: Soviet Union - 5 Rubles
+-- German Democratic Republic
+-- 5 Mark, 1975
 ------------------------------------------------------------
 
 IF NOT EXISTS
@@ -342,23 +399,206 @@ IF NOT EXISTS
     SELECT 1
     FROM [dbo].[Coins]
     WHERE [CollectionId] = @CollectionId
-      AND [Year] = 1987
-      AND [CountryId] = @RussiaId
-      AND [CurrencyId] = @RUBId
-      AND [DenominationId] = @RUB5Id
+      AND [CountryId] = @GDRId
+      AND [CurrencyId] = @DDMId
+      AND [DenominationId] = @DDM5Id
+      AND [Year] = 1975
 )
 BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
         [CountryId],
-        [IssuingAuthorityId],
         [CurrencyId],
         [DenominationId],
         [MintId],
         [MaterialId],
         [Year],
         [MintMark],
+        [Fineness],
+        [Weight],
+        [Diameter],
+        [Shape],
+        [Description],
+        [Condition],
+        [CurrentPrice],
+        [CurrentPriceCurrencyId],
+        [CurrentPriceDate],
+        [Notes]
+    )
+    VALUES
+    (
+        @CollectionId,
+        @GDRId,
+        @DDMId,
+        @DDM5Id,
+        @GDRBerlinMintId,
+        @CopperId,
+        1975,
+        NULL,
+        NULL,
+        9.60,
+        29.00,
+        N'Round',
+        N'East German 5 Mark coin.',
+        N'VF',
+        5.00,
+        @EURId,
+        SYSUTCDATETIME(),
+        N'Historical issuer development test coin.'
+    );
+END;
+
+
+------------------------------------------------------------
+-- Soviet Union
+-- 5 Soviet Rubles, 1987
+------------------------------------------------------------
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Coins]
+    WHERE [CollectionId] = @CollectionId
+      AND [CountryId] = @USSRId
+      AND [CurrencyId] = @SURId
+      AND [DenominationId] = @SUR5Id
+      AND [Year] = 1987
+)
+BEGIN
+    INSERT INTO [dbo].[Coins]
+    (
+        [CollectionId],
+        [CountryId],
+        [CurrencyId],
+        [DenominationId],
+        [MintId],
+        [MaterialId],
+        [Year],
+        [MintMark],
+        [Fineness],
+        [Weight],
+        [Diameter],
+        [Shape],
+        [Description],
+        [Condition],
+        [CurrentPrice],
+        [CurrentPriceCurrencyId],
+        [CurrentPriceDate],
+        [Notes]
+    )
+    VALUES
+    (
+        @CollectionId,
+        @USSRId,
+        @SURId,
+        @SUR5Id,
+        @USSRMoscowMintId,
+        @CopperId,
+        1987,
+        N'M',
+        NULL,
+        5.80,
+        27.00,
+        N'Round',
+        N'Soviet 5 Rubles commemorative coin.',
+        N'XF',
+        4.00,
+        @EURId,
+        SYSUTCDATETIME(),
+        N'Historical issuer development test coin.'
+    );
+END;
+
+
+------------------------------------------------------------
+-- Russian Empire
+-- 5 Rubles, 1899
+------------------------------------------------------------
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Coins]
+    WHERE [CollectionId] = @CollectionId
+      AND [CountryId] = @RussianEmpireId
+      AND [CurrencyId] = @RURId
+      AND [DenominationId] = @RUR5Id
+      AND [Year] = 1899
+)
+BEGIN
+    INSERT INTO [dbo].[Coins]
+    (
+        [CollectionId],
+        [CountryId],
+        [CurrencyId],
+        [DenominationId],
+        [MintId],
+        [MaterialId],
+        [Year],
+        [MintMark],
+        [Fineness],
+        [Weight],
+        [Diameter],
+        [Shape],
+        [Description],
+        [Condition],
+        [CurrentPrice],
+        [CurrentPriceCurrencyId],
+        [CurrentPriceDate],
+        [Notes]
+    )
+    VALUES
+    (
+        @CollectionId,
+        @RussianEmpireId,
+        @RURId,
+        @RUR5Id,
+        @RussianEmpireStPetersburgMintId,
+        @SilverId,
+        1899,
+        NULL,
+        900.0000,
+        4.30,
+        18.50,
+        N'Round',
+        N'Russian Empire 5 Rubles silver coin.',
+        N'VF',
+        500.00,
+        @EURId,
+        SYSUTCDATETIME(),
+        N'Historical issuer development test coin.'
+    );
+END;
+
+
+------------------------------------------------------------
+-- Russian Federation
+-- 10 Rubles, 2024
+------------------------------------------------------------
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Coins]
+    WHERE [CollectionId] = @CollectionId
+      AND [CountryId] = @RussiaId
+      AND [CurrencyId] = @RUBId
+      AND [DenominationId] = @RUB10Id
+      AND [Year] = 2024
+)
+BEGIN
+    INSERT INTO [dbo].[Coins]
+    (
+        [CollectionId],
+        [CountryId],
+        [CurrencyId],
+        [DenominationId],
+        [MintId],
+        [MaterialId],
+        [Year],
+        [MintMark],
+        [Fineness],
         [Weight],
         [Diameter],
         [Shape],
@@ -373,174 +613,82 @@ BEGIN
     (
         @CollectionId,
         @RussiaId,
-        @SovietUnionId,
         @RUBId,
-        @RUB5Id,
-        @MoscowMintId,
+        @RUB10Id,
+        @RussiaMoscowMintId,
         @CopperId,
-        1987,
+        2024,
         N'M',
-        5.80,
-        27.00,
+        NULL,
+        5.63,
+        22.00,
         N'Round',
-        N'Soviet 5 ruble commemorative coin.',
-        N'XF',
-        4.00,
+        N'Russian Federation 10 Rubles coin.',
+        N'UNC',
+        0.15,
         @EURId,
         SYSUTCDATETIME(),
-        N'Historical issuing authority test case.'
+        N'Current issuer development test coin.'
     );
 END;
 
 
 ------------------------------------------------------------
--- Resolve Coins
+-- United States
+-- 1 Dollar, 2024
 ------------------------------------------------------------
 
-SELECT @Coin2EuroId = [CoinId]
-FROM [dbo].[Coins]
-WHERE [CollectionId] = @CollectionId
-  AND [Year] = 2024
-  AND [CountryId] = @GermanyId
-  AND [CurrencyId] = @EURId
-  AND [DenominationId] = @EUR2Id;
-
-SELECT @Coin5DEMId = [CoinId]
-FROM [dbo].[Coins]
-WHERE [CollectionId] = @CollectionId
-  AND [Year] = 1975
-  AND [CountryId] = @GermanyId
-  AND [CurrencyId] = @DEMId
-  AND [DenominationId] = @DEM5Id;
-
-SELECT @Coin5RUBId = [CoinId]
-FROM [dbo].[Coins]
-WHERE [CollectionId] = @CollectionId
-  AND [Year] = 1987
-  AND [CountryId] = @RussiaId
-  AND [CurrencyId] = @RUBId
-  AND [DenominationId] = @RUB5Id;
-
-
-------------------------------------------------------------
--- Catalog Entry: 2 Euro -> KM
-------------------------------------------------------------
-
-IF @KMId IS NOT NULL
-AND @Coin2EuroId IS NOT NULL
-AND NOT EXISTS
+IF NOT EXISTS
 (
     SELECT 1
-    FROM [dbo].[CatalogEntries]
-    WHERE [CatalogId] = @KMId
-      AND [CoinId] = @Coin2EuroId
+    FROM [dbo].[Coins]
+    WHERE [CollectionId] = @CollectionId
+      AND [CountryId] = @USAId
+      AND [CurrencyId] = @USDId
+      AND [DenominationId] = @USD1Id
+      AND [Year] = 2024
 )
 BEGIN
-    INSERT INTO [dbo].[CatalogEntries]
+    INSERT INTO [dbo].[Coins]
     (
-        [CatalogId],
-        [CoinId],
-        [CatalogNumber],
+        [CollectionId],
+        [CountryId],
+        [CurrencyId],
+        [DenominationId],
+        [MintId],
+        [MaterialId],
+        [Year],
+        [MintMark],
+        [Fineness],
+        [Weight],
+        [Diameter],
+        [Shape],
+        [Description],
+        [Condition],
+        [CurrentPrice],
+        [CurrentPriceCurrencyId],
+        [CurrentPriceDate],
         [Notes]
     )
     VALUES
     (
-        @KMId,
-        @Coin2EuroId,
-        N'KM-2EUR-2024-DE',
-        N'Development catalog entry.'
-    );
-END;
-
-
-------------------------------------------------------------
--- Catalog Entry: 5 DEM -> KM
-------------------------------------------------------------
-
-IF @KMId IS NOT NULL
-AND @Coin5DEMId IS NOT NULL
-AND NOT EXISTS
-(
-    SELECT 1
-    FROM [dbo].[CatalogEntries]
-    WHERE [CatalogId] = @KMId
-      AND [CoinId] = @Coin5DEMId
-)
-BEGIN
-    INSERT INTO [dbo].[CatalogEntries]
-    (
-        [CatalogId],
-        [CoinId],
-        [CatalogNumber],
-        [Notes]
-    )
-    VALUES
-    (
-        @KMId,
-        @Coin5DEMId,
-        N'KM-5DEM-1975-DE',
-        N'Development catalog entry.'
-    );
-END;
-
-
-------------------------------------------------------------
--- Catalog Entry: 5 DEM -> Jaeger
-------------------------------------------------------------
-
-IF @JId IS NOT NULL
-AND @Coin5DEMId IS NOT NULL
-AND NOT EXISTS
-(
-    SELECT 1
-    FROM [dbo].[CatalogEntries]
-    WHERE [CatalogId] = @JId
-      AND [CoinId] = @Coin5DEMId
-)
-BEGIN
-    INSERT INTO [dbo].[CatalogEntries]
-    (
-        [CatalogId],
-        [CoinId],
-        [CatalogNumber],
-        [Notes]
-    )
-    VALUES
-    (
-        @JId,
-        @Coin5DEMId,
-        N'J-1975-5DM',
-        N'Development catalog entry.'
-    );
-END;
-
-
-------------------------------------------------------------
--- Catalog Entry: 5 RUB -> KM
-------------------------------------------------------------
-
-IF @KMId IS NOT NULL
-AND @Coin5RUBId IS NOT NULL
-AND NOT EXISTS
-(
-    SELECT 1
-    FROM [dbo].[CatalogEntries]
-    WHERE [CatalogId] = @KMId
-      AND [CoinId] = @Coin5RUBId
-)
-BEGIN
-    INSERT INTO [dbo].[CatalogEntries]
-    (
-        [CatalogId],
-        [CoinId],
-        [CatalogNumber],
-        [Notes]
-    )
-    VALUES
-    (
-        @KMId,
-        @Coin5RUBId,
-        N'KM-5RUB-1987-USSR',
-        N'Development catalog entry.'
+        @CollectionId,
+        @USAId,
+        @USDId,
+        @USD1Id,
+        @USAPhiladelphiaMintId,
+        @CopperId,
+        2024,
+        N'P',
+        NULL,
+        8.10,
+        26.50,
+        N'Round',
+        N'United States 1 Dollar coin.',
+        N'UNC',
+        1.00,
+        @EURId,
+        SYSUTCDATETIME(),
+        N'Development test coin.'
     );
 END;

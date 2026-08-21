@@ -7,15 +7,15 @@
 BEGIN
     INSERT INTO [dbo].[Currencies]
     (
-        [Code],
         [Name],
+        [Code],
         [Symbol],
         [IsActive]
     )
     VALUES
     (
-        N'EUR',
         N'Euro',
+        N'EUR',
         N'€',
         1
     );
@@ -31,16 +31,88 @@ IF NOT EXISTS
 BEGIN
     INSERT INTO [dbo].[Currencies]
     (
-        [Code],
         [Name],
+        [Code],
         [Symbol],
         [IsActive]
     )
     VALUES
     (
-        N'DEM',
         N'Deutsche Mark',
+        N'DEM',
         N'DM',
+        0
+    );
+END;
+
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Currencies]
+    WHERE [Code] = N'DDM'
+)
+BEGIN
+    INSERT INTO [dbo].[Currencies]
+    (
+        [Name],
+        [Code],
+        [Symbol],
+        [IsActive]
+    )
+    VALUES
+    (
+        N'Mark der DDR',
+        N'DDM',
+        N'M',
+        0
+    );
+END;
+
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Currencies]
+    WHERE [Code] = N'SUR'
+)
+BEGIN
+    INSERT INTO [dbo].[Currencies]
+    (
+        [Name],
+        [Code],
+        [Symbol],
+        [IsActive]
+    )
+    VALUES
+    (
+        N'Soviet Ruble',
+        N'SUR',
+        N'₽',
+        0
+    );
+END;
+
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM [dbo].[Currencies]
+    WHERE [Code] = N'RUR'
+)
+BEGIN
+    INSERT INTO [dbo].[Currencies]
+    (
+        [Name],
+        [Code],
+        [Symbol],
+        [IsActive]
+    )
+    VALUES
+    (
+        N'Russian Ruble',
+        N'RUR',
+        N'₽',
         0
     );
 END;
@@ -55,15 +127,15 @@ IF NOT EXISTS
 BEGIN
     INSERT INTO [dbo].[Currencies]
     (
-        [Code],
         [Name],
+        [Code],
         [Symbol],
         [IsActive]
     )
     VALUES
     (
-        N'RUB',
         N'Russian Ruble',
+        N'RUB',
         N'₽',
         1
     );
@@ -79,15 +151,15 @@ IF NOT EXISTS
 BEGIN
     INSERT INTO [dbo].[Currencies]
     (
-        [Code],
         [Name],
+        [Code],
         [Symbol],
         [IsActive]
     )
     VALUES
     (
+        N'United States Dollar',
         N'USD',
-        N'US Dollar',
         N'$',
         1
     );

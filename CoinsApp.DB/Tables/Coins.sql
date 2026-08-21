@@ -3,7 +3,6 @@
     [CoinId] INT IDENTITY(1,1) NOT NULL,
     [CollectionId] INT NOT NULL,
     [CountryId] INT NOT NULL,
-    [IssuingAuthorityId] INT NOT NULL,
     [CurrencyId] INT NOT NULL,
     [DenominationId] INT NOT NULL,
     [MintId] INT NULL,
@@ -48,10 +47,6 @@
     CONSTRAINT [FK_Coins_Countries]
         FOREIGN KEY ([CountryId])
         REFERENCES [dbo].[Countries] ([CountryId]),
-
-    CONSTRAINT [FK_Coins_IssuingAuthorities]
-        FOREIGN KEY ([IssuingAuthorityId])
-        REFERENCES [dbo].[IssuingAuthorities] ([IssuingAuthorityId]),
 
     CONSTRAINT [FK_Coins_Currencies]
         FOREIGN KEY ([CurrencyId])

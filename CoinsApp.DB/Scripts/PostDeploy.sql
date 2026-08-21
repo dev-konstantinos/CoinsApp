@@ -10,13 +10,13 @@ GO
 :r ..\Seed\Global\Currencies.sql
 GO
 
+:r ..\Seed\Global\CountryCurrencies.sql
+GO
+
 :r ..\Seed\Global\Materials.sql
 GO
 
 :r ..\Seed\Global\Mints.sql
-GO
-
-:r ..\Seed\Global\IssuingAuthorities.sql
 GO
 
 :r ..\Seed\Global\Denominations.sql

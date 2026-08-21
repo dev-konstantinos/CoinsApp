@@ -80,14 +80,13 @@
     <None Include="Seed\Global\Currencies.sql" />
     <None Include="Seed\Global\Materials.sql" />
     <None Include="Seed\Global\Mints.sql" />
-    <None Include="Seed\Global\IssuingAuthorities.sql" />
     <None Include="Seed\Global\Denominations.sql" />
     <None Include="Seed\Global\Catalogs.sql" />
     <None Include="Scripts\GlobalSeed.sql" />
+    <None Include="Seed\Global\CountryCurrencies.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Countries.sql" />
-    <Build Include="Tables\IssuingAuthorities.sql" />
     <Build Include="Tables\Currencies.sql" />
     <Build Include="Tables\Denominations.sql" />
     <Build Include="Tables\Mints.sql" />
@@ -105,7 +104,6 @@
     <Build Include="Indexes\UX_Users_Email.sql" />
     <Build Include="Indexes\IX_Collections_UserId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId.sql" />
-    <Build Include="Indexes\IX_Coins_IssuingAuthorityId.sql" />
     <Build Include="Indexes\IX_Coins_CurrencyId.sql" />
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_MintId.sql" />
@@ -115,5 +113,6 @@
     <Build Include="Indexes\IX_PriceHistory_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CollectionId.sql" />
     <Build Include="Indexes\IX_CoinImages_CoinId.sql" />
+    <Build Include="Tables\CountryCurrencies.sql" />
   </ItemGroup>
 </Project>

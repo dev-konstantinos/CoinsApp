@@ -15,6 +15,6 @@
         FOREIGN KEY ([CountryId])
         REFERENCES [dbo].[Countries] ([CountryId]),
 
-    CONSTRAINT [UQ_Mints_Name]
-        UNIQUE ([Name])
+    CONSTRAINT [UQ_Mints_Country_Name]
+        UNIQUE ([CountryId], [Name])
 );
