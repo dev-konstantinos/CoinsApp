@@ -84,6 +84,8 @@
     <None Include="Seed\Global\Catalogs.sql" />
     <None Include="Scripts\GlobalSeed.sql" />
     <None Include="Seed\Global\CountryCurrencies.sql" />
+    <None Include="Indexes\IX_Coins_CountryId_CurrencyId.sql" />
+    <None Include="Indexes\IX_Coins_CurrentPriceCurrencyId.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Countries.sql" />
@@ -102,7 +104,6 @@
     <Build Include="Tables\CatalogEntries.sql" />
     <Build Include="Tables\CoinImages.sql" />
     <Build Include="Indexes\UX_Users_Email.sql" />
-    <Build Include="Indexes\IX_Collections_UserId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId.sql" />
     <Build Include="Indexes\IX_Coins_CurrencyId.sql" />
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
