@@ -1,10 +1,14 @@
-﻿namespace CoinsApp.UI
+﻿using CoinsApp.UI.Menus;
+
+namespace CoinsApp.UI;
+
+internal static class Program
 {
-    internal class Program
+    private static void Main()
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello, World!");
-        }
+        var mainMenu = new MainMenu();
+        var menuRunner = new MenuRunner(mainMenu);
+
+        menuRunner.Run();
     }
 }
