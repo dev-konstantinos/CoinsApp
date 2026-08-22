@@ -16,8 +16,4 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CoinsApp.DAL\CoinsApp.DAL.csproj" />
-  </ItemGroup>
-
 </Project>

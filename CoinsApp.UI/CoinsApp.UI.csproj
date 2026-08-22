@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoinsApp.BLL\CoinsApp.BLL.csproj" />
+    <ProjectReference Include="..\CoinsApp.DAL\CoinsApp.DAL.csproj" />
   </ItemGroup>
 
 </Project>
