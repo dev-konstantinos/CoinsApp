@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CoinsApp.DAL\CoinsApp.DAL.csproj" />
+  </ItemGroup>
+
 </Project>

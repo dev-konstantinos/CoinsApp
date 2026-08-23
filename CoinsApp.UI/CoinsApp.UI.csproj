@@ -24,4 +24,24 @@
     <ProjectReference Include="..\CoinsApp.BLL\CoinsApp.BLL.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\CoinsApp.DB\CoinsApp.DB.sqlproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>None</OutputItemType>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Target Name="CopyDatabaseDacpac"
+        AfterTargets="Build">
+
+		<ItemGroup>
+			<DatabaseDacpac Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
+		</ItemGroup>
+
+		<Copy
+		  SourceFiles="@(DatabaseDacpac)"
+		  DestinationFolder="$(TargetDir)Database"
+		  SkipUnchangedFiles="true" />
+	</Target>
+
 </Project>
