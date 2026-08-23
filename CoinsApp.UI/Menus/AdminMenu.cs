@@ -37,6 +37,10 @@ internal sealed class AdminMenu
                     Install();
                     break;
 
+                case "2":
+                    Reset();
+                    break;
+
                 case "0":
                     return;
 
@@ -58,6 +62,21 @@ internal sealed class AdminMenu
         Console.WriteLine();
 
         var result = _installService.Install();
+
+        Console.WriteLine(result.Message);
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+    }
+
+    private void Reset()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Reset ===");
+        Console.WriteLine();
+
+        var result = _resetService.Reset();
 
         Console.WriteLine(result.Message);
         Console.WriteLine();

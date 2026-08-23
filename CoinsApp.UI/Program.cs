@@ -11,33 +11,21 @@ internal static class Program
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile(
-                "appsettings.json",
-                optional: false,
-                reloadOnChange: false)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
             .Build();
 
-        var connectionString =
-            configuration.GetConnectionString("CoinsApp")
-            ?? throw new InvalidOperationException(
-                "Connection string 'CoinsApp' was not found.");
+        var connectionString = configuration.GetConnectionString("CoinsApp")
+            ?? throw new InvalidOperationException("Connection string 'CoinsApp' was not found.");
 
-        var installService =
-            new InstallService(connectionString);
+        var installService = new InstallService(connectionString);
 
-        var resetService =
-            new ResetService(connectionString);
+        var resetService = new ResetService(connectionString);
 
-        var adminMenu =
-            new AdminMenu(
-                installService,
-                resetService);
+        var adminMenu = new AdminMenu(installService, resetService);
 
-        var mainMenu =
-            new MainMenu(adminMenu);
+        var mainMenu = new MainMenu(adminMenu);
 
-        var menuRunner =
-            new MenuRunner(mainMenu);
+        var menuRunner = new MenuRunner(mainMenu);
 
         menuRunner.Run();
     }

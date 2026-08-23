@@ -2,23 +2,23 @@
 
 public sealed class ResetResult
 {
-    public bool IsSuccess { get; }
+    public bool Success { get; }
 
-    public string? ErrorMessage { get; }
+    public string Message { get; }
 
-    private ResetResult(bool isSuccess, string? errorMessage)
+    public ResetResult(bool success, string message)
     {
-        IsSuccess = isSuccess;
-        ErrorMessage = errorMessage;
+        Success = success;
+        Message = message;
     }
 
-    public static ResetResult Success()
+    public static ResetResult Succeeded(string message)
     {
-        return new ResetResult(isSuccess: true, errorMessage: null);
+        return new ResetResult(true, message);
     }
 
-    public static ResetResult Failed(string errorMessage)
+    public static ResetResult Failed(string message)
     {
-        return new ResetResult(isSuccess: false, errorMessage: errorMessage);
+        return new ResetResult(false, message);
     }
 }
