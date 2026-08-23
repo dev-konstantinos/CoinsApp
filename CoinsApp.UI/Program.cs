@@ -1,7 +1,6 @@
 ﻿using CoinsApp.BLL.Install;
-using CoinsApp.DAL.Database;
-using CoinsApp.DAL.Install;
 using CoinsApp.UI.Menus;
+using Microsoft.Extensions.Configuration;
 
 namespace CoinsApp.UI;
 
@@ -9,23 +8,23 @@ internal static class Program
 {
     private static void Main()
     {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .Build();
+
         var connectionString =
-            "YOUR_EXISTING_CONNECTION_STRING";
-
-        var databaseConnection =
-            new DatabaseConnection(connectionString);
-
-        var databaseInstaller =
-            new DatabaseInstaller(databaseConnection);
+            configuration.GetConnectionString("CoinsApp")
+            ?? throw new InvalidOperationException("Connection string 'CoinsApp' was not found.");
 
         var installService =
-            new InstallService(databaseInstaller);
+            new InstallService(connectionString);
 
-        var administrationMenu =
+        var adminMenu =
             new AdminMenu(installService);
 
         var mainMenu =
-            new MainMenu(administrationMenu);
+            new MainMenu(adminMenu);
 
         var menuRunner =
             new MenuRunner(mainMenu);

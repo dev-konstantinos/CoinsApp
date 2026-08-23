@@ -21,17 +21,17 @@ public sealed class DatabaseInstaller
             var dacpacPath = GetDacpacPath();
 
             if (!File.Exists(dacpacPath))
+            {
                 return InstallResult.Failed($"DACPAC not found: {dacpacPath}");
+            }
 
-            var connectionString = _databaseConnection.ConnectionString;
-
-            var dacServices = new DacServices(connectionString);
+            var dacServices = new DacServices(_databaseConnection.ConnectionString);
 
             using var dacpac = DacPackage.Load(dacpacPath);
 
-            dacServices.Deploy(dacpac, "CoinsApp", upgradeExisting: true);
+            dacServices.Deploy(dacpac, _databaseConnection.DatabaseName, upgradeExisting: true);
 
-            return InstallResult.Succeeded("CoinsApp database installed successfully.");
+            return InstallResult.Succeeded($"Database '{_databaseConnection.DatabaseName}' installed successfully.");
         }
         catch (DacServicesException ex)
         {

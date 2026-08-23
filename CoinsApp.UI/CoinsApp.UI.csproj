@@ -25,23 +25,9 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CoinsApp.DB\CoinsApp.DB.sqlproj">
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-			<OutputItemType>None</OutputItemType>
-		</ProjectReference>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
-
-	<Target Name="CopyDatabaseDacpac"
-        AfterTargets="Build">
-
-		<ItemGroup>
-			<DatabaseDacpac Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
-		</ItemGroup>
-
-		<Copy
-		  SourceFiles="@(DatabaseDacpac)"
-		  DestinationFolder="$(TargetDir)Database"
-		  SkipUnchangedFiles="true" />
-	</Target>
 
 </Project>

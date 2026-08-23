@@ -8,6 +8,8 @@ public sealed class DatabaseConnection
 
     public string ConnectionString => _connectionString;
 
+    public string DatabaseName { get; }
+
     public DatabaseConnection(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -15,7 +17,15 @@ public sealed class DatabaseConnection
             throw new ArgumentException("Database connection string cannot be empty.");
         }
 
+        var builder = new SqlConnectionStringBuilder(connectionString);
+
+        if (string.IsNullOrWhiteSpace(builder.InitialCatalog))
+        {
+            throw new ArgumentException("Database name is missing from the connection string.");
+        }
+
         _connectionString = connectionString;
+        DatabaseName = builder.InitialCatalog;
     }
 
     public SqlConnection Create()
