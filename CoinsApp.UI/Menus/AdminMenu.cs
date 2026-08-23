@@ -1,14 +1,18 @@
 ﻿using CoinsApp.BLL.Install;
+using CoinsApp.BLL.Reset;
 
 namespace CoinsApp.UI.Menus;
 
 internal sealed class AdminMenu
 {
     private readonly InstallService _installService;
+    private readonly ResetService _resetService;
 
-    public AdminMenu(InstallService installService)
+    public AdminMenu(InstallService installService, ResetService resetService)
     {
         _installService = installService ?? throw new ArgumentNullException(nameof(installService));
+
+        _resetService = resetService ?? throw new ArgumentNullException(nameof(resetService));
     }
 
     public void Run()

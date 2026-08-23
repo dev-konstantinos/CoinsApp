@@ -1,4 +1,5 @@
 ﻿using CoinsApp.BLL.Install;
+using CoinsApp.BLL.Reset;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
 
@@ -10,18 +11,27 @@ internal static class Program
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .AddJsonFile(
+                "appsettings.json",
+                optional: false,
+                reloadOnChange: false)
             .Build();
 
         var connectionString =
             configuration.GetConnectionString("CoinsApp")
-            ?? throw new InvalidOperationException("Connection string 'CoinsApp' was not found.");
+            ?? throw new InvalidOperationException(
+                "Connection string 'CoinsApp' was not found.");
 
         var installService =
             new InstallService(connectionString);
 
+        var resetService =
+            new ResetService(connectionString);
+
         var adminMenu =
-            new AdminMenu(installService);
+            new AdminMenu(
+                installService,
+                resetService);
 
         var mainMenu =
             new MainMenu(adminMenu);

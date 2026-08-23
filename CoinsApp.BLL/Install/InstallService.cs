@@ -7,8 +7,7 @@ public sealed class InstallService
 {
     private readonly DatabaseInstaller _databaseInstaller;
 
-    public InstallService(string connectionString)
-        : this(new DatabaseInstaller(new DatabaseConnection(connectionString)))
+    public InstallService(string connectionString) : this(new DatabaseInstaller(new DatabaseConnection(connectionString)))
     {
     }
 

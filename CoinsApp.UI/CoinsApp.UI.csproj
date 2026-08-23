@@ -30,4 +30,18 @@
 		</None>
 	</ItemGroup>
 
+	<Target Name="CopyResetArtifacts" AfterTargets="Build">
+
+		<ItemGroup>
+			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\ResetDevelopment.sql" />
+			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\DevelopmentSeed.sql" />
+		</ItemGroup>
+
+		<Copy
+			SourceFiles="@(ResetArtifact)"
+			DestinationFolder="$(OutputPath)Reset"
+			SkipUnchangedFiles="true" />
+
+	</Target>
+
 </Project>
