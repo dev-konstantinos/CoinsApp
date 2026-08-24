@@ -44,4 +44,19 @@
 
 	</Target>
 
+	<Target Name="CopyDatabaseDacpac" AfterTargets="Build">
+
+		<ItemGroup>
+			<DatabaseArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
+		</ItemGroup>
+
+		<MakeDir Directories="$(OutputPath)Database" />
+
+		<Copy
+			SourceFiles="@(DatabaseArtifact)"
+			DestinationFolder="$(OutputPath)Database"
+			SkipUnchangedFiles="true" />
+
+	</Target>
+
 </Project>
