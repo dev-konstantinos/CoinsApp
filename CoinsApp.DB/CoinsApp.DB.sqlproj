@@ -102,6 +102,7 @@
     <Build Include="Tables\Catalogs.sql" />
     <Build Include="Tables\CatalogEntries.sql" />
     <Build Include="Tables\CoinImages.sql" />
+    <Build Include="Tables\CountryCurrencies.sql" />
     <Build Include="Indexes\UX_Users_Email.sql" />
     <Build Include="Indexes\IX_Coins_CountryId.sql" />
     <Build Include="Indexes\IX_Coins_CurrencyId.sql" />
@@ -115,7 +116,8 @@
     <Build Include="Indexes\IX_CoinImages_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId_CurrencyId.sql" />
     <Build Include="Indexes\IX_Coins_CurrentPriceCurrencyId.sql" />
-    <Build Include="Tables\CountryCurrencies.sql" />
+    <Build Include="Indexes\IX_Coins_CurrencyId_DenominationId.sql" />
+    <Build Include="Indexes\IX_Coins_CountryId_MintId.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>

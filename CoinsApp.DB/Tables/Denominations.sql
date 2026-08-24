@@ -10,6 +10,9 @@
     CONSTRAINT [PK_Denominations]
         PRIMARY KEY ([DenominationId]),
 
+    CONSTRAINT [UQ_Denominations_Currency_DenominationId]
+        UNIQUE ([CurrencyId], [DenominationId]),
+
     CONSTRAINT [FK_Denominations_Currencies]
         FOREIGN KEY ([CurrencyId])
         REFERENCES [dbo].[Currencies] ([CurrencyId]),

@@ -11,6 +11,9 @@
     CONSTRAINT [PK_Mints]
         PRIMARY KEY ([MintId]),
 
+    CONSTRAINT [UQ_Mints_Country_MintId]
+        UNIQUE ([CountryId], [MintId]),
+
     CONSTRAINT [FK_Mints_Countries]
         FOREIGN KEY ([CountryId])
         REFERENCES [dbo].[Countries] ([CountryId]),

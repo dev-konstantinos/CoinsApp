@@ -1,2 +1,2 @@
-﻿CREATE UNIQUE INDEX [UX_Purchases_CoinId]
+﻿CREATE INDEX [IX_Purchases_CoinId]
 ON [dbo].[Purchases] ([CoinId]);

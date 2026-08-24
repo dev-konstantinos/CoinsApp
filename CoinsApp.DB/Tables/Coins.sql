@@ -54,12 +54,20 @@
         REFERENCES [dbo].[Currencies] ([CurrencyId]),
 
     CONSTRAINT [FK_Coins_Denominations]
-        FOREIGN KEY ([DenominationId])
-        REFERENCES [dbo].[Denominations] ([DenominationId]),
+        FOREIGN KEY ([CurrencyId], [DenominationId])
+        REFERENCES [dbo].[Denominations]
+        (
+            [CurrencyId],
+            [DenominationId]
+        ),
 
     CONSTRAINT [FK_Coins_Mints]
-        FOREIGN KEY ([MintId])
-        REFERENCES [dbo].[Mints] ([MintId]),
+        FOREIGN KEY ([CountryId], [MintId])
+        REFERENCES [dbo].[Mints]
+        (
+            [CountryId],
+            [MintId]
+        ),
 
     CONSTRAINT [FK_Coins_Materials]
         FOREIGN KEY ([MaterialId])
