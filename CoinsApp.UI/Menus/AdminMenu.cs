@@ -102,7 +102,21 @@ internal sealed class AdminMenu
 
         var result = _databaseStatusService.GetStatus();
 
-        Console.WriteLine(result.Message);
+        Console.WriteLine($"Status:          {(result.Success ? "Available" : "Not available")}");
+
+        if (result.Success)
+        {
+            Console.WriteLine($"Server:          {result.ServerName}");
+            Console.WriteLine($"Database:        {result.DatabaseName}");
+            Console.WriteLine($"SQL Version:     {result.SqlServerVersion}");
+            Console.WriteLine($"Edition:         {result.SqlServerEdition}");
+            Console.WriteLine($"Product Level:   {result.SqlServerLevel}");
+        }
+        else
+        {
+            Console.WriteLine($"Details:         {result.Message}");
+        }
+
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
