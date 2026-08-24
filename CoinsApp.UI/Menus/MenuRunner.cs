@@ -60,12 +60,5 @@ internal sealed class MenuRunner
         Console.WriteLine();
 
         item.Action?.Invoke();
-
-        if (item.Action is not null)
-        {
-            Console.WriteLine();
-            Console.WriteLine("Press Enter to continue...");
-            Console.ReadLine();
-        }
     }
 }

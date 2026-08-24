@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.Install;
 using CoinsApp.BLL.Reset;
+using CoinsApp.BLL.Status;
 
 namespace CoinsApp.UI.Menus;
 
@@ -7,12 +8,15 @@ internal sealed class AdminMenu
 {
     private readonly InstallService _installService;
     private readonly ResetService _resetService;
+    private readonly DatabaseStatusService _databaseStatusService;
 
-    public AdminMenu(InstallService installService, ResetService resetService)
+    public AdminMenu(InstallService installService, ResetService resetService, DatabaseStatusService databaseStatusService)
     {
         _installService = installService ?? throw new ArgumentNullException(nameof(installService));
 
         _resetService = resetService ?? throw new ArgumentNullException(nameof(resetService));
+
+        _databaseStatusService = databaseStatusService ?? throw new ArgumentNullException(nameof(databaseStatusService));
     }
 
     public void Run()
@@ -25,6 +29,7 @@ internal sealed class AdminMenu
             Console.WriteLine();
             Console.WriteLine("1. Install Database");
             Console.WriteLine("2. Reset Database");
+            Console.WriteLine("3. Database Status");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -39,6 +44,10 @@ internal sealed class AdminMenu
 
                 case "2":
                     Reset();
+                    break;
+
+                case "3":
+                    ShowStatus();
                     break;
 
                 case "0":
@@ -77,6 +86,21 @@ internal sealed class AdminMenu
         Console.WriteLine();
 
         var result = _resetService.Reset();
+
+        Console.WriteLine(result.Message);
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+    }
+
+    private void ShowStatus()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Database Status ===");
+        Console.WriteLine();
+
+        var result = _databaseStatusService.GetStatus();
 
         Console.WriteLine(result.Message);
         Console.WriteLine();

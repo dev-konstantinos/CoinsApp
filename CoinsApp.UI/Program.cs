@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.Install;
 using CoinsApp.BLL.Reset;
+using CoinsApp.BLL.Status;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
 
@@ -21,7 +22,9 @@ internal static class Program
 
         var resetService = new ResetService(connectionString);
 
-        var adminMenu = new AdminMenu(installService, resetService);
+        var databaseStatusService = new DatabaseStatusService(connectionString);
+
+        var adminMenu = new AdminMenu(installService, resetService, databaseStatusService);
 
         var mainMenu = new MainMenu(adminMenu);
 
