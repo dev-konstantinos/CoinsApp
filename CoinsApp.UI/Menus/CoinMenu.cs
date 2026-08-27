@@ -21,6 +21,7 @@ internal sealed class CoinMenu
             Console.WriteLine("=== Coins ===");
             Console.WriteLine();
             Console.WriteLine("1. List Coins");
+            Console.WriteLine("2. Details");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -31,6 +32,10 @@ internal sealed class CoinMenu
             {
                 case "1":
                     ListCoins();
+                    break;
+
+                case "2":
+                    ShowDetails();
                     break;
 
                 case "0":
@@ -86,6 +91,55 @@ internal sealed class CoinMenu
         Console.ReadLine();
     }
 
+    private void ShowDetails()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Details ===");
+        Console.WriteLine();
+
+        Console.Write("Coin ID: ");
+
+        if (!int.TryParse(Console.ReadLine(), out var coinId))
+        {
+            Console.WriteLine();
+            Console.WriteLine("Invalid Coin ID.");
+            Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+            return;
+        }
+
+        try
+        {
+            var coin = _coinService.GetById(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Coin with ID {coinId} was not found.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            PrintDetails(coin);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading coin.");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+        }
+    }
+
     private static void PrintHeader()
     {
         Console.WriteLine(
@@ -112,5 +166,67 @@ internal sealed class CoinMenu
             $"{(coin.Year?.ToString() ?? "-"),6} " +
             $"{(coin.Mint ?? "-"),-18} " +
             $"{price,16}");
+    }
+
+    private static void PrintDetails(CoinDetailsViewModel coin)
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Details ===");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Coin ID:        {coin.CoinId}");
+        Console.WriteLine($"Collection ID:  {coin.CollectionId}");
+        Console.WriteLine($"Country:        {coin.CountryName}");
+        Console.WriteLine($"Currency:       {coin.CurrencyCode} - {coin.CurrencyName}");
+        Console.WriteLine($"Denomination:   {coin.DenominationDisplayName}");
+        Console.WriteLine($"Year:           {coin.Year?.ToString() ?? "-"}");
+        Console.WriteLine($"Mint:           {coin.MintName ?? "-"}");
+        Console.WriteLine($"Mint Mark:      {coin.MintMark ?? "-"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Physical ---");
+        Console.WriteLine($"Material:       {coin.MaterialName ?? "-"}");
+        Console.WriteLine($"Fineness:       {FormatDecimal(coin.Fineness)}");
+        Console.WriteLine($"Weight:         {FormatDecimal(coin.Weight)}");
+        Console.WriteLine($"Diameter:       {FormatDecimal(coin.Diameter)}");
+        Console.WriteLine($"Thickness:      {FormatDecimal(coin.Thickness)}");
+        Console.WriteLine($"Shape:          {coin.Shape ?? "-"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine($"Designer:       {coin.Designer ?? "-"}");
+        Console.WriteLine($"Mintage:        {coin.Mintage?.ToString() ?? "-"}");
+        Console.WriteLine($"Description:    {coin.Description ?? "-"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Condition ---");
+        Console.WriteLine($"Condition:      {coin.Condition ?? "-"}");
+        Console.WriteLine($"Grade:          {coin.Grade ?? "-"}");
+        Console.WriteLine($"Grading Company:{coin.GradingCompany ?? "-"}");
+        Console.WriteLine(
+            $"Certificate:    {coin.GradingCertificateNumber ?? "-"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Price ---");
+
+        var price = coin.CurrentPrice.HasValue
+            ? $"{coin.CurrentPrice.Value:0.####} {coin.CurrentPriceCurrencyCode ?? string.Empty}".Trim()
+            : "-";
+
+        Console.WriteLine($"Price:          {price}");
+        Console.WriteLine(
+            $"Price Date:     {coin.CurrentPriceDate?.ToString("yyyy-MM-dd HH:mm") ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Notes ---");
+        Console.WriteLine(coin.Notes ?? "-");
+    }
+
+    private static string FormatDecimal(decimal? value)
+    {
+        return value?.ToString("0.####") ?? "-";
     }
 }

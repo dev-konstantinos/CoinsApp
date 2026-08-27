@@ -120,6 +120,7 @@
     <Build Include="Indexes\IX_Coins_CurrencyId_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId_MintId.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetAll.sql" />
+    <Build Include="StoredProcedures\Coins\Coins_GetById.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>

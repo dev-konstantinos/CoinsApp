@@ -10,16 +10,26 @@ public sealed class CoinService
 
     public CoinService(CoinRepository coinRepository)
     {
-        _coinRepository = coinRepository ?? throw new ArgumentNullException(nameof(coinRepository));
+        _coinRepository =
+            coinRepository
+            ?? throw new ArgumentNullException(nameof(coinRepository));
     }
 
     public IReadOnlyList<CoinListItemViewModel> GetAll()
     {
-        var coins = _coinRepository.GetAll();
-
-        return coins
+        return _coinRepository
+            .GetAll()
             .Select(MapToListItem)
             .ToList();
+    }
+
+    public CoinDetailsViewModel? GetById(int coinId)
+    {
+        var coin = _coinRepository.GetById(coinId);
+
+        return coin is null
+            ? null
+            : MapToDetails(coin);
     }
 
     private static CoinListItemViewModel MapToListItem(CoinData coin)
@@ -34,6 +44,58 @@ public sealed class CoinService
             Mint = coin.MintName,
             CurrentPrice = coin.CurrentPrice,
             CurrentPriceCurrency = coin.CurrentPriceCurrencyCode
+        };
+    }
+
+    private static CoinDetailsViewModel MapToDetails(CoinData coin)
+    {
+        return new CoinDetailsViewModel
+        {
+            CoinId = coin.CoinId,
+            CollectionId = coin.CollectionId,
+
+            CountryId = coin.CountryId,
+            CountryName = coin.CountryName,
+
+            CurrencyId = coin.CurrencyId,
+            CurrencyCode = coin.CurrencyCode,
+            CurrencyName = coin.CurrencyName,
+
+            DenominationId = coin.DenominationId,
+            DenominationDisplayName = coin.DenominationDisplayName,
+
+            MintId = coin.MintId,
+            MintName = coin.MintName,
+
+            MaterialId = coin.MaterialId,
+            MaterialName = coin.MaterialName,
+
+            Year = coin.Year,
+            MintMark = coin.MintMark,
+
+            Fineness = coin.Fineness,
+            Weight = coin.Weight,
+            Diameter = coin.Diameter,
+            Thickness = coin.Thickness,
+
+            Shape = coin.Shape,
+            Description = coin.Description,
+            Designer = coin.Designer,
+            Mintage = coin.Mintage,
+
+            Condition = coin.Condition,
+            Grade = coin.Grade,
+
+            GradingCompany = coin.GradingCompany,
+            GradingCertificateNumber = coin.GradingCertificateNumber,
+
+            CurrentPrice = coin.CurrentPrice,
+            CurrentPriceCurrencyId = coin.CurrentPriceCurrencyId,
+            CurrentPriceCurrencyCode = coin.CurrentPriceCurrencyCode,
+            CurrentPriceDate = coin.CurrentPriceDate,
+
+            Notes = coin.Notes,
+            CreatedAt = coin.CreatedAt
         };
     }
 }

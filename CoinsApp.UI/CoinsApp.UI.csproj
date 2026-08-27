@@ -24,6 +24,13 @@
     <ProjectReference Include="..\CoinsApp.BLL\CoinsApp.BLL.csproj" />
   </ItemGroup>
 
+	<!--<ItemGroup>
+		<ProjectReference
+			Include="..\CoinsApp.DB\CoinsApp.DB.sqlproj"
+			ReferenceOutputAssembly="false"
+			BuildReference="true" />
+	</ItemGroup>-->
+
 	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -40,11 +47,11 @@
 		<Copy
 			SourceFiles="@(ResetArtifact)"
 			DestinationFolder="$(OutputPath)Reset"
-			SkipUnchangedFiles="true" />
+			SkipUnchangedFiles="false" />
 
 	</Target>
 
-	<Target Name="CopyDatabaseDacpac" AfterTargets="Build">
+	<Target Name="CopyDatabaseDacpac" AfterTargets="Build" DependsOnTargets="Build">
 
 		<ItemGroup>
 			<DatabaseArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
@@ -55,7 +62,7 @@
 		<Copy
 			SourceFiles="@(DatabaseArtifact)"
 			DestinationFolder="$(OutputPath)Database"
-			SkipUnchangedFiles="true" />
+			SkipUnchangedFiles="false" />
 
 	</Target>
 
