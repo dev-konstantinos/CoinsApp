@@ -22,6 +22,7 @@ internal sealed class CoinMenu
             Console.WriteLine();
             Console.WriteLine("1. List Coins");
             Console.WriteLine("2. Details");
+            Console.WriteLine("3. Create");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -36,6 +37,10 @@ internal sealed class CoinMenu
 
                 case "2":
                     ShowDetails();
+                    break;
+
+                case "3":
+                    CreateCoin();
                     break;
 
                 case "0":
@@ -228,5 +233,119 @@ internal sealed class CoinMenu
     private static string FormatDecimal(decimal? value)
     {
         return value?.ToString("0.####") ?? "-";
+    }
+
+    private void CreateCoin()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Create Coin ===");
+        Console.WriteLine();
+
+        try
+        {
+            var model = new CreateCoinViewModel
+            {
+                CollectionId = ReadRequired<int>("Collection ID"),
+                CountryId = ReadRequired<int>("Country ID"),
+                CurrencyId = ReadRequired<int>("Currency ID"),
+                DenominationId = ReadRequired<int>("Denomination ID"),
+
+                MintId = ReadNullable<int>("Mint ID"),
+                MaterialId = ReadNullable<int>("Material ID"),
+
+                Year = ReadNullable<short>("Year"),
+                MintMark = ReadNullableString("Mint Mark"),
+
+                Fineness = ReadNullable<decimal>("Fineness"),
+                Weight = ReadNullable<decimal>("Weight"),
+                Diameter = ReadNullable<decimal>("Diameter"),
+                Thickness = ReadNullable<decimal>("Thickness"),
+
+                Shape = ReadNullableString("Shape"),
+                Description = ReadNullableString("Description"),
+                Designer = ReadNullableString("Designer"),
+                Mintage = ReadNullable<long>("Mintage"),
+
+                Condition = ReadNullableString("Condition"),
+                Grade = ReadNullableString("Grade"),
+                GradingCompany = ReadNullableString("Grading Company"),
+                GradingCertificateNumber = ReadNullableString("Grading Certificate Number"),
+
+                CurrentPrice = ReadNullable<decimal>("Current Price"),
+                CurrentPriceCurrencyId = ReadNullable<int>("Current Price Currency ID"),
+
+                CurrentPriceDate = ReadNullable<DateTime>("Current Price Date"),
+
+                Notes = ReadNullableString("Notes")
+            };
+
+            Console.WriteLine();
+            Console.WriteLine("Creating coin...");
+
+            var coinId = _coinService.Create(model);
+
+            Console.WriteLine();
+            Console.WriteLine($"Coin created successfully. Coin ID: {coinId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error creating coin.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+    }
+
+    private static T ReadRequired<T>(string label) where T : IParsable<T>
+    {
+        while (true)
+        {
+            Console.Write($"{label}: ");
+
+            var input = Console.ReadLine();
+
+            if (T.TryParse(input, null, out var value))
+            {
+                return value;
+            }
+
+            Console.WriteLine($"Please enter a valid {typeof(T).Name}.");
+        }
+    }
+
+    private static T? ReadNullable<T>(string label) where T : struct, IParsable<T>
+    {
+        while (true)
+        {
+            Console.Write($"{label} (empty = null): ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return null;
+            }
+
+            if (T.TryParse(input, null, out var value))
+            {
+                return value;
+            }
+
+            Console.WriteLine($"Please enter a valid {typeof(T).Name}.");
+        }
+    }
+
+    private static string? ReadNullableString(string label)
+    {
+        Console.Write($"{label} (empty = null): ");
+
+        var input = Console.ReadLine();
+
+        return string.IsNullOrWhiteSpace(input) ? null : input.Trim();
     }
 }
