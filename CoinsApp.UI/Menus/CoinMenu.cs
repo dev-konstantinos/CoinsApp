@@ -25,6 +25,8 @@ internal sealed class CoinMenu
             Console.WriteLine("1. List Coins");
             Console.WriteLine("2. Details");
             Console.WriteLine("3. Create");
+            Console.WriteLine("4. Update");
+            Console.WriteLine("5. Delete");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -43,6 +45,14 @@ internal sealed class CoinMenu
 
                 case "3":
                     await CreateCoinAsync();
+                    break;
+
+                case "4":
+                    await UpdateCoinAsync();
+                    break;
+
+                case "5":
+                    await DeleteCoinAsync();
                     break;
 
                 case "0":
@@ -218,6 +228,486 @@ internal sealed class CoinMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+    }
+
+    private async Task DeleteCoinAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Delete Coin ===");
+        Console.WriteLine();
+
+        var coinId = ReadRequired<int>("Coin ID");
+
+        try
+        {
+            var coin = await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Clear();
+
+            Console.WriteLine("=== Delete Coin ===");
+            Console.WriteLine();
+
+            PrintDetails(coin);
+
+            Console.WriteLine();
+            Console.WriteLine("=== WARNING ===");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                "Deleting this coin will also delete:");
+
+            Console.WriteLine("- catalog entries");
+            Console.WriteLine("- images");
+            Console.WriteLine("- price history");
+            Console.WriteLine("- purchases");
+            Console.WriteLine("- sales");
+
+            Console.WriteLine();
+
+            Console.Write(
+                "Type DELETE to confirm: ");
+
+            var confirmation = Console.ReadLine()?.Trim();
+
+            if (!string.Equals(
+                    confirmation,
+                    "DELETE",
+                    StringComparison.Ordinal))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Delete cancelled.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            var model = new DeleteCoinViewModel
+            {
+                CoinId = coin.CoinId
+            };
+
+            Console.WriteLine();
+            Console.WriteLine("Deleting coin...");
+
+            var deletedCoinId =
+                await _coinService.DeleteAsync(model);
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"Coin deleted successfully. " +
+                $"Coin ID: {deletedCoinId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error deleting coin.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+    }
+
+    private async Task UpdateCoinAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Update Coin ===");
+        Console.WriteLine();
+
+        var coinId = ReadRequired<int>("Coin ID");
+
+        try
+        {
+            var coin = await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Clear();
+
+            Console.WriteLine("=== Update Coin ===");
+            Console.WriteLine();
+
+            Console.WriteLine("--- Current Coin ---");
+            PrintDetails(coin);
+
+            Console.WriteLine();
+            Console.WriteLine("--- Enter New Values ---");
+            Console.WriteLine(
+                "Press Enter to keep the current value.");
+            Console.WriteLine();
+
+            var model = new UpdateCoinViewModel
+            {
+                CoinId = coin.CoinId,
+
+                CollectionId =
+                    ReadKeepCurrent(
+                        "Collection ID",
+                        coin.CollectionId),
+
+                CountryId =
+                    ReadKeepCurrent(
+                        "Country ID",
+                        coin.CountryId),
+
+                CurrencyId =
+                    ReadKeepCurrent(
+                        "Currency ID",
+                        coin.CurrencyId),
+
+                DenominationId =
+                    ReadKeepCurrent(
+                        "Denomination ID",
+                        coin.DenominationId),
+
+                MintId =
+                    ReadKeepCurrentNullable(
+                        "Mint ID",
+                        coin.MintId),
+
+                MaterialId =
+                    ReadKeepCurrentNullable(
+                        "Material ID",
+                        coin.MaterialId),
+
+                Year =
+                    ReadKeepCurrentNullable(
+                        "Year",
+                        coin.Year),
+
+                MintMark =
+                    ReadKeepCurrentString(
+                        "Mint Mark",
+                        coin.MintMark),
+
+                Fineness =
+                    ReadKeepCurrentNullable(
+                        "Fineness",
+                        coin.Fineness),
+
+                Weight =
+                    ReadKeepCurrentNullable(
+                        "Weight",
+                        coin.Weight),
+
+                Diameter =
+                    ReadKeepCurrentNullable(
+                        "Diameter",
+                        coin.Diameter),
+
+                Thickness =
+                    ReadKeepCurrentNullable(
+                        "Thickness",
+                        coin.Thickness),
+
+                Shape =
+                    ReadKeepCurrentString(
+                        "Shape",
+                        coin.Shape),
+
+                Description =
+                    ReadKeepCurrentString(
+                        "Description",
+                        coin.Description),
+
+                Designer =
+                    ReadKeepCurrentString(
+                        "Designer",
+                        coin.Designer),
+
+                Mintage =
+                    ReadKeepCurrentNullable(
+                        "Mintage",
+                        coin.Mintage),
+
+                Condition =
+                    ReadKeepCurrentString(
+                        "Condition",
+                        coin.Condition),
+
+                Grade =
+                    ReadKeepCurrentString(
+                        "Grade",
+                        coin.Grade),
+
+                GradingCompany =
+                    ReadKeepCurrentString(
+                        "Grading Company",
+                        coin.GradingCompany),
+
+                GradingCertificateNumber =
+                    ReadKeepCurrentString(
+                        "Grading Certificate Number",
+                        coin.GradingCertificateNumber),
+
+                CurrentPrice =
+                    ReadKeepCurrentNullable(
+                        "Current Price",
+                        coin.CurrentPrice),
+
+                CurrentPriceCurrencyId =
+                    ReadKeepCurrentNullable(
+                        "Current Price Currency ID",
+                        coin.CurrentPriceCurrencyId),
+
+                CurrentPriceDate =
+                    ReadKeepCurrentNullable(
+                        "Current Price Date",
+                        coin.CurrentPriceDate),
+
+                Notes =
+                    ReadKeepCurrentString(
+                        "Notes",
+                        coin.Notes)
+            };
+
+            Console.WriteLine();
+            Console.WriteLine("=== Update Preview ===");
+            Console.WriteLine();
+
+            PrintUpdateSummary(model);
+
+            Console.WriteLine();
+            Console.Write("Save changes? (y/n): ");
+
+            var confirmation =
+                Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (confirmation != "y" &&
+                confirmation != "yes")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Update cancelled.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Updating coin...");
+
+            var updatedCoinId =
+                await _coinService.UpdateAsync(model);
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"Coin updated successfully. Coin ID: {updatedCoinId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error updating coin.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+    }
+
+    private static T ReadKeepCurrent<T>(
+    string label,
+    T current)
+    where T : IParsable<T>
+    {
+        while (true)
+        {
+            Console.Write(
+                $"{label} [{current}]: ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return current;
+            }
+
+            if (T.TryParse(input.Trim(), null, out var value))
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                $"Please enter a valid {typeof(T).Name}, " +
+                "or press Enter to keep the current value.");
+        }
+    }
+
+    private static T? ReadKeepCurrentNullable<T>(
+    string label,
+    T? current)
+    where T : struct, IParsable<T>
+    {
+        while (true)
+        {
+            var currentText =
+                current?.ToString() ?? "null";
+
+            Console.Write(
+                $"{label} [{currentText}] " +
+                "(Enter = keep, null = clear): ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return current;
+            }
+
+            if (input.Trim().Equals(
+                    "null",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            if (T.TryParse(input.Trim(), null, out var value))
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                $"Please enter a valid {typeof(T).Name}, " +
+                "or use 'null' to clear the value.");
+        }
+    }
+
+    private static string? ReadKeepCurrentString(
+    string label,
+    string? current)
+    {
+        var currentText = current ?? "null";
+
+        Console.Write(
+            $"{label} [{currentText}] " +
+            "(Enter = keep, null = clear): ");
+
+        var input = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return current;
+        }
+
+        if (input.Trim().Equals(
+                "null",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return input.Trim();
+    }
+
+    private static void PrintUpdateSummary(
+    UpdateCoinViewModel model)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine(
+            $"Coin ID:        {model.CoinId}");
+        Console.WriteLine(
+            $"Collection ID:  {model.CollectionId}");
+        Console.WriteLine(
+            $"Country ID:     {model.CountryId}");
+        Console.WriteLine(
+            $"Currency ID:    {model.CurrencyId}");
+        Console.WriteLine(
+            $"Denomination ID:{model.DenominationId}");
+        Console.WriteLine(
+            $"Mint ID:        {model.MintId?.ToString() ?? "null"}");
+        Console.WriteLine(
+            $"Material ID:    {model.MaterialId?.ToString() ?? "null"}");
+        Console.WriteLine(
+            $"Year:           {model.Year?.ToString() ?? "null"}");
+        Console.WriteLine(
+            $"Mint Mark:      {model.MintMark ?? "null"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Physical ---");
+        Console.WriteLine(
+            $"Fineness:       {FormatDecimal(model.Fineness)}");
+        Console.WriteLine(
+            $"Weight:         {FormatDecimal(model.Weight)}");
+        Console.WriteLine(
+            $"Diameter:       {FormatDecimal(model.Diameter)}");
+        Console.WriteLine(
+            $"Thickness:      {FormatDecimal(model.Thickness)}");
+        Console.WriteLine(
+            $"Shape:          {model.Shape ?? "null"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(
+            $"Designer:       {model.Designer ?? "null"}");
+        Console.WriteLine(
+            $"Mintage:        {model.Mintage?.ToString() ?? "null"}");
+        Console.WriteLine(
+            $"Description:    {model.Description ?? "null"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Condition ---");
+        Console.WriteLine(
+            $"Condition:      {model.Condition ?? "null"}");
+        Console.WriteLine(
+            $"Grade:          {model.Grade ?? "null"}");
+        Console.WriteLine(
+            $"Grading Company:{model.GradingCompany ?? "null"}");
+        Console.WriteLine(
+            $"Certificate:    " +
+            $"{model.GradingCertificateNumber ?? "null"}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Price ---");
+
+        var price =
+            model.CurrentPrice.HasValue
+                ? model.CurrentPrice.Value.ToString("0.####")
+                : "null";
+
+        Console.WriteLine(
+            $"Price:          {price}");
+
+        Console.WriteLine(
+            $"Price Currency: " +
+            $"{model.CurrentPriceCurrencyId?.ToString() ?? "null"}");
+
+        Console.WriteLine(
+            $"Price Date:     " +
+            $"{model.CurrentPriceDate?.ToString("yyyy-MM-dd HH:mm") ?? "null"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Notes ---");
+        Console.WriteLine(
+            model.Notes ?? "null");
     }
 
     private static void PrintHeader()

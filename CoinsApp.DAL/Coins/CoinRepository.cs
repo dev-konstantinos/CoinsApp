@@ -48,4 +48,28 @@ public sealed class CoinRepository
             data,
             commandType: CommandType.StoredProcedure);
     }
+
+    public async Task<int> UpdateAsync(CoinUpdateData data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        using var connection = _databaseConnection.Create();
+
+        return await connection.QuerySingleAsync<int>(
+            "dbo.Coins_Update",
+            data,
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<int> DeleteAsync(CoinDeleteData data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        using var connection = _databaseConnection.Create();
+
+        return await connection.QuerySingleAsync<int>(
+            "dbo.Coins_Delete",
+            data,
+            commandType: CommandType.StoredProcedure);
+    }
 }

@@ -122,6 +122,8 @@
     <Build Include="StoredProcedures\Coins\Coins_GetAll.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetById.sql" />
     <Build Include="StoredProcedures\Coins\Coins_Create.sql" />
+    <Build Include="StoredProcedures\Coins\Coins_Update.sql" />
+    <Build Include="StoredProcedures\Coins\Coins_Delete.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>

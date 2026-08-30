@@ -150,4 +150,70 @@ public sealed class CoinService
             CreatedAt = coin.CreatedAt
         };
     }
+
+    public async Task<int> UpdateAsync(UpdateCoinViewModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+
+        var data = new CoinUpdateData
+        {
+            CoinId = model.CoinId,
+
+            CollectionId = model.CollectionId,
+            CountryId = model.CountryId,
+            CurrencyId = model.CurrencyId,
+            DenominationId = model.DenominationId,
+
+            MintId = model.MintId,
+            MaterialId = model.MaterialId,
+
+            Year = model.Year,
+            MintMark = model.MintMark,
+
+            Fineness = model.Fineness,
+            Weight = model.Weight,
+            Diameter = model.Diameter,
+            Thickness = model.Thickness,
+
+            Shape = model.Shape,
+            Description = model.Description,
+            Designer = model.Designer,
+            Mintage = model.Mintage,
+
+            Condition = model.Condition,
+            Grade = model.Grade,
+            GradingCompany = model.GradingCompany,
+            GradingCertificateNumber =
+                model.GradingCertificateNumber,
+
+            CurrentPrice = model.CurrentPrice,
+            CurrentPriceCurrencyId =
+                model.CurrentPriceCurrencyId,
+            CurrentPriceDate =
+                model.CurrentPriceDate,
+
+            Notes = model.Notes
+        };
+
+        return await _coinRepository.UpdateAsync(data);
+    }
+
+    public async Task<int> DeleteAsync(DeleteCoinViewModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (model.CoinId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(model.CoinId),
+                "Coin ID must be greater than zero.");
+        }
+
+        var data = new CoinDeleteData
+        {
+            CoinId = model.CoinId
+        };
+
+        return await _coinRepository.DeleteAsync(data);
+    }
 }
