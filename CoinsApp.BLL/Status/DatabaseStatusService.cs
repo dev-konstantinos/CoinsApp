@@ -8,17 +8,23 @@ public sealed class DatabaseStatusService
     private readonly DatabaseStatusProvider _databaseStatusProvider;
 
     public DatabaseStatusService(string connectionString)
-        : this(new DatabaseStatusProvider(new DatabaseConnection(connectionString)))
+        : this(
+            new DatabaseStatusProvider(
+                new DatabaseConnection(connectionString)))
     {
     }
 
-    public DatabaseStatusService(DatabaseStatusProvider databaseStatusProvider)
+    public DatabaseStatusService(
+        DatabaseStatusProvider databaseStatusProvider)
     {
-        _databaseStatusProvider = databaseStatusProvider ?? throw new ArgumentNullException(nameof(databaseStatusProvider));
+        _databaseStatusProvider =
+            databaseStatusProvider
+            ?? throw new ArgumentNullException(
+                nameof(databaseStatusProvider));
     }
 
-    public DatabaseStatusResult GetStatus()
+    public async Task<DatabaseStatusResult> GetStatusAsync()
     {
-        return _databaseStatusProvider.GetStatus();
+        return await _databaseStatusProvider.GetStatusAsync();
     }
 }

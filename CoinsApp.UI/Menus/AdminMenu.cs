@@ -89,31 +89,29 @@ internal sealed class AdminMenu
         return Task.CompletedTask;
     }
 
-    private Task ResetAsync()
+    private async Task ResetAsync()
     {
         Console.Clear();
 
         Console.WriteLine("=== Reset ===");
         Console.WriteLine();
 
-        var result = _resetService.Reset();
+        var result = await _resetService.ResetAsync();
 
         Console.WriteLine(result.Message);
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
-
-        return Task.CompletedTask;
     }
 
-    private Task ShowStatusAsync()
+    private async Task ShowStatusAsync()
     {
         Console.Clear();
 
         Console.WriteLine("=== Database Status ===");
         Console.WriteLine();
 
-        var result = _databaseStatusService.GetStatus();
+        var result = await _databaseStatusService.GetStatusAsync();
 
         Console.WriteLine(
             $"Status:          {(result.Success ? "Available" : "Not available")}");
@@ -134,7 +132,5 @@ internal sealed class AdminMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
-
-        return Task.CompletedTask;
     }
 }

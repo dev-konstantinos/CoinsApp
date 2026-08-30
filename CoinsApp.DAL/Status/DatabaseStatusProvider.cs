@@ -12,13 +12,13 @@ public sealed class DatabaseStatusProvider
         _databaseConnection = databaseConnection ?? throw new ArgumentNullException(nameof(databaseConnection));
     }
 
-    public DatabaseStatusResult GetStatus()
+    public async Task<DatabaseStatusResult> GetStatusAsync()
     {
         try
         {
             using var connection = _databaseConnection.Create();
 
-            connection.Open();
+            await connection.OpenAsync();
 
             const string sql = """
                 SELECT
@@ -31,9 +31,9 @@ public sealed class DatabaseStatusProvider
 
             using var command = new SqlCommand(sql, connection);
 
-            using var reader = command.ExecuteReader();
+            using var reader = await command.ExecuteReaderAsync();
 
-            if (!reader.Read())
+            if (!await reader.ReadAsync())
             {
                 return DatabaseStatusResult.Failed("Database status information could not be read.");
             }

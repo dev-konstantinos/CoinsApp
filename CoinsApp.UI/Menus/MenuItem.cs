@@ -18,11 +18,10 @@ internal sealed class MenuItem
         _action = action;
     }
 
-    public async Task ExecuteAsync()
+    public Task ExecuteAsync()
     {
-        if (_action is not null)
-        {
-            await _action();
-        }
+        return _action is null
+            ? Task.CompletedTask
+            : _action();
     }
 }

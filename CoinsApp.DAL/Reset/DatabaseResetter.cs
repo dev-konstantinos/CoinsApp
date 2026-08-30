@@ -5,60 +5,75 @@ namespace CoinsApp.DAL.Reset;
 
 public sealed class DatabaseResetter
 {
-    private const string ResetRelativePath = "Reset/ResetDevelopment.sql";
+    private const string ResetRelativePath =
+        "Reset/ResetDevelopment.sql";
 
-    private const string SeedRelativePath = "Reset/DevelopmentSeed.sql";
+    private const string SeedRelativePath =
+        "Reset/DevelopmentSeed.sql";
 
     private readonly DatabaseConnection _databaseConnection;
 
     public DatabaseResetter(DatabaseConnection databaseConnection)
     {
-        _databaseConnection = databaseConnection ?? throw new ArgumentNullException(nameof(databaseConnection));
+        _databaseConnection =
+            databaseConnection
+            ?? throw new ArgumentNullException(nameof(databaseConnection));
     }
 
-    public ResetResult Reset()
+    public async Task<ResetResult> ResetAsync()
     {
         try
         {
             var resetScriptPath = GetPath(ResetRelativePath);
-
             var seedScriptPath = GetPath(SeedRelativePath);
 
             if (!File.Exists(resetScriptPath))
             {
-                return ResetResult.Failed($"Reset script not found: {resetScriptPath}");
+                return ResetResult.Failed(
+                    $"Reset script not found: {resetScriptPath}");
             }
 
             if (!File.Exists(seedScriptPath))
             {
-                return ResetResult.Failed($"Development seed script not found: {seedScriptPath}");
+                return ResetResult.Failed(
+                    $"Development seed script not found: {seedScriptPath}");
             }
 
-            var resetScript = File.ReadAllText(resetScriptPath);
+            var resetScript =
+                await File.ReadAllTextAsync(resetScriptPath);
 
-            var seedScript = File.ReadAllText(seedScriptPath);
+            var seedScript =
+                await File.ReadAllTextAsync(seedScriptPath);
 
             using var connection = _databaseConnection.Create();
 
-            connection.Open();
+            await connection.OpenAsync();
 
-            using var transaction = connection.BeginTransaction();
+            using var transaction =
+                (SqlTransaction)await connection.BeginTransactionAsync();
 
             try
             {
-                ExecuteScript(connection, transaction, resetScript);
+                await ExecuteScriptAsync(
+                    connection,
+                    transaction,
+                    resetScript);
 
-                ExecuteScript(connection, transaction, seedScript);
+                await ExecuteScriptAsync(
+                    connection,
+                    transaction,
+                    seedScript);
 
-                transaction.Commit();
+                await transaction.CommitAsync();
 
-                return ResetResult.Succeeded($"Database '{_databaseConnection.DatabaseName}' reset successfully.");
+                return ResetResult.Succeeded(
+                    $"Database '{_databaseConnection.DatabaseName}' reset successfully.");
             }
             catch
             {
                 try
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                 }
                 catch
                 {
@@ -70,20 +85,27 @@ public sealed class DatabaseResetter
         }
         catch (SqlException ex)
         {
-            return ResetResult.Failed($"Database reset failed: {ex.Message}");
+            return ResetResult.Failed(
+                $"Database reset failed: {ex.Message}");
         }
         catch (Exception ex)
         {
-            return ResetResult.Failed($"Database reset failed: {ex.Message}");
+            return ResetResult.Failed(
+                $"Database reset failed: {ex.Message}");
         }
     }
 
     private static string GetPath(string relativePath)
     {
-        return Path.Combine(AppContext.BaseDirectory, relativePath);
+        return Path.Combine(
+            AppContext.BaseDirectory,
+            relativePath);
     }
 
-    private static void ExecuteScript(SqlConnection connection, SqlTransaction transaction, string script)
+    private static async Task ExecuteScriptAsync(
+        SqlConnection connection,
+        SqlTransaction transaction,
+        string script)
     {
         using var command =
             new SqlCommand(script, connection, transaction)
@@ -91,6 +113,6 @@ public sealed class DatabaseResetter
                 CommandTimeout = 0
             };
 
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync();
     }
 }
