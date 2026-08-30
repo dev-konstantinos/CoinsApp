@@ -2,22 +2,27 @@
 
 internal sealed class MenuItem
 {
-    public string Key { get; }
+    private readonly Func<Task>? _action;
 
+    public string Key { get; }
     public string Title { get; }
 
-    public Action? Action { get; }
-
-    public MenuItem(string key, string title, Action? action = null)
+    public MenuItem(
+        string key,
+        string title,
+        Func<Task>? action = null)
     {
-        if (string.IsNullOrWhiteSpace(key))
-            throw new ArgumentException("Menu key cannot be empty!");
+        Key = key ?? throw new ArgumentNullException(nameof(key));
+        Title = title ?? throw new ArgumentNullException(nameof(title));
 
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Menu title cannot be empty!");
+        _action = action;
+    }
 
-        Key = key;
-        Title = title;
-        Action = action;
+    public async Task ExecuteAsync()
+    {
+        if (_action is not null)
+        {
+            await _action();
+        }
     }
 }

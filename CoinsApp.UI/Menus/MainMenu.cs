@@ -22,10 +22,13 @@ internal sealed class MainMenu
         Items =
         [
             new MenuItem("1", "Dashboard"),
-            new MenuItem("2", "Coins", _coinMenu.Run),
+            new MenuItem("2", "Coins", _coinMenu.RunAsync),
             new MenuItem("3", "Collections"),
             new MenuItem("4", "Data"),
-            new MenuItem("5", "Administration", _administrationMenu.Run),
+            new MenuItem(
+                "5",
+                "Administration",
+                _administrationMenu.RunAsync),
         ];
     }
 }

@@ -10,16 +10,25 @@ internal sealed class AdminMenu
     private readonly ResetService _resetService;
     private readonly DatabaseStatusService _databaseStatusService;
 
-    public AdminMenu(InstallService installService, ResetService resetService, DatabaseStatusService databaseStatusService)
+    public AdminMenu(
+        InstallService installService,
+        ResetService resetService,
+        DatabaseStatusService databaseStatusService)
     {
-        _installService = installService ?? throw new ArgumentNullException(nameof(installService));
+        _installService =
+            installService
+            ?? throw new ArgumentNullException(nameof(installService));
 
-        _resetService = resetService ?? throw new ArgumentNullException(nameof(resetService));
+        _resetService =
+            resetService
+            ?? throw new ArgumentNullException(nameof(resetService));
 
-        _databaseStatusService = databaseStatusService ?? throw new ArgumentNullException(nameof(databaseStatusService));
+        _databaseStatusService =
+            databaseStatusService
+            ?? throw new ArgumentNullException(nameof(databaseStatusService));
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         while (true)
         {
@@ -39,15 +48,15 @@ internal sealed class AdminMenu
             switch (input)
             {
                 case "1":
-                    Install();
+                    await InstallAsync();
                     break;
 
                 case "2":
-                    Reset();
+                    await ResetAsync();
                     break;
 
                 case "3":
-                    ShowStatus();
+                    await ShowStatusAsync();
                     break;
 
                 case "0":
@@ -63,7 +72,7 @@ internal sealed class AdminMenu
         }
     }
 
-    private void Install()
+    private Task InstallAsync()
     {
         Console.Clear();
 
@@ -76,9 +85,11 @@ internal sealed class AdminMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+
+        return Task.CompletedTask;
     }
 
-    private void Reset()
+    private Task ResetAsync()
     {
         Console.Clear();
 
@@ -91,9 +102,11 @@ internal sealed class AdminMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+
+        return Task.CompletedTask;
     }
 
-    private void ShowStatus()
+    private Task ShowStatusAsync()
     {
         Console.Clear();
 
@@ -102,7 +115,8 @@ internal sealed class AdminMenu
 
         var result = _databaseStatusService.GetStatus();
 
-        Console.WriteLine($"Status:          {(result.Success ? "Available" : "Not available")}");
+        Console.WriteLine(
+            $"Status:          {(result.Success ? "Available" : "Not available")}");
 
         if (result.Success)
         {
@@ -120,5 +134,7 @@ internal sealed class AdminMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+
+        return Task.CompletedTask;
     }
 }

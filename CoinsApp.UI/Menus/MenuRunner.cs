@@ -6,10 +6,12 @@ internal sealed class MenuRunner
 
     public MenuRunner(MainMenu menu)
     {
-        _menu = menu ?? throw new ArgumentNullException(nameof(menu));
+        _menu =
+            menu
+            ?? throw new ArgumentNullException(nameof(menu));
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         while (true)
         {
@@ -17,11 +19,20 @@ internal sealed class MenuRunner
 
             var input = Console.ReadLine()?.Trim();
 
-            if (string.Equals(input, "0", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(
+                input,
+                "0",
+                StringComparison.OrdinalIgnoreCase))
+            {
                 return;
+            }
 
             var selectedItem = _menu.Items
-                .FirstOrDefault(item => string.Equals(item.Key, input, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(item =>
+                    string.Equals(
+                        item.Key,
+                        input,
+                        StringComparison.OrdinalIgnoreCase));
 
             if (selectedItem is null)
             {
@@ -32,7 +43,7 @@ internal sealed class MenuRunner
                 continue;
             }
 
-            Execute(selectedItem);
+            await ExecuteAsync(selectedItem);
         }
     }
 
@@ -53,12 +64,12 @@ internal sealed class MenuRunner
         Console.Write("Select: ");
     }
 
-    private static void Execute(MenuItem item)
+    private static async Task ExecuteAsync(MenuItem item)
     {
         Console.WriteLine();
         Console.WriteLine($"Selected: {item.Title}");
         Console.WriteLine();
 
-        item.Action?.Invoke();
+        await item.ExecuteAsync();
     }
 }

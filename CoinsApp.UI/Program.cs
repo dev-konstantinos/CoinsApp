@@ -11,7 +11,7 @@ namespace CoinsApp.UI;
 
 internal static class Program
 {
-    private static void Main()
+    private static async Task Main()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -73,6 +73,6 @@ internal static class Program
         var menuRunner =
             new MenuRunner(mainMenu);
 
-        menuRunner.Run();
+        await menuRunner.RunAsync();
     }
 }

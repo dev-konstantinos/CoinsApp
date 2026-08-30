@@ -1,7 +1,7 @@
-﻿using CoinsApp.DAL.Coins.Models;
+﻿using System.Data;
+using CoinsApp.DAL.Coins.Models;
 using CoinsApp.DAL.Database;
 using Dapper;
-using System.Data;
 
 namespace CoinsApp.DAL.Coins;
 
@@ -11,30 +11,41 @@ public sealed class CoinRepository
 
     public CoinRepository(DatabaseConnection databaseConnection)
     {
-        _databaseConnection = databaseConnection ?? throw new ArgumentNullException(nameof(databaseConnection));
+        _databaseConnection =
+            databaseConnection
+            ?? throw new ArgumentNullException(nameof(databaseConnection));
     }
 
-    public IReadOnlyList<CoinData> GetAll()
+    public async Task<IReadOnlyList<CoinData>> GetAllAsync()
     {
         using var connection = _databaseConnection.Create();
 
-        var coins = connection.Query<CoinData>("dbo.Coins_GetAll", commandType: CommandType.StoredProcedure);
+        var coins = await connection.QueryAsync<CoinData>(
+            "dbo.Coins_GetAll",
+            commandType: CommandType.StoredProcedure);
 
         return coins.ToList();
     }
 
-    public CoinData? GetById(int coinId)
+    public async Task<CoinData?> GetByIdAsync(int coinId)
     {
         using var connection = _databaseConnection.Create();
 
-        return connection.QuerySingleOrDefault<CoinData>("dbo.Coins_GetById", new { CoinId = coinId },
+        return await connection.QuerySingleOrDefaultAsync<CoinData>(
+            "dbo.Coins_GetById",
+            new { CoinId = coinId },
             commandType: CommandType.StoredProcedure);
     }
 
-    public int Create(CoinCreateData data)
+    public async Task<int> CreateAsync(CoinCreateData data)
     {
+        ArgumentNullException.ThrowIfNull(data);
+
         using var connection = _databaseConnection.Create();
 
-        return connection.QuerySingle<int>("dbo.Coins_Create", data, commandType: CommandType.StoredProcedure);
+        return await connection.QuerySingleAsync<int>(
+            "dbo.Coins_Create",
+            data,
+            commandType: CommandType.StoredProcedure);
     }
 }
