@@ -155,6 +155,13 @@ public sealed class CoinService
     {
         ArgumentNullException.ThrowIfNull(model);
 
+        if (model.CoinId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(model.CoinId),
+                "Coin ID must be greater than zero.");
+        }
+
         var data = new CoinUpdateData
         {
             CoinId = model.CoinId,

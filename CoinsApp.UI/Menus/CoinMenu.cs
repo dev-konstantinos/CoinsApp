@@ -115,16 +115,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Coin Details ===");
         Console.WriteLine();
 
-        Console.Write("Coin ID: ");
-
-        if (!int.TryParse(Console.ReadLine(), out var coinId))
-        {
-            Console.WriteLine();
-            Console.WriteLine("Invalid Coin ID.");
-            Console.WriteLine("Press Enter to continue...");
-            Console.ReadLine();
-            return;
-        }
+        var coinId = ReadRequiredId("Coin ID");
 
         try
         {
@@ -157,7 +148,7 @@ internal sealed class CoinMenu
             Console.ReadLine();
         }
     }
-
+    
     private async Task CreateCoinAsync()
     {
         Console.Clear();
@@ -169,13 +160,13 @@ internal sealed class CoinMenu
         {
             var model = new CreateCoinViewModel
             {
-                CollectionId = ReadRequired<int>("Collection ID"),
-                CountryId = ReadRequired<int>("Country ID"),
-                CurrencyId = ReadRequired<int>("Currency ID"),
-                DenominationId = ReadRequired<int>("Denomination ID"),
+                CollectionId = ReadRequiredId("Collection ID"),
+                CountryId = ReadRequiredId("Country ID"),
+                CurrencyId = ReadRequiredId("Currency ID"),
+                DenominationId = ReadRequiredId("Denomination ID"),
 
-                MintId = ReadNullable<int>("Mint ID"),
-                MaterialId = ReadNullable<int>("Material ID"),
+                MintId = ReadNullableId("Mint ID"),
+                MaterialId = ReadNullableId("Material ID"),
 
                 Year = ReadNullable<short>("Year"),
                 MintMark = ReadNullableString("Mint Mark"),
@@ -200,7 +191,7 @@ internal sealed class CoinMenu
                     ReadNullable<decimal>("Current Price"),
 
                 CurrentPriceCurrencyId =
-                    ReadNullable<int>("Current Price Currency ID"),
+                    ReadNullableId("Current Price Currency ID"),
 
                 CurrentPriceDate =
                     ReadNullable<DateTime>("Current Price Date"),
@@ -237,7 +228,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Delete Coin ===");
         Console.WriteLine();
 
-        var coinId = ReadRequired<int>("Coin ID");
+        var coinId = ReadRequiredId("Coin ID");
 
         try
         {
@@ -324,6 +315,25 @@ internal sealed class CoinMenu
         Console.ReadLine();
     }
 
+    private static int ReadRequiredId(string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label}: ");
+
+            var input = Console.ReadLine();
+
+            if (int.TryParse(input, out var value) &&
+                value > 0)
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                "Please enter a valid ID greater than zero.");
+        }
+    }
+
     private async Task UpdateCoinAsync()
     {
         Console.Clear();
@@ -331,7 +341,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Update Coin ===");
         Console.WriteLine();
 
-        var coinId = ReadRequired<int>("Coin ID");
+        var coinId = ReadRequiredId("Coin ID");
 
         try
         {
@@ -367,32 +377,32 @@ internal sealed class CoinMenu
                 CoinId = coin.CoinId,
 
                 CollectionId =
-                    ReadKeepCurrent(
+                    ReadKeepCurrentId(
                         "Collection ID",
                         coin.CollectionId),
 
                 CountryId =
-                    ReadKeepCurrent(
+                    ReadKeepCurrentId(
                         "Country ID",
                         coin.CountryId),
 
                 CurrencyId =
-                    ReadKeepCurrent(
+                    ReadKeepCurrentId(
                         "Currency ID",
                         coin.CurrencyId),
 
                 DenominationId =
-                    ReadKeepCurrent(
+                    ReadKeepCurrentId(
                         "Denomination ID",
                         coin.DenominationId),
 
                 MintId =
-                    ReadKeepCurrentNullable(
+                    ReadKeepCurrentNullableId(
                         "Mint ID",
                         coin.MintId),
 
                 MaterialId =
-                    ReadKeepCurrentNullable(
+                    ReadKeepCurrentNullableId(
                         "Material ID",
                         coin.MaterialId),
 
@@ -472,7 +482,7 @@ internal sealed class CoinMenu
                         coin.CurrentPrice),
 
                 CurrentPriceCurrencyId =
-                    ReadKeepCurrentNullable(
+                    ReadKeepCurrentNullableId(
                         "Current Price Currency ID",
                         coin.CurrentPriceCurrencyId),
 
@@ -533,15 +543,18 @@ internal sealed class CoinMenu
         Console.ReadLine();
     }
 
-    private static T ReadKeepCurrent<T>(
+    private static int? ReadKeepCurrentNullableId(
     string label,
-    T current)
-    where T : IParsable<T>
+    int? current)
     {
         while (true)
         {
+            var currentText =
+                current?.ToString() ?? "null";
+
             Console.Write(
-                $"{label} [{current}]: ");
+                $"{label} [{currentText}] " +
+                "(Enter = keep, null = clear): ");
 
             var input = Console.ReadLine();
 
@@ -550,13 +563,73 @@ internal sealed class CoinMenu
                 return current;
             }
 
-            if (T.TryParse(input.Trim(), null, out var value))
+            if (input.Trim().Equals(
+                    "null",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            if (int.TryParse(input.Trim(), out var value) &&
+                value > 0)
             {
                 return value;
             }
 
             Console.WriteLine(
-                $"Please enter a valid {typeof(T).Name}, " +
+                "Please enter a valid ID greater than zero, " +
+                "or use 'null' to clear the value.");
+        }
+    }
+
+    private static int? ReadNullableId(string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label} (empty = null): ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return null;
+            }
+
+            if (int.TryParse(input.Trim(), out var value) &&
+                value > 0)
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                "Please enter a valid ID greater than zero, " +
+                "or leave empty for null.");
+        }
+    }
+
+    private static int ReadKeepCurrentId(
+    string label,
+    int current)
+    {
+        while (true)
+        {
+            Console.Write($"{label} [{current}]: ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return current;
+            }
+
+            if (int.TryParse(input.Trim(), out var value) &&
+                value > 0)
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                "Please enter a valid ID greater than zero, " +
                 "or press Enter to keep the current value.");
         }
     }
@@ -815,25 +888,6 @@ internal sealed class CoinMenu
     private static string FormatDecimal(decimal? value)
     {
         return value?.ToString("0.####") ?? "-";
-    }
-
-    private static T ReadRequired<T>(string label)
-        where T : IParsable<T>
-    {
-        while (true)
-        {
-            Console.Write($"{label}: ");
-
-            var input = Console.ReadLine();
-
-            if (T.TryParse(input, null, out var value))
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                $"Please enter a valid {typeof(T).Name}.");
-        }
     }
 
     private static T? ReadNullable<T>(string label)
