@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoinsApp.DAL.PriceHistory.Models
+﻿namespace CoinsApp.DAL.PriceHistory.Models
 {
     public sealed class PriceHistoryData
     {

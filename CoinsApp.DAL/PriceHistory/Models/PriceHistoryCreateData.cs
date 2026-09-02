@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace CoinsApp.DAL.PriceHistory.Models;
 
-namespace CoinsApp.DAL.PriceHistory.Models
+public sealed class PriceHistoryCreateData
 {
-    internal class PriceHistoryCreateData
-    {
-    }
+    public int CoinId { get; init; }
+
+    public decimal Price { get; init; }
+
+    public int CurrencyId { get; init; }
+
+    public DateTime PriceDate { get; init; }
+
+    public string? Source { get; init; }
+
+    public string? Notes { get; init; }
 }

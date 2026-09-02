@@ -1,6 +1,6 @@
-﻿namespace CoinsApp.DAL.PriceHistory.Models;
+﻿namespace CoinsApp.BLL.PriceHistory.ViewModels;
 
-public sealed class PriceHistoryUpdateData
+public sealed class UpdatePriceHistoryViewModel
 {
     public int PriceHistoryId { get; init; }
 
