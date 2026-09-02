@@ -21,6 +21,11 @@ BEGIN
 
         IF @CoinId IS NULL
         BEGIN
+            IF XACT_STATE() <> 0
+            BEGIN
+                ROLLBACK TRANSACTION;
+            END;
+
             RAISERROR ('Price history entry not found.', 16, 1);
             RETURN;
         END;
@@ -36,6 +41,11 @@ BEGIN
 
         ------------------------------------------------------------
         -- 3. Neuesten verbleibenden History-Eintrag ermitteln
+        --
+        -- Regel:
+        --   1. höchstes PriceDate
+        --   2. bei gleichem PriceDate:
+        --      höchste PriceHistoryId
         ------------------------------------------------------------
 
         DECLARE

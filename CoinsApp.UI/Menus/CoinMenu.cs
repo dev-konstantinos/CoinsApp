@@ -1,17 +1,25 @@
 ﻿using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Coins.ViewModels;
+using CoinsApp.BLL.PriceHistory;
 
 namespace CoinsApp.UI.Menus;
 
 internal sealed class CoinMenu
 {
     private readonly CoinService _coinService;
+    private readonly PriceHistoryMenu _priceHistoryMenu;
 
-    public CoinMenu(CoinService coinService)
+    public CoinMenu(
+        CoinService coinService,
+        PriceHistoryMenu priceHistoryMenu)
     {
         _coinService =
             coinService
             ?? throw new ArgumentNullException(nameof(coinService));
+
+        _priceHistoryMenu =
+            priceHistoryMenu
+            ?? throw new ArgumentNullException(nameof(priceHistoryMenu));
     }
 
     public async Task RunAsync()
@@ -22,11 +30,12 @@ internal sealed class CoinMenu
 
             Console.WriteLine("=== Coins ===");
             Console.WriteLine();
-            Console.WriteLine("1. List Coins");
-            Console.WriteLine("2. Details");
-            Console.WriteLine("3. Create");
-            Console.WriteLine("4. Update");
-            Console.WriteLine("5. Delete");
+            Console.WriteLine("1. List of coins");
+            Console.WriteLine("2. Coin details");
+            Console.WriteLine("3. Create a coin");
+            Console.WriteLine("4. Update a coin");
+            Console.WriteLine("5. Delete a coin");
+            Console.WriteLine("6. Price history");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -53,6 +62,10 @@ internal sealed class CoinMenu
 
                 case "5":
                     await DeleteCoinAsync();
+                    break;
+
+                case "6":
+                    await PriceHistoryAsync();
                     break;
 
                 case "0":
@@ -923,5 +936,44 @@ internal sealed class CoinMenu
         return string.IsNullOrWhiteSpace(input)
             ? null
             : input.Trim();
+    }
+
+    private async Task PriceHistoryAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Price History ===");
+        Console.WriteLine();
+
+        var coinId = ReadRequiredId("Coin ID");
+
+        try
+        {
+            var coin = await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            await _priceHistoryMenu.RunAsync(coin.CoinId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading price history.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+        }
     }
 }

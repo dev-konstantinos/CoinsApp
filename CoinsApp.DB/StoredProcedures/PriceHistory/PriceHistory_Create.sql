@@ -20,6 +20,11 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            IF XACT_STATE() <> 0
+            BEGIN
+                ROLLBACK TRANSACTION;
+            END;
+
             RAISERROR ('Coin not found.', 16, 1);
             RETURN;
         END;
@@ -85,7 +90,9 @@ BEGIN
 
         COMMIT TRANSACTION;
 
-        SELECT @PriceHistoryId AS [PriceHistoryId];
+        SELECT
+            @PriceHistoryId AS [PriceHistoryId];
+
     END TRY
     BEGIN CATCH
 

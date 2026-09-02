@@ -1,9 +1,11 @@
 ﻿using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Install;
+using CoinsApp.BLL.PriceHistory;
 using CoinsApp.BLL.Reset;
 using CoinsApp.BLL.Status;
 using CoinsApp.DAL.Coins;
 using CoinsApp.DAL.Database;
+using CoinsApp.DAL.PriceHistory;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
 
@@ -46,11 +48,15 @@ internal static class Program
                 databaseStatusService);
 
         // -------------------------------------------------
-        // Coins
+        // Database
         // -------------------------------------------------
 
         var databaseConnection =
             new DatabaseConnection(connectionString);
+
+        // -------------------------------------------------
+        // Coins
+        // -------------------------------------------------
 
         var coinRepository =
             new CoinRepository(databaseConnection);
@@ -58,8 +64,27 @@ internal static class Program
         var coinService =
             new CoinService(coinRepository);
 
+        // -------------------------------------------------
+        // Price History
+        // -------------------------------------------------
+
+        var priceHistoryRepository =
+            new PriceHistoryRepository(databaseConnection);
+
+        var priceHistoryService =
+            new PriceHistoryService(priceHistoryRepository);
+
+        var priceHistoryMenu =
+            new PriceHistoryMenu(priceHistoryService);
+
+        // -------------------------------------------------
+        // Coin Menu
+        // -------------------------------------------------
+
         var coinMenu =
-            new CoinMenu(coinService);
+            new CoinMenu(
+                coinService,
+                priceHistoryMenu);
 
         // -------------------------------------------------
         // Main Menu

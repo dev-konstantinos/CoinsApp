@@ -28,6 +28,11 @@ BEGIN
 
         IF @@ROWCOUNT = 0
         BEGIN
+            IF XACT_STATE() <> 0
+            BEGIN
+                ROLLBACK TRANSACTION;
+            END;
+
             RAISERROR ('Price history entry not found.', 16, 1);
             RETURN;
         END;
@@ -47,6 +52,11 @@ BEGIN
 
         ------------------------------------------------------------
         -- 3. Find the newest price history entry
+        --
+        -- Rule:
+        --   1. highest PriceDate
+        --   2. if PriceDate is equal:
+        --      highest PriceHistoryId
         ------------------------------------------------------------
 
         DECLARE
