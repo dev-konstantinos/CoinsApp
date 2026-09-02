@@ -49,17 +49,31 @@ BEGIN
             CONVERT(INT, SCOPE_IDENTITY());
 
         /*
-            Synchronize Coins.CurrentPrice only when
-            this is the newest price entry for the coin.
+            Determine the newest price entry for the coin.
+
+            Primary rule:
+                newest PriceDate
+
+            Tie-breaker:
+                highest PriceHistoryId
         */
 
-        IF NOT EXISTS
-        (
-            SELECT 1
-            FROM [dbo].[PriceHistory]
-            WHERE [CoinId] = @CoinId
-              AND [PriceDate] > @PriceDate
-        )
+        DECLARE @LatestPriceHistoryId INT;
+
+        SELECT TOP (1)
+            @LatestPriceHistoryId = [PriceHistoryId]
+        FROM [dbo].[PriceHistory]
+        WHERE [CoinId] = @CoinId
+        ORDER BY
+            [PriceDate] DESC,
+            [PriceHistoryId] DESC;
+
+        /*
+            Synchronize Coins.CurrentPrice only when
+            the newly created entry is the newest entry.
+        */
+
+        IF @LatestPriceHistoryId = @PriceHistoryId
         BEGIN
             UPDATE [dbo].[Coins]
             SET
