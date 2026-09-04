@@ -72,6 +72,7 @@
     <Folder Include="Development\Seed" />
     <Folder Include="StoredProcedures\Coins" />
     <Folder Include="StoredProcedures\PriceHistory" />
+    <Folder Include="StoredProcedures\Purchases" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
@@ -111,7 +112,7 @@
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_MintId.sql" />
     <Build Include="Indexes\IX_Coins_MaterialId.sql" />
-    <Build Include="Indexes\IX_Purchases_CoinId.sql" />
+    <Build Include="Indexes\IX_Purchases_CoinId_PurchaseDate.sql" />
     <Build Include="Indexes\IX_Sales_CoinId.sql" />
     <Build Include="Indexes\IX_PriceHistory_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CollectionId.sql" />
@@ -129,6 +130,11 @@
     <Build Include="StoredProcedures\PriceHistory\PriceHistory_GetByCoin.sql" />
     <Build Include="StoredProcedures\PriceHistory\PriceHistory_Update.sql" />
     <Build Include="StoredProcedures\PriceHistory\PriceHistory_Delete.sql" />
+    <Build Include="StoredProcedures\Purchases\Purchases_Create.sql" />
+    <Build Include="StoredProcedures\Purchases\Purchases_GetById.sql" />
+    <Build Include="StoredProcedures\Purchases\Purchases_GetByCoin.sql" />
+    <Build Include="StoredProcedures\Purchases\Purchases_Update.sql" />
+    <Build Include="StoredProcedures\Purchases\Purchases_Delete.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
