@@ -1,6 +1,6 @@
 ﻿using CoinsApp.BLL.Purchase.ViewModels;
 using CoinsApp.DAL.Purchase.Models;
-using CoinsApp.DAL.Purchases;
+using CoinsApp.DAL.Purchase;
 
 namespace CoinsApp.BLL.Purchase;
 

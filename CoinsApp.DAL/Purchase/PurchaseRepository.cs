@@ -3,7 +3,7 @@ using CoinsApp.DAL.Purchase.Models;
 using Dapper;
 using System.Data;
 
-namespace CoinsApp.DAL.Purchases;
+namespace CoinsApp.DAL.Purchase;
 
 public sealed class PurchaseRepository
 {

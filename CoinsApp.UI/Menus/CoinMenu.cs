@@ -8,10 +8,12 @@ internal sealed class CoinMenu
 {
     private readonly CoinService _coinService;
     private readonly PriceHistoryMenu _priceHistoryMenu;
+    private readonly PurchaseMenu _purchaseMenu;
 
     public CoinMenu(
         CoinService coinService,
-        PriceHistoryMenu priceHistoryMenu)
+        PriceHistoryMenu priceHistoryMenu,
+        PurchaseMenu purchaseMenu)
     {
         _coinService =
             coinService
@@ -20,6 +22,10 @@ internal sealed class CoinMenu
         _priceHistoryMenu =
             priceHistoryMenu
             ?? throw new ArgumentNullException(nameof(priceHistoryMenu));
+
+        _purchaseMenu =
+            purchaseMenu
+            ?? throw new ArgumentNullException(nameof(purchaseMenu));
     }
 
     public async Task RunAsync()
@@ -36,6 +42,7 @@ internal sealed class CoinMenu
             Console.WriteLine("4. Update a coin");
             Console.WriteLine("5. Delete a coin");
             Console.WriteLine("6. Price history");
+            Console.WriteLine("7. Purchases");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -66,6 +73,10 @@ internal sealed class CoinMenu
 
                 case "6":
                     await PriceHistoryAsync();
+                    break;
+
+                case "7":
+                    await PurchasesAsync();
                     break;
 
                 case "0":
@@ -969,6 +980,45 @@ internal sealed class CoinMenu
         {
             Console.WriteLine();
             Console.WriteLine("Error loading price history.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+        }
+    }
+
+    private async Task PurchasesAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Purchases ===");
+        Console.WriteLine();
+
+        var coinId = ReadRequiredId("Coin ID");
+
+        try
+        {
+            var coin = await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            await _purchaseMenu.RunAsync(coin.CoinId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading purchases.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
             Console.WriteLine();
