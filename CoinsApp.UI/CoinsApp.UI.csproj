@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Input\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="Output\" />
     <Folder Include="Views\" />
   </ItemGroup>
 
@@ -44,10 +41,7 @@
 			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\DevelopmentSeed.sql" />
 		</ItemGroup>
 
-		<Copy
-			SourceFiles="@(ResetArtifact)"
-			DestinationFolder="$(OutputPath)Reset"
-			SkipUnchangedFiles="false" />
+		<Copy SourceFiles="@(ResetArtifact)" DestinationFolder="$(OutputPath)Reset" SkipUnchangedFiles="false" />
 
 	</Target>
 
@@ -59,10 +53,7 @@
 
 		<MakeDir Directories="$(OutputPath)Database" />
 
-		<Copy
-			SourceFiles="@(DatabaseArtifact)"
-			DestinationFolder="$(OutputPath)Database"
-			SkipUnchangedFiles="false" />
+		<Copy SourceFiles="@(DatabaseArtifact)" DestinationFolder="$(OutputPath)Database" SkipUnchangedFiles="false" />
 
 	</Target>
 

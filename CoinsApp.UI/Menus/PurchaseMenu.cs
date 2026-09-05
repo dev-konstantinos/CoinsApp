@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.Purchase;
 using CoinsApp.BLL.Purchase.ViewModels;
+using CoinsApp.UI.Helpers;
 
 namespace CoinsApp.UI.Menus;
 
@@ -7,12 +8,12 @@ internal sealed class PurchaseMenu
 {
     private readonly PurchaseService _purchaseService;
 
-public PurchaseMenu(PurchaseService purchaseService)
-    {
-        _purchaseService =
-            purchaseService
-            ?? throw new ArgumentNullException(nameof(purchaseService));
-    }
+    public PurchaseMenu(PurchaseService purchaseService)
+        {
+            _purchaseService =
+                purchaseService
+                ?? throw new ArgumentNullException(nameof(purchaseService));
+        }
 
     public async Task RunAsync(int coinId)
     {
@@ -135,7 +136,7 @@ public PurchaseMenu(PurchaseService purchaseService)
         Console.WriteLine();
 
         var purchaseId =
-            ReadRequiredId("Purchase ID");
+            MenuInput.ReadRequiredId("Purchase ID");
 
         try
         {
@@ -193,19 +194,19 @@ public PurchaseMenu(PurchaseService purchaseService)
             {
                 CoinId = coinId,
                 PurchaseDate =
-                    ReadRequiredDateTime("Purchase Date"),
+                    MenuInput.ReadRequiredDateTime("Purchase Date"),
 
                 PurchasePrice =
-                    ReadRequiredPrice("Purchase Price"),
+                    MenuInput.ReadRequiredPrice("Purchase Price"),
 
                 CurrencyId =
-                    ReadRequiredId("Currency ID"),
+                    MenuInput.ReadRequiredId("Currency ID"),
 
                 SellerId =
-                    ReadNullableId("Seller ID"),
+                    MenuInput.ReadNullableId("Seller ID"),
 
                 Notes =
-                    ReadNullableString("Notes")
+                    MenuInput.ReadNullableString("Notes")
             };
 
             Console.WriteLine();
@@ -241,7 +242,7 @@ public PurchaseMenu(PurchaseService purchaseService)
         Console.WriteLine();
 
         var purchaseId =
-            ReadRequiredId("Purchase ID");
+            MenuInput.ReadRequiredId("Purchase ID");
 
         try
         {
@@ -274,27 +275,27 @@ public PurchaseMenu(PurchaseService purchaseService)
                 PurchaseId = purchaseId,
 
                 PurchaseDate =
-                    ReadKeepCurrentDateTime(
+                    MenuInput.ReadKeepCurrentDateTime(
                         "Purchase Date",
                         current.PurchaseDate),
 
                 PurchasePrice =
-                    ReadKeepCurrentPrice(
+                    MenuInput.ReadKeepCurrentPrice(
                         "Purchase Price",
                         current.PurchasePrice),
 
                 CurrencyId =
-                    ReadKeepCurrentId(
+                    MenuInput.ReadKeepCurrentId(
                         "Currency ID",
                         current.CurrencyId),
 
                 SellerId =
-                    ReadKeepCurrentNullableId(
+                    MenuInput.ReadKeepCurrentNullableId(
                         "Seller ID",
                         current.SellerId),
 
                 Notes =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Notes",
                         current.Notes)
             };
@@ -330,7 +331,7 @@ public PurchaseMenu(PurchaseService purchaseService)
         Console.WriteLine();
 
         var purchaseId =
-            ReadRequiredId("Purchase ID");
+            MenuInput.ReadRequiredId("Purchase ID");
 
         try
         {
@@ -435,271 +436,5 @@ public PurchaseMenu(PurchaseService purchaseService)
         Console.WriteLine(
             $"Notes:          " +
             $"{purchase.Notes ?? "-"}");
-    }
-
-    private static int ReadRequiredId(string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label}: ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (int.TryParse(input, out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid positive ID.");
-        }
-    }
-
-    private static int? ReadNullableId(string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label} (empty = null): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return null;
-            }
-
-            if (int.TryParse(input, out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid positive ID " +
-                "or leave empty.");
-        }
-    }
-
-    private static int? ReadKeepCurrentNullableId(
-        string label,
-        int? currentValue)
-    {
-        while (true)
-        {
-            var currentText =
-                currentValue?.ToString() ?? "null";
-
-            Console.Write(
-                $"{label} [{currentText}] " +
-                "(Enter = keep, null = clear): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return currentValue;
-            }
-
-            if (input.Equals(
-                    "null",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            if (int.TryParse(input, out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid positive ID, " +
-                "or 'null' to clear.");
-        }
-    }
-
-    private static decimal ReadRequiredPrice(string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label}: ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (decimal.TryParse(
-                    input,
-                    out var value) &&
-                value >= 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid price " +
-                "greater than or equal to zero.");
-        }
-    }
-
-    private static decimal ReadKeepCurrentPrice(
-        string label,
-        decimal currentValue)
-    {
-        while (true)
-        {
-            Console.Write(
-                $"{label} [{currentValue:0.####}] " +
-                "(Enter = keep current): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return currentValue;
-            }
-
-            if (decimal.TryParse(
-                    input,
-                    out var value) &&
-                value >= 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid price " +
-                "greater than or equal to zero.");
-        }
-    }
-
-    private static DateTime ReadRequiredDateTime(
-        string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label}: ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (DateTime.TryParse(
-                    input,
-                    out var value))
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid date and time.");
-        }
-    }
-
-    private static DateTime ReadKeepCurrentDateTime(
-        string label,
-        DateTime currentValue)
-    {
-        while (true)
-        {
-            Console.Write(
-                $"{label} " +
-                $"[{currentValue:yyyy-MM-dd HH:mm:ss}] " +
-                "(Enter = keep current): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return currentValue;
-            }
-
-            if (DateTime.TryParse(
-                    input,
-                    out var value))
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid date and time.");
-        }
-    }
-
-    private static int ReadKeepCurrentId(
-    string label,
-    int currentValue)
-    {
-        while (true)
-        {
-            Console.Write(
-                $"{label} [{currentValue}] " +
-                "(Enter = keep current): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return currentValue;
-            }
-
-            if (int.TryParse(input, out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid positive ID " +
-                "or press Enter to keep the current value.");
-        }
-    }
-
-    private static string? ReadNullableString(
-        string label)
-    {
-        Console.Write($"{label} (optional): ");
-
-        var input = Console.ReadLine();
-
-        return string.IsNullOrWhiteSpace(input)
-            ? null
-            : input.Trim();
-    }
-
-    private static string? ReadKeepCurrentString(
-        string label,
-        string? currentValue)
-    {
-        var currentText =
-            string.IsNullOrWhiteSpace(currentValue)
-                ? "null"
-                : currentValue;
-
-        Console.Write(
-            $"{label} [{currentText}] " +
-            "(Enter = keep, null = clear): ");
-
-        var input = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            return currentValue;
-        }
-
-        if (input.Trim().Equals(
-                "null",
-                StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
-        return input.Trim();
     }
 }

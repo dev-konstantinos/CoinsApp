@@ -1,6 +1,6 @@
 ﻿using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Coins.ViewModels;
-using CoinsApp.BLL.PriceHistory;
+using CoinsApp.UI.Helpers;
 
 namespace CoinsApp.UI.Menus;
 
@@ -139,7 +139,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Coin Details ===");
         Console.WriteLine();
 
-        var coinId = ReadRequiredId("Coin ID");
+        var coinId = MenuInput.ReadRequiredId("Coin ID");
 
         try
         {
@@ -184,43 +184,43 @@ internal sealed class CoinMenu
         {
             var model = new CreateCoinViewModel
             {
-                CollectionId = ReadRequiredId("Collection ID"),
-                CountryId = ReadRequiredId("Country ID"),
-                CurrencyId = ReadRequiredId("Currency ID"),
-                DenominationId = ReadRequiredId("Denomination ID"),
+                CollectionId = MenuInput.ReadRequiredId("Collection ID"),
+                CountryId = MenuInput.ReadRequiredId("Country ID"),
+                CurrencyId = MenuInput.ReadRequiredId("Currency ID"),
+                DenominationId = MenuInput.ReadRequiredId("Denomination ID"),
 
-                MintId = ReadNullableId("Mint ID"),
-                MaterialId = ReadNullableId("Material ID"),
+                MintId = MenuInput.ReadNullableId("Mint ID"),
+                MaterialId = MenuInput.ReadNullableId("Material ID"),
 
-                Year = ReadNullable<short>("Year"),
-                MintMark = ReadNullableString("Mint Mark"),
+                Year = MenuInput.ReadNullable<short>("Year"),
+                MintMark = MenuInput.ReadNullableString("Mint Mark"),
 
-                Fineness = ReadNullable<decimal>("Fineness"),
-                Weight = ReadNullable<decimal>("Weight"),
-                Diameter = ReadNullable<decimal>("Diameter"),
-                Thickness = ReadNullable<decimal>("Thickness"),
+                Fineness = MenuInput.ReadNullable<decimal>("Fineness"),
+                Weight = MenuInput.ReadNullable<decimal>("Weight"),
+                Diameter = MenuInput.ReadNullable<decimal>("Diameter"),
+                Thickness = MenuInput.ReadNullable<decimal>("Thickness"),
 
-                Shape = ReadNullableString("Shape"),
-                Description = ReadNullableString("Description"),
-                Designer = ReadNullableString("Designer"),
-                Mintage = ReadNullable<long>("Mintage"),
+                Shape = MenuInput.ReadNullableString("Shape"),
+                Description = MenuInput.ReadNullableString("Description"),
+                Designer = MenuInput.ReadNullableString("Designer"),
+                Mintage = MenuInput.ReadNullable<long>("Mintage"),
 
-                Condition = ReadNullableString("Condition"),
-                Grade = ReadNullableString("Grade"),
-                GradingCompany = ReadNullableString("Grading Company"),
+                Condition = MenuInput.ReadNullableString("Condition"),
+                Grade = MenuInput.ReadNullableString("Grade"),
+                GradingCompany = MenuInput.ReadNullableString("Grading Company"),
                 GradingCertificateNumber =
-                    ReadNullableString("Grading Certificate Number"),
+                    MenuInput.ReadNullableString("Grading Certificate Number"),
 
                 CurrentPrice =
-                    ReadNullable<decimal>("Current Price"),
+                    MenuInput.ReadNullable<decimal>("Current Price"),
 
                 CurrentPriceCurrencyId =
-                    ReadNullableId("Current Price Currency ID"),
+                    MenuInput.ReadNullableId("Current Price Currency ID"),
 
                 CurrentPriceDate =
-                    ReadNullable<DateTime>("Current Price Date"),
+                    MenuInput.ReadNullable<DateTime>("Current Price Date"),
 
-                Notes = ReadNullableString("Notes")
+                Notes = MenuInput.ReadNullableString("Notes")
             };
 
             Console.WriteLine();
@@ -252,7 +252,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Delete Coin ===");
         Console.WriteLine();
 
-        var coinId = ReadRequiredId("Coin ID");
+        var coinId = MenuInput.ReadRequiredId("Coin ID");
 
         try
         {
@@ -339,25 +339,6 @@ internal sealed class CoinMenu
         Console.ReadLine();
     }
 
-    private static int ReadRequiredId(string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label}: ");
-
-            var input = Console.ReadLine();
-
-            if (int.TryParse(input, out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid ID greater than zero.");
-        }
-    }
-
     private async Task UpdateCoinAsync()
     {
         Console.Clear();
@@ -365,7 +346,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Update Coin ===");
         Console.WriteLine();
 
-        var coinId = ReadRequiredId("Coin ID");
+        var coinId = MenuInput.ReadRequiredId("Coin ID");
 
         try
         {
@@ -401,122 +382,122 @@ internal sealed class CoinMenu
                 CoinId = coin.CoinId,
 
                 CollectionId =
-                    ReadKeepCurrentId(
+                    MenuInput.ReadKeepCurrentId(
                         "Collection ID",
                         coin.CollectionId),
 
                 CountryId =
-                    ReadKeepCurrentId(
+                    MenuInput.ReadKeepCurrentId(
                         "Country ID",
                         coin.CountryId),
 
                 CurrencyId =
-                    ReadKeepCurrentId(
+                    MenuInput.ReadKeepCurrentId(
                         "Currency ID",
                         coin.CurrencyId),
 
                 DenominationId =
-                    ReadKeepCurrentId(
+                    MenuInput.ReadKeepCurrentId(
                         "Denomination ID",
                         coin.DenominationId),
 
                 MintId =
-                    ReadKeepCurrentNullableId(
+                    MenuInput.ReadKeepCurrentNullableId(
                         "Mint ID",
                         coin.MintId),
 
                 MaterialId =
-                    ReadKeepCurrentNullableId(
+                    MenuInput.ReadKeepCurrentNullableId(
                         "Material ID",
                         coin.MaterialId),
 
                 Year =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Year",
                         coin.Year),
 
                 MintMark =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Mint Mark",
                         coin.MintMark),
 
                 Fineness =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Fineness",
                         coin.Fineness),
 
                 Weight =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Weight",
                         coin.Weight),
 
                 Diameter =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Diameter",
                         coin.Diameter),
 
                 Thickness =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Thickness",
                         coin.Thickness),
 
                 Shape =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Shape",
                         coin.Shape),
 
                 Description =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Description",
                         coin.Description),
 
                 Designer =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Designer",
                         coin.Designer),
 
                 Mintage =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Mintage",
                         coin.Mintage),
 
                 Condition =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Condition",
                         coin.Condition),
 
                 Grade =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Grade",
                         coin.Grade),
 
                 GradingCompany =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Grading Company",
                         coin.GradingCompany),
 
                 GradingCertificateNumber =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Grading Certificate Number",
                         coin.GradingCertificateNumber),
 
                 CurrentPrice =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Current Price",
                         coin.CurrentPrice),
 
                 CurrentPriceCurrencyId =
-                    ReadKeepCurrentNullableId(
+                    MenuInput.ReadKeepCurrentNullableId(
                         "Current Price Currency ID",
                         coin.CurrentPriceCurrencyId),
 
                 CurrentPriceDate =
-                    ReadKeepCurrentNullable(
+                    MenuInput.ReadKeepCurrentNullable(
                         "Current Price Date",
                         coin.CurrentPriceDate),
 
                 Notes =
-                    ReadKeepCurrentString(
+                    MenuInput.ReadKeepCurrentString(
                         "Notes",
                         coin.Notes)
             };
@@ -565,163 +546,6 @@ internal sealed class CoinMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
-    }
-
-    private static int? ReadKeepCurrentNullableId(
-    string label,
-    int? current)
-    {
-        while (true)
-        {
-            var currentText =
-                current?.ToString() ?? "null";
-
-            Console.Write(
-                $"{label} [{currentText}] " +
-                "(Enter = keep, null = clear): ");
-
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            if (input.Trim().Equals(
-                    "null",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            if (int.TryParse(input.Trim(), out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid ID greater than zero, " +
-                "or use 'null' to clear the value.");
-        }
-    }
-
-    private static int? ReadNullableId(string label)
-    {
-        while (true)
-        {
-            Console.Write($"{label} (empty = null): ");
-
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return null;
-            }
-
-            if (int.TryParse(input.Trim(), out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid ID greater than zero, " +
-                "or leave empty for null.");
-        }
-    }
-
-    private static int ReadKeepCurrentId(
-    string label,
-    int current)
-    {
-        while (true)
-        {
-            Console.Write($"{label} [{current}]: ");
-
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            if (int.TryParse(input.Trim(), out var value) &&
-                value > 0)
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                "Please enter a valid ID greater than zero, " +
-                "or press Enter to keep the current value.");
-        }
-    }
-
-    private static T? ReadKeepCurrentNullable<T>(
-    string label,
-    T? current)
-    where T : struct, IParsable<T>
-    {
-        while (true)
-        {
-            var currentText =
-                current?.ToString() ?? "null";
-
-            Console.Write(
-                $"{label} [{currentText}] " +
-                "(Enter = keep, null = clear): ");
-
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            if (input.Trim().Equals(
-                    "null",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            if (T.TryParse(input.Trim(), null, out var value))
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                $"Please enter a valid {typeof(T).Name}, " +
-                "or use 'null' to clear the value.");
-        }
-    }
-
-    private static string? ReadKeepCurrentString(
-    string label,
-    string? current)
-    {
-        var currentText = current ?? "null";
-
-        Console.Write(
-            $"{label} [{currentText}] " +
-            "(Enter = keep, null = clear): ");
-
-        var input = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            return current;
-        }
-
-        if (input.Trim().Equals(
-                "null",
-                StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
-        return input.Trim();
     }
 
     private static void PrintUpdateSummary(
@@ -914,41 +738,6 @@ internal sealed class CoinMenu
         return value?.ToString("0.####") ?? "-";
     }
 
-    private static T? ReadNullable<T>(string label)
-        where T : struct, IParsable<T>
-    {
-        while (true)
-        {
-            Console.Write($"{label} (empty = null): ");
-
-            var input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return null;
-            }
-
-            if (T.TryParse(input, null, out var value))
-            {
-                return value;
-            }
-
-            Console.WriteLine(
-                $"Please enter a valid {typeof(T).Name}.");
-        }
-    }
-
-    private static string? ReadNullableString(string label)
-    {
-        Console.Write($"{label} (empty = null): ");
-
-        var input = Console.ReadLine();
-
-        return string.IsNullOrWhiteSpace(input)
-            ? null
-            : input.Trim();
-    }
-
     private async Task PriceHistoryAsync()
     {
         Console.Clear();
@@ -956,7 +745,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Coin Price History ===");
         Console.WriteLine();
 
-        var coinId = ReadRequiredId("Coin ID");
+        var coinId = MenuInput.ReadRequiredId("Coin ID");
 
         try
         {
@@ -995,7 +784,7 @@ internal sealed class CoinMenu
         Console.WriteLine("=== Coin Purchases ===");
         Console.WriteLine();
 
-        var coinId = ReadRequiredId("Coin ID");
+        var coinId = MenuInput.ReadRequiredId("Coin ID");
 
         try
         {
