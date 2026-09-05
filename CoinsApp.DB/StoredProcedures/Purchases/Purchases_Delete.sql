@@ -13,16 +13,14 @@ BEGIN
 
         IF @@ROWCOUNT = 0
         BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
-
             RAISERROR ('Purchase not found.', 16, 1);
             RETURN;
         END;
 
         COMMIT TRANSACTION;
+
+        SELECT
+            @PurchaseId AS [PurchaseId];
 
     END TRY
     BEGIN CATCH
