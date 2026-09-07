@@ -10,10 +10,13 @@ internal sealed class CoinMenu
     private readonly PriceHistoryMenu _priceHistoryMenu;
     private readonly PurchaseMenu _purchaseMenu;
 
+    private readonly SaleMenu _saleMenu;
+
     public CoinMenu(
         CoinService coinService,
         PriceHistoryMenu priceHistoryMenu,
-        PurchaseMenu purchaseMenu)
+        PurchaseMenu purchaseMenu,
+        SaleMenu saleMenu)
     {
         _coinService =
             coinService
@@ -26,6 +29,10 @@ internal sealed class CoinMenu
         _purchaseMenu =
             purchaseMenu
             ?? throw new ArgumentNullException(nameof(purchaseMenu));
+
+        _saleMenu =
+            saleMenu
+            ?? throw new ArgumentNullException(nameof(saleMenu));
     }
 
     public async Task RunAsync()
@@ -43,6 +50,7 @@ internal sealed class CoinMenu
             Console.WriteLine("5. Delete a coin");
             Console.WriteLine("6. Price history");
             Console.WriteLine("7. Purchases");
+            Console.WriteLine("8. Sales");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -77,6 +85,10 @@ internal sealed class CoinMenu
 
                 case "7":
                     await PurchasesAsync();
+                    break;
+
+                case "8":
+                    await SalesAsync();
                     break;
 
                 case "0":
@@ -546,6 +558,51 @@ internal sealed class CoinMenu
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+    }
+
+    private async Task SalesAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Sales ===");
+        Console.WriteLine();
+
+        var coinId =
+            MenuInput.ReadRequiredId("Coin ID");
+
+        try
+        {
+            var coin =
+                await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine(
+                    "Press Enter to continue...");
+
+                Console.ReadLine();
+                return;
+            }
+
+            await _saleMenu.RunAsync(coin.CoinId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading sales.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+            Console.WriteLine();
+            Console.WriteLine(
+                "Press Enter to continue...");
+
+            Console.ReadLine();
+        }
     }
 
     private static void PrintUpdateSummary(

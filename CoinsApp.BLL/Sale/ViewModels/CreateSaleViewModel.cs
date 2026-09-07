@@ -1,8 +1,8 @@
 ﻿namespace CoinsApp.BLL.Sale.ViewModels;
 
-public sealed class SaleUpdateViewModel
+public sealed class CreateSaleViewModel
 {
-    public int SaleId { get; init; }
+    public int CoinId { get; init; }
 
     public DateTime SaleDate { get; init; }
 

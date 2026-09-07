@@ -1,4 +1,6 @@
-﻿using CoinsApp.BLL.Coins;
+﻿using CoinsApp.BLL.Sale;
+using CoinsApp.DAL.Sale;
+using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Install;
 using CoinsApp.BLL.PriceHistory;
 using CoinsApp.BLL.Purchase;
@@ -93,6 +95,19 @@ internal static class Program
             new PurchaseMenu(purchaseService);
 
         // -------------------------------------------------
+        // Sales
+        // -------------------------------------------------
+
+        var saleRepository =
+            new SaleRepository(databaseConnection);
+
+        var saleService =
+            new SaleService(saleRepository);
+
+        var saleMenu =
+            new SaleMenu(saleService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -100,7 +115,8 @@ internal static class Program
             new CoinMenu(
                 coinService,
                 priceHistoryMenu,
-                purchaseMenu);
+                purchaseMenu,
+                saleMenu);
 
         // -------------------------------------------------
         // Main Menu
