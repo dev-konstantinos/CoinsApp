@@ -9,11 +9,11 @@ internal sealed class PurchaseMenu
     private readonly PurchaseService _purchaseService;
 
     public PurchaseMenu(PurchaseService purchaseService)
-        {
-            _purchaseService =
-                purchaseService
-                ?? throw new ArgumentNullException(nameof(purchaseService));
-        }
+    {
+        _purchaseService =
+            purchaseService
+            ?? throw new ArgumentNullException(nameof(purchaseService));
+    }
 
     public async Task RunAsync(int coinId)
     {

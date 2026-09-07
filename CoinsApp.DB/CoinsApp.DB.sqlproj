@@ -73,6 +73,7 @@
     <Folder Include="StoredProcedures\Coins" />
     <Folder Include="StoredProcedures\PriceHistory" />
     <Folder Include="StoredProcedures\Purchases" />
+    <Folder Include="StoredProcedures\Sales" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
@@ -135,6 +136,11 @@
     <Build Include="StoredProcedures\Purchases\Purchases_GetByCoin.sql" />
     <Build Include="StoredProcedures\Purchases\Purchases_Update.sql" />
     <Build Include="StoredProcedures\Purchases\Purchases_Delete.sql" />
+    <Build Include="StoredProcedures\Sales\Sales_Create.sql" />
+    <Build Include="StoredProcedures\Sales\Sales_GetById.sql" />
+    <Build Include="StoredProcedures\Sales\Sales_GetByCoin.sql" />
+    <Build Include="StoredProcedures\Sales\Sales_Update.sql" />
+    <Build Include="StoredProcedures\Sales\Sales_Delete.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
