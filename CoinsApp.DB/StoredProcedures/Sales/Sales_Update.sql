@@ -10,27 +10,59 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    DECLARE @CoinId INT;
+    DECLARE @PreviousOwnerId INT;
+
     BEGIN TRY
+
+        ------------------------------------------------------------
+        -- Start transaction
+        ------------------------------------------------------------
+
         BEGIN TRANSACTION;
 
+
         ------------------------------------------------------------
-        -- 1. Validate SaleDate
+        -- Read and lock existing Sale
         ------------------------------------------------------------
 
-        IF @SaleDate > SYSUTCDATETIME()
+        SELECT
+            @CoinId = [CoinId],
+            @PreviousOwnerId = [PreviousOwnerId]
+        FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
+        WHERE [SaleId] = @SaleId;
+
+
+        IF @@ROWCOUNT = 0
         BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
-
-            RAISERROR ('SaleDate cannot be in the future.', 16, 1);
+            RAISERROR(
+                'Sale not found.',
+                16,
+                1
+            );
             RETURN;
         END;
 
 
         ------------------------------------------------------------
-        -- 2. Update Sale
+        -- Validate SaleDate
+        ------------------------------------------------------------
+
+        IF @SaleDate > SYSUTCDATETIME()
+        BEGIN
+            RAISERROR(
+                'SaleDate cannot be in the future.',
+                16,
+                1
+            );
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- Update Sale
+        --
+        -- PreviousOwnerId intentionally remains unchanged.
         ------------------------------------------------------------
 
         UPDATE [dbo].[Sales]
@@ -42,37 +74,36 @@ BEGIN
             [Notes] = @Notes
         WHERE [SaleId] = @SaleId;
 
-        IF @@ROWCOUNT = 0
-        BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
 
-            RAISERROR ('Sale not found.', 16, 1);
-            RETURN;
-        END;
+        ------------------------------------------------------------
+        -- Update current ownership
+        --
+        -- Buyer specified:
+        --     Owner becomes Buyer.
+        --
+        -- Buyer NULL:
+        --     Restore the owner that existed before the Sale.
+        ------------------------------------------------------------
+
+        UPDATE [dbo].[Coins]
+        SET [OwnerId] =
+            COALESCE(@BuyerId, @PreviousOwnerId)
+        WHERE [CoinId] = @CoinId;
 
 
         ------------------------------------------------------------
-        -- 3. Commit
-        --
-        -- Sale does not modify:
-        --   Coins.CurrentPrice
-        --   PriceHistory
+        -- Commit
         ------------------------------------------------------------
 
         COMMIT TRANSACTION;
 
 
         ------------------------------------------------------------
-        -- 4. Return updated ID
+        -- Return Sale ID
         ------------------------------------------------------------
 
         SELECT
-            [SaleId]
-        FROM [dbo].[Sales]
-        WHERE [SaleId] = @SaleId;
+            @SaleId AS [SaleId];
 
     END TRY
     BEGIN CATCH

@@ -29,42 +29,57 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    UPDATE [dbo].[Coins]
-    SET
-        [CollectionId] = @CollectionId,
-        [OwnerId] = @OwnerId,
-        [CountryId] = @CountryId,
-        [CurrencyId] = @CurrencyId,
-        [DenominationId] = @DenominationId,
-        [MintId] = @MintId,
-        [MaterialId] = @MaterialId,
-        [Year] = @Year,
-        [MintMark] = @MintMark,
-        [Fineness] = @Fineness,
-        [Weight] = @Weight,
-        [Diameter] = @Diameter,
-        [Thickness] = @Thickness,
-        [Shape] = @Shape,
-        [Description] = @Description,
-        [Designer] = @Designer,
-        [Mintage] = @Mintage,
-        [Condition] = @Condition,
-        [Grade] = @Grade,
-        [GradingCompany] = @GradingCompany,
-        [GradingCertificateNumber] = @GradingCertificateNumber,
-        [CurrentPrice] = @CurrentPrice,
-        [CurrentPriceCurrencyId] = @CurrentPriceCurrencyId,
-        [CurrentPriceDate] = @CurrentPriceDate,
-        [Notes] = @Notes
-    WHERE [CoinId] = @CoinId;
+    BEGIN TRY
 
-    IF @@ROWCOUNT = 0
-    BEGIN
-        THROW 50001, 'Coin not found.', 1;
-    END;
+        UPDATE [dbo].[Coins]
+        SET
+            [CollectionId] = @CollectionId,
+            [OwnerId] = @OwnerId,
+            [CountryId] = @CountryId,
+            [CurrencyId] = @CurrencyId,
+            [DenominationId] = @DenominationId,
+            [MintId] = @MintId,
+            [MaterialId] = @MaterialId,
+            [Year] = @Year,
+            [MintMark] = @MintMark,
+            [Fineness] = @Fineness,
+            [Weight] = @Weight,
+            [Diameter] = @Diameter,
+            [Thickness] = @Thickness,
+            [Shape] = @Shape,
+            [Description] = @Description,
+            [Designer] = @Designer,
+            [Mintage] = @Mintage,
+            [Condition] = @Condition,
+            [Grade] = @Grade,
+            [GradingCompany] = @GradingCompany,
+            [GradingCertificateNumber] = @GradingCertificateNumber,
+            [CurrentPrice] = @CurrentPrice,
+            [CurrentPriceCurrencyId] = @CurrentPriceCurrencyId,
+            [CurrentPriceDate] = @CurrentPriceDate,
+            [Notes] = @Notes
+        WHERE [CoinId] = @CoinId;
 
-    SELECT [CoinId]
-    FROM [dbo].[Coins]
-    WHERE [CoinId] = @CoinId;
+        IF @@ROWCOUNT = 0
+        BEGIN
+            RAISERROR(
+                'Coin not found.',
+                16,
+                1
+            );
+            RETURN;
+        END;
+
+        SELECT
+            [CoinId]
+        FROM [dbo].[Coins]
+        WHERE [CoinId] = @CoinId;
+
+    END TRY
+    BEGIN CATCH
+
+        THROW;
+
+    END CATCH;
 END;
 GO

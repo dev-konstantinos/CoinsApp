@@ -10,19 +10,28 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    DECLARE @PreviousOwnerId INT;
+    DECLARE @SaleId INT;
+
     BEGIN TRY
         BEGIN TRANSACTION;
 
         ------------------------------------------------------------
-        -- 1. Validate Coin
+        -- 1. Validate Coin and lock it
         ------------------------------------------------------------
 
-        IF NOT EXISTS
-        (
-            SELECT 1
-            FROM [dbo].[Coins]
-            WHERE [CoinId] = @CoinId
-        )
+        SELECT
+            @PreviousOwnerId = [OwnerId]
+        FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
+        WHERE [CoinId] = @CoinId;
+
+        IF @PreviousOwnerId IS NULL
+           AND NOT EXISTS
+           (
+               SELECT 1
+               FROM [dbo].[Coins]
+               WHERE [CoinId] = @CoinId
+           )
         BEGIN
             RAISERROR ('Coin not found.', 16, 1);
             RETURN;
@@ -41,11 +50,7 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 3. Insert Sale
-        --
-        -- Sale does not modify:
-        --   Coins.CurrentPrice
-        --   PriceHistory
+        -- 3. Create Sale
         ------------------------------------------------------------
 
         INSERT INTO [dbo].[Sales]
@@ -54,6 +59,7 @@ BEGIN
             [SaleDate],
             [SalePrice],
             [CurrencyId],
+            [PreviousOwnerId],
             [BuyerId],
             [Notes]
         )
@@ -63,22 +69,33 @@ BEGIN
             @SaleDate,
             @SalePrice,
             @CurrencyId,
+            @PreviousOwnerId,
             @BuyerId,
             @Notes
         );
 
 
-        DECLARE @SaleId INT;
-
         SET @SaleId =
             CONVERT(INT, SCOPE_IDENTITY());
+
+
+        ------------------------------------------------------------
+        -- 4. Transfer ownership
+        ------------------------------------------------------------
+
+        IF @BuyerId IS NOT NULL
+        BEGIN
+            UPDATE [dbo].[Coins]
+            SET [OwnerId] = @BuyerId
+            WHERE [CoinId] = @CoinId;
+        END;
 
 
         COMMIT TRANSACTION;
 
 
         ------------------------------------------------------------
-        -- 4. Return new ID
+        -- 5. Return new ID
         ------------------------------------------------------------
 
         SELECT

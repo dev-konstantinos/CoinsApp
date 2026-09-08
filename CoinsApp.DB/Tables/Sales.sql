@@ -5,6 +5,7 @@
     [SaleDate] DATETIME2(0) NOT NULL,
     [SalePrice] DECIMAL(19,4) NOT NULL,
     [CurrencyId] INT NOT NULL,
+    [PreviousOwnerId] INT NULL,
     [BuyerId] INT NULL,
     [Notes] NVARCHAR(2000) NULL,
 
@@ -18,6 +19,10 @@
     CONSTRAINT [FK_Sales_Currencies]
         FOREIGN KEY ([CurrencyId])
         REFERENCES [dbo].[Currencies] ([CurrencyId]),
+    
+    CONSTRAINT [FK_Sales_PreviousOwner]
+        FOREIGN KEY ([PreviousOwnerId])
+        REFERENCES [dbo].[Contacts] ([ContactId]),
 
     CONSTRAINT [FK_Sales_Buyers]
         FOREIGN KEY ([BuyerId])

@@ -1,32 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Views\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CoinsApp.BLL\CoinsApp.BLL.csproj" />
-  </ItemGroup>
-
-	<!--<ItemGroup>
-		<ProjectReference
-			Include="..\CoinsApp.DB\CoinsApp.DB.sqlproj"
-			ReferenceOutputAssembly="false"
-			BuildReference="true" />
-	</ItemGroup>-->
+	<ItemGroup>
+		<ProjectReference Include="..\CoinsApp.BLL\CoinsApp.BLL.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="appsettings.json">
@@ -34,18 +27,35 @@
 		</None>
 	</ItemGroup>
 
-	<Target Name="CopyResetArtifacts" AfterTargets="Build">
+	<Target Name="BuildDatabaseProject"
+			BeforeTargets="Build">
+
+		<MSBuild
+			Projects="$(MSBuildProjectDirectory)\..\CoinsApp.DB\CoinsApp.DB.sqlproj"
+			Targets="Build"
+			Properties="Configuration=$(Configuration)" />
+
+	</Target>
+
+	<Target Name="CopyResetArtifacts"
+			AfterTargets="Build">
 
 		<ItemGroup>
 			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\ResetDevelopment.sql" />
 			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\DevelopmentSeed.sql" />
 		</ItemGroup>
 
-		<Copy SourceFiles="@(ResetArtifact)" DestinationFolder="$(OutputPath)Reset" SkipUnchangedFiles="false" />
+		<MakeDir Directories="$(OutputPath)Reset" />
+
+		<Copy
+			SourceFiles="@(ResetArtifact)"
+			DestinationFolder="$(OutputPath)Reset"
+			SkipUnchangedFiles="false" />
 
 	</Target>
 
-	<Target Name="CopyDatabaseDacpac" AfterTargets="Build" DependsOnTargets="Build">
+	<Target Name="CopyDatabaseDacpac"
+			AfterTargets="Build">
 
 		<ItemGroup>
 			<DatabaseArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
@@ -53,7 +63,10 @@
 
 		<MakeDir Directories="$(OutputPath)Database" />
 
-		<Copy SourceFiles="@(DatabaseArtifact)" DestinationFolder="$(OutputPath)Database" SkipUnchangedFiles="false" />
+		<Copy
+			SourceFiles="@(DatabaseArtifact)"
+			DestinationFolder="$(OutputPath)Database"
+			SkipUnchangedFiles="false" />
 
 	</Target>
 

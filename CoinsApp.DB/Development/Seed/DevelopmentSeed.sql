@@ -9,6 +9,9 @@
 DECLARE @UserId INT;
 DECLARE @CollectionId INT;
 
+DECLARE @OwnerId INT;
+DECLARE @BuyerId INT;
+
 DECLARE @GermanyId INT;
 DECLARE @FRGId INT;
 DECLARE @GDRId INT;
@@ -115,6 +118,74 @@ BEGIN
     SET @CollectionId = SCOPE_IDENTITY();
 END;
 
+------------------------------------------------------------
+-- Development Contacts
+------------------------------------------------------------
+
+SELECT @OwnerId = [ContactId]
+FROM [dbo].[Contacts]
+WHERE [Email] = N'dev.owner@coinsapp.local';
+
+IF @OwnerId IS NULL
+BEGIN
+    INSERT INTO [dbo].[Contacts]
+    (
+        [Name],
+        [CompanyName],
+        [Email],
+        [Phone],
+        [Address],
+        [Website],
+        [Notes],
+        [IsActive]
+    )
+    VALUES
+    (
+        N'Dev Owner',
+        NULL,
+        N'dev.owner@coinsapp.local',
+        NULL,
+        NULL,
+        NULL,
+        N'Development owner for ownership tests.',
+        1
+    );
+
+    SET @OwnerId = SCOPE_IDENTITY();
+END;
+
+
+SELECT @BuyerId = [ContactId]
+FROM [dbo].[Contacts]
+WHERE [Email] = N'dev.buyer@coinsapp.local';
+
+IF @BuyerId IS NULL
+BEGIN
+    INSERT INTO [dbo].[Contacts]
+    (
+        [Name],
+        [CompanyName],
+        [Email],
+        [Phone],
+        [Address],
+        [Website],
+        [Notes],
+        [IsActive]
+    )
+    VALUES
+    (
+        N'Dev Buyer',
+        NULL,
+        N'dev.buyer@coinsapp.local',
+        NULL,
+        NULL,
+        NULL,
+        N'Development buyer for ownership tests.',
+        1
+    );
+
+    SET @BuyerId = SCOPE_IDENTITY();
+END;
 
 ------------------------------------------------------------
 -- Countries / Issuers
@@ -295,6 +366,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -317,6 +389,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @GermanyId,
         @EURId,
         @EUR2Id,
@@ -359,6 +432,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -380,6 +454,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @FRGId,
         @DEMId,
         @DEM5Id,
@@ -421,6 +496,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -442,6 +518,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @GDRId,
         @DDMId,
         @DDM5Id,
@@ -483,6 +560,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -504,6 +582,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @USSRId,
         @SURId,
         @SUR5Id,
@@ -545,6 +624,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -566,6 +646,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @RussianEmpireId,
         @RURId,
         @RUR5Id,
@@ -607,6 +688,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -628,6 +710,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @RussiaId,
         @RUBId,
         @RUB10Id,
@@ -669,6 +752,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -690,6 +774,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @USAId,
         @USDId,
         @USD1Id,
@@ -710,6 +795,14 @@ BEGIN
     );
 END;
 
+------------------------------------------------------------
+-- Synchronize Development Coin Owners
+------------------------------------------------------------
+
+UPDATE [dbo].[Coins]
+SET [OwnerId] = @OwnerId
+WHERE [CollectionId] = @CollectionId
+  AND [OwnerId] IS NULL;
 
 ------------------------------------------------------------
 -- Resolve Coin IDs
