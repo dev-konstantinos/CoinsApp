@@ -1,4 +1,4 @@
-﻿﻿CREATE PROCEDURE [dbo].[Sales_Delete]
+﻿CREATE PROCEDURE [dbo].[Sales_Delete]
     @SaleId INT
 AS
 BEGIN
@@ -15,7 +15,7 @@ BEGIN
         BEGIN TRANSACTION;
 
         ------------------------------------------------------------
-        -- 1. Get Sale and lock it
+        -- 1. Get Sale
         ------------------------------------------------------------
 
         SELECT
@@ -23,7 +23,7 @@ BEGIN
         FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
         WHERE [SaleId] = @SaleId;
 
-        IF @@ROWCOUNT = 0
+        IF @CoinId IS NULL
         BEGIN
             RAISERROR('Sale not found.', 16, 1);
             RETURN;
@@ -47,7 +47,7 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 3. Determine original owner BEFORE deleting the Sale
+        -- 3. Determine the original owner BEFORE deleting the Sale
         ------------------------------------------------------------
 
         SELECT TOP (1)
@@ -66,24 +66,18 @@ BEGIN
         DELETE FROM [dbo].[Sales]
         WHERE [SaleId] = @SaleId;
 
-
         IF @@ROWCOUNT = 0
         BEGIN
-            RAISERROR(
-                'Sale could not be deleted.',
-                16,
-                1
-            );
+            RAISERROR('Sale could not be deleted.', 16, 1);
             RETURN;
         END;
 
 
         ------------------------------------------------------------
-        -- 5. Rebuild remaining Sales chain
+        -- 5. Rebuild the remaining ownership chain
         ------------------------------------------------------------
 
         SET @CurrentOwnerId = @InitialOwnerId;
-
 
         DECLARE SalesCursor CURSOR LOCAL FAST_FORWARD FOR
             SELECT
@@ -95,7 +89,6 @@ BEGIN
                 [SaleDate] ASC,
                 [SaleId] ASC;
 
-
         OPEN SalesCursor;
 
         FETCH NEXT FROM SalesCursor
@@ -103,12 +96,11 @@ BEGIN
             @CurrentSaleId,
             @CurrentBuyerId;
 
-
         WHILE @@FETCH_STATUS = 0
         BEGIN
 
             --------------------------------------------------------
-            -- Owner before this Sale
+            -- Owner immediately before this Sale
             --------------------------------------------------------
 
             UPDATE [dbo].[Sales]
@@ -118,6 +110,8 @@ BEGIN
 
             --------------------------------------------------------
             -- Apply ownership transfer
+            --
+            -- NULL BuyerId means that the owner does not change.
             --------------------------------------------------------
 
             IF @CurrentBuyerId IS NOT NULL
@@ -133,13 +127,12 @@ BEGIN
 
         END;
 
-
         CLOSE SalesCursor;
         DEALLOCATE SalesCursor;
 
 
         ------------------------------------------------------------
-        -- 6. Update current Coin owner
+        -- 6. Store the final owner on Coins
         ------------------------------------------------------------
 
         UPDATE [dbo].[Coins]

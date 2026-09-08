@@ -14,6 +14,9 @@ public sealed class SaleData
     public string CurrencyCode { get; init; } = string.Empty;
     public string CurrencyName { get; init; } = string.Empty;
 
+    public int? PreviousOwnerId { get; init; }
+    public string? PreviousOwnerName { get; init; }
+
     public int? BuyerId { get; init; }
     public string? BuyerName { get; init; }
 

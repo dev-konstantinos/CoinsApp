@@ -16,8 +16,10 @@ public sealed class SaleDetailsViewModel
 
     public string CurrencyName { get; init; } = string.Empty;
 
-    public int? BuyerId { get; init; }
+    public int? PreviousOwnerId { get; init; }
+    public string? PreviousOwnerName { get; init; }
 
+    public int? BuyerId { get; init; }
     public string? BuyerName { get; init; }
 
     public string? Notes { get; init; }

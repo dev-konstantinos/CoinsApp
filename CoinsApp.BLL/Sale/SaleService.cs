@@ -201,6 +201,8 @@ public sealed class SaleService
             CurrencyId = sale.CurrencyId,
             CurrencyCode = sale.CurrencyCode,
             CurrencyName = sale.CurrencyName,
+            PreviousOwnerId = sale.PreviousOwnerId,
+            PreviousOwnerName = sale.PreviousOwnerName,
             BuyerId = sale.BuyerId,
             BuyerName = sale.BuyerName,
             Notes = sale.Notes
@@ -219,6 +221,8 @@ public sealed class SaleService
             CurrencyId = sale.CurrencyId,
             CurrencyCode = sale.CurrencyCode,
             CurrencyName = sale.CurrencyName,
+            PreviousOwnerId = sale.PreviousOwnerId,
+            PreviousOwnerName = sale.PreviousOwnerName,
             BuyerId = sale.BuyerId,
             BuyerName = sale.BuyerName,
             Notes = sale.Notes
