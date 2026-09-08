@@ -697,9 +697,10 @@ internal sealed class CoinMenu
             $"{"Denomination",-22} " +
             $"{"Year",6} " +
             $"{"Mint",-18} " +
+            $"{"Owner",-24} " +
             $"{"Current Price",16}");
 
-        Console.WriteLine(new string('-', 110));
+        Console.WriteLine(new string('-', 138));
     }
 
     private static void PrintCoin(CoinListItemViewModel coin)
@@ -716,6 +717,7 @@ internal sealed class CoinMenu
             $"{coin.Denomination,-22} " +
             $"{(coin.Year?.ToString() ?? "-"),6} " +
             $"{(coin.Mint ?? "-"),-18} " +
+            $"{(coin.OwnerName ?? "-"),-24} " +
             $"{price,16}");
     }
 
@@ -738,6 +740,8 @@ internal sealed class CoinMenu
             $"Year:           {coin.Year?.ToString() ?? "-"}");
         Console.WriteLine($"Mint:           {coin.MintName ?? "-"}");
         Console.WriteLine($"Mint Mark:      {coin.MintMark ?? "-"}");
+        Console.WriteLine(
+            $"Owner:          {coin.OwnerName ?? "-"}");
         Console.WriteLine();
 
         Console.WriteLine("--- Physical ---");
