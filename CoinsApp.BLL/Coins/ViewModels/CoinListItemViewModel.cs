@@ -14,6 +14,10 @@ public sealed class CoinListItemViewModel
 
     public string? Mint { get; init; }
 
+    public int? OwnerId { get; init; }
+
+    public string? OwnerName { get; init; }
+
     public decimal? CurrentPrice { get; init; }
 
     public string? CurrentPriceCurrency { get; init; }

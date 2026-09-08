@@ -5,6 +5,9 @@ public sealed class CoinDetailsViewModel
     public int CoinId { get; init; }
     public int CollectionId { get; init; }
 
+    public int? OwnerId { get; init; }
+    public string? OwnerName { get; init; }
+
     public int CountryId { get; init; }
     public string CountryName { get; init; } = string.Empty;
 

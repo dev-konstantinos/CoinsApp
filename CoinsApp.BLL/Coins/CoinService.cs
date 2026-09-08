@@ -88,6 +88,7 @@ public sealed class CoinService
             Currency = coin.CurrencyCode,
             Year = coin.Year,
             Mint = coin.MintName,
+            OwnerName = coin.OwnerName,
             CurrentPrice = coin.CurrentPrice,
             CurrentPriceCurrency =
                 coin.CurrentPriceCurrencyCode
@@ -100,6 +101,9 @@ public sealed class CoinService
         {
             CoinId = coin.CoinId,
             CollectionId = coin.CollectionId,
+
+            OwnerId = coin.OwnerId,
+            OwnerName = coin.OwnerName,
 
             CountryId = coin.CountryId,
             CountryName = coin.CountryName,
