@@ -16,13 +16,6 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        ------------------------------------------------------------
-        -- 1. Validate Coin and lock it
-        --
-        -- OwnerId may legitimately be NULL.
-        -- Therefore Coin existence must be checked separately.
-        ------------------------------------------------------------
-
         IF NOT EXISTS
         (
             SELECT 1
@@ -30,6 +23,7 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('Coin not found.', 16, 1);
             RETURN;
         END;
@@ -41,17 +35,20 @@ BEGIN
 
         IF @SaleDate > SYSUTCDATETIME()
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('SaleDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 
         IF @BuyerId <= 0
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('BuyerId must be greater than zero.', 16, 1);
             RETURN;
         END;
+
         ------------------------------------------------------------
-        -- 2. Validate SaleDate
+        -- Preserve the original owner only once.
         ------------------------------------------------------------
 
         IF NOT EXISTS
@@ -63,11 +60,9 @@ BEGIN
         BEGIN
             UPDATE [dbo].[Coins]
             SET [InitialOwnerId] = [OwnerId]
-            WHERE [CoinId] = @CoinId;
+            WHERE [CoinId] = @CoinId
+              AND [InitialOwnerId] IS NULL;
         END;
-        ------------------------------------------------------------
-        -- 3. Create Sale
-        ------------------------------------------------------------
 
         INSERT INTO [dbo].[Sales]
         (
@@ -93,12 +88,8 @@ BEGIN
         SET @SaleId =
             CONVERT(INT, SCOPE_IDENTITY());
 
-
         ------------------------------------------------------------
-        -- 4. Transfer ownership
-        --
-        -- A NULL BuyerId means that the buyer is unknown.
-        -- In that case the current OwnerId remains unchanged.
+        -- Transfer ownership to the buyer.
         ------------------------------------------------------------
 
         UPDATE [dbo].[Coins]
@@ -106,9 +97,6 @@ BEGIN
         WHERE [CoinId] = @CoinId;
 
         COMMIT TRANSACTION;
-      ------------------------------------------------------------
-        -- 5. Return new ID
-        ------------------------------------------------------------
 
         SELECT
             @SaleId AS [SaleId];

@@ -367,6 +367,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -389,6 +390,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @GermanyId,
         @EURId,
@@ -433,6 +435,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -454,6 +457,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @FRGId,
         @DEMId,
@@ -497,6 +501,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -518,6 +523,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @GDRId,
         @DDMId,
@@ -561,6 +567,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -582,6 +589,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @USSRId,
         @SURId,
@@ -625,6 +633,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -646,6 +655,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @RussianEmpireId,
         @RURId,
@@ -689,6 +699,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -710,6 +721,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @RussiaId,
         @RUBId,
@@ -753,6 +765,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -774,6 +787,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @USAId,
         @USDId,
@@ -800,9 +814,12 @@ END;
 ------------------------------------------------------------
 
 UPDATE [dbo].[Coins]
-SET [OwnerId] = @OwnerId
+SET
+    [OwnerId] = @OwnerId,
+    [InitialOwnerId] = @OwnerId
 WHERE [CollectionId] = @CollectionId
-  AND [OwnerId] IS NULL;
+  AND [OwnerId] IS NULL
+  AND [InitialOwnerId] IS NULL;
 
 ------------------------------------------------------------
 -- Resolve Coin IDs

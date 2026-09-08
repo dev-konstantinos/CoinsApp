@@ -133,10 +133,15 @@
     CONSTRAINT [CK_Coins_CurrentPrice]
         CHECK
         (
-            [CurrentPrice] IS NULL
+            (
+                [CurrentPrice] IS NULL
+                AND [CurrentPriceCurrencyId] IS NULL
+                AND [CurrentPriceDate] IS NULL
+            )
             OR
             (
-                [CurrentPrice] >= 0
+                [CurrentPrice] IS NOT NULL
+                AND [CurrentPrice] >= 0
                 AND [CurrentPriceCurrencyId] IS NOT NULL
                 AND [CurrentPriceDate] IS NOT NULL
             )

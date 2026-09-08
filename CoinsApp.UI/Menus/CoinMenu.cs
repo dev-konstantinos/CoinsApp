@@ -639,26 +639,6 @@ internal sealed class CoinMenu
             $"{model.GradingCertificateNumber ?? "null"}");
         Console.WriteLine();
 
-        Console.WriteLine("--- Current Price ---");
-
-        var price =
-            model.CurrentPrice.HasValue
-                ? model.CurrentPrice.Value.ToString("0.####")
-                : "null";
-
-        Console.WriteLine(
-            $"Price:          {price}");
-
-        Console.WriteLine(
-            $"Price Currency: " +
-            $"{model.CurrentPriceCurrencyId?.ToString() ?? "null"}");
-
-        Console.WriteLine(
-            $"Price Date:     " +
-            $"{model.CurrentPriceDate?.ToString("yyyy-MM-dd HH:mm") ?? "null"}");
-
-        Console.WriteLine();
-
         Console.WriteLine("--- Notes ---");
         Console.WriteLine(
             model.Notes ?? "null");
