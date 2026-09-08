@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Coins_Create]
     @CollectionId INT,
+    @OwnerId INT = NULL,
     @CountryId INT,
     @CurrencyId INT,
     @DenominationId INT,
@@ -30,6 +31,7 @@ BEGIN
     INSERT INTO [dbo].[Coins]
     (
         [CollectionId],
+        [OwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -57,6 +59,7 @@ BEGIN
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @CountryId,
         @CurrencyId,
         @DenominationId,

@@ -47,6 +47,9 @@ BEGIN
         priceCurrency.Code AS CurrentPriceCurrencyCode,
         c.CurrentPriceDate,
 
+        c.OwnerId,
+        owner.Name AS OwnerName,
+
         c.Notes,
         c.CreatedAt
 
@@ -71,6 +74,9 @@ BEGIN
 
     LEFT JOIN dbo.Currencies AS priceCurrency
         ON priceCurrency.CurrencyId = c.CurrentPriceCurrencyId
+
+    LEFT JOIN dbo.Contacts AS owner
+        ON owner.ContactId = c.OwnerId
 
     WHERE c.CoinId = @CoinId;
 END;

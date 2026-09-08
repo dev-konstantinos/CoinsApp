@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Coins_Update]
     @CoinId INT,
     @CollectionId INT,
+    @OwnerId INT = NULL,
     @CountryId INT,
     @CurrencyId INT,
     @DenominationId INT,
@@ -31,6 +32,7 @@ BEGIN
     UPDATE [dbo].[Coins]
     SET
         [CollectionId] = @CollectionId,
+        [OwnerId] = @OwnerId,
         [CountryId] = @CountryId,
         [CurrencyId] = @CurrencyId,
         [DenominationId] = @DenominationId,
