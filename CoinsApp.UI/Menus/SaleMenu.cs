@@ -204,7 +204,7 @@ internal sealed class SaleMenu
                     MenuInput.ReadRequiredId("Currency ID"),
 
                 BuyerId =
-                    MenuInput.ReadNullableId("Buyer ID"),
+                    MenuInput.ReadRequiredId("Buyer ID"),
 
                 Notes =
                     MenuInput.ReadNullableString("Notes")
@@ -291,7 +291,7 @@ internal sealed class SaleMenu
                         current.CurrencyId),
 
                 BuyerId =
-                    MenuInput.ReadKeepCurrentNullableId(
+                    MenuInput.ReadKeepCurrentId(
                         "Buyer ID",
                         current.BuyerId),
 
@@ -428,7 +428,7 @@ internal sealed class SaleMenu
 
         Console.WriteLine(
             $"Buyer ID:       " +
-            $"{sale.BuyerId?.ToString() ?? "-"}");
+            $"{sale.BuyerId.ToString() ?? "-"}");
 
         Console.WriteLine(
             $"Buyer:          " +

@@ -142,10 +142,10 @@ public sealed class SaleService
                 nameof(model.SaleDate));
         }
 
-        if (model.BuyerId is <= 0)
+        if (model.BuyerId <= 0)
         {
             throw new ArgumentException(
-                "Buyer ID must be greater than zero when specified.",
+                "Buyer ID must be greater than zero.",
                 nameof(model.BuyerId));
         }
     }
@@ -181,10 +181,10 @@ public sealed class SaleService
                 nameof(model.SaleDate));
         }
 
-        if (model.BuyerId is <= 0)
+        if (model.BuyerId <= 0)
         {
             throw new ArgumentException(
-                "Buyer ID must be greater than zero when specified.",
+                "Buyer ID must be greater than zero.",
                 nameof(model.BuyerId));
         }
     }

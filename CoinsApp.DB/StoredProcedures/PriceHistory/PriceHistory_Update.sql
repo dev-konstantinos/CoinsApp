@@ -14,7 +14,31 @@ BEGIN
         BEGIN TRANSACTION;
 
         ------------------------------------------------------------
-        -- 1. Update PriceHistory
+        -- 1. Determine and lock the Coin
+        ------------------------------------------------------------
+
+        DECLARE @CoinId INT;
+
+        SELECT
+            @CoinId = [CoinId]
+        FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
+        WHERE [PriceHistoryId] = @PriceHistoryId;
+
+        IF @CoinId IS NULL
+        BEGIN
+            RAISERROR ('Price history entry not found.', 16, 1);
+            RETURN;
+        END;
+
+        IF @PriceDate > SYSUTCDATETIME()
+        BEGIN
+            RAISERROR ('PriceDate cannot be in the future.', 16, 1);
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 2. Update PriceHistory
         ------------------------------------------------------------
 
         UPDATE [dbo].[PriceHistory]
@@ -24,29 +48,6 @@ BEGIN
             [PriceDate] = @PriceDate,
             [Source] = @Source,
             [Notes] = @Notes
-        WHERE [PriceHistoryId] = @PriceHistoryId;
-
-        IF @@ROWCOUNT = 0
-        BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
-
-            RAISERROR ('Price history entry not found.', 16, 1);
-            RETURN;
-        END;
-
-
-        ------------------------------------------------------------
-        -- 2. Determine the Coin
-        ------------------------------------------------------------
-
-        DECLARE @CoinId INT;
-
-        SELECT
-            @CoinId = [CoinId]
-        FROM [dbo].[PriceHistory]
         WHERE [PriceHistoryId] = @PriceHistoryId;
 
 

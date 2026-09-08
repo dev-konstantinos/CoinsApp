@@ -2,6 +2,7 @@
 (
     [CoinId] INT IDENTITY(1,1) NOT NULL,
     [OwnerId] INT NULL,
+    [InitialOwnerId] INT NULL,
     [CollectionId] INT NOT NULL,
     [CountryId] INT NOT NULL,
     [CurrencyId] INT NOT NULL,
@@ -44,6 +45,10 @@
 
     CONSTRAINT [FK_Coins_Owner]
         FOREIGN KEY ([OwnerId])
+        REFERENCES [dbo].[Contacts] ([ContactId]),
+    
+    CONSTRAINT [FK_Coins_InitialOwner]
+        FOREIGN KEY ([InitialOwnerId])
         REFERENCES [dbo].[Contacts] ([ContactId]),
 
     CONSTRAINT [FK_Coins_Collections]

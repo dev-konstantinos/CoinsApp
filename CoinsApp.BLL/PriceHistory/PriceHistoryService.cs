@@ -115,6 +115,13 @@ public sealed class PriceHistoryService
                 "Price cannot be negative.",
                 nameof(model.Price));
         }
+
+        if (model.PriceDate > DateTime.UtcNow)
+        {
+            throw new ArgumentException(
+                "Price date cannot be in the future.",
+                nameof(model.PriceDate));
+        }
     }
 
     private static void ValidateUpdate(
@@ -139,6 +146,13 @@ public sealed class PriceHistoryService
             throw new ArgumentException(
                 "Price cannot be negative.",
                 nameof(model.Price));
+        }
+
+        if (model.PriceDate > DateTime.UtcNow)
+        {
+            throw new ArgumentException(
+                "Price date cannot be in the future.",
+                nameof(model.PriceDate));
         }
     }
 

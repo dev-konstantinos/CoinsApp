@@ -3,7 +3,7 @@
     @SaleDate DATETIME2(0),
     @SalePrice DECIMAL(19,4),
     @CurrencyId INT,
-    @BuyerId INT = NULL,
+    @BuyerId INT,
     @Notes NVARCHAR(2000) = NULL
 AS
 BEGIN
@@ -39,18 +39,32 @@ BEGIN
         FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
         WHERE [CoinId] = @CoinId;
 
-
-        ------------------------------------------------------------
-        -- 2. Validate SaleDate
-        ------------------------------------------------------------
-
         IF @SaleDate > SYSUTCDATETIME()
         BEGIN
             RAISERROR ('SaleDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 
+        IF @BuyerId <= 0
+        BEGIN
+            RAISERROR ('BuyerId must be greater than zero.', 16, 1);
+            RETURN;
+        END;
+        ------------------------------------------------------------
+        -- 2. Validate SaleDate
+        ------------------------------------------------------------
 
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [CoinId] = @CoinId
+        )
+        BEGIN
+            UPDATE [dbo].[Coins]
+            SET [InitialOwnerId] = [OwnerId]
+            WHERE [CoinId] = @CoinId;
+        END;
         ------------------------------------------------------------
         -- 3. Create Sale
         ------------------------------------------------------------
@@ -87,18 +101,12 @@ BEGIN
         -- In that case the current OwnerId remains unchanged.
         ------------------------------------------------------------
 
-        IF @BuyerId IS NOT NULL
-        BEGIN
-            UPDATE [dbo].[Coins]
-            SET [OwnerId] = @BuyerId
-            WHERE [CoinId] = @CoinId;
-        END;
-
+        UPDATE [dbo].[Coins]
+        SET [OwnerId] = @BuyerId
+        WHERE [CoinId] = @CoinId;
 
         COMMIT TRANSACTION;
-
-
-        ------------------------------------------------------------
+      ------------------------------------------------------------
         -- 5. Return new ID
         ------------------------------------------------------------
 

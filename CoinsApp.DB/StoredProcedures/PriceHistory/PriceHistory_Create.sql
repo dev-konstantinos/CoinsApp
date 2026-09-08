@@ -16,16 +16,17 @@ BEGIN
         IF NOT EXISTS
         (
             SELECT 1
-            FROM [dbo].[Coins]
+            FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
             WHERE [CoinId] = @CoinId
         )
         BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
-
             RAISERROR ('Coin not found.', 16, 1);
+            RETURN;
+        END;
+
+        IF @PriceDate > SYSUTCDATETIME()
+        BEGIN
+            RAISERROR ('PriceDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 

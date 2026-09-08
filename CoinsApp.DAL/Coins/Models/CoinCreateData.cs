@@ -42,11 +42,5 @@ public sealed class CoinCreateData
 
     public string? GradingCertificateNumber { get; init; }
 
-    public decimal? CurrentPrice { get; init; }
-
-    public int? CurrentPriceCurrencyId { get; init; }
-
-    public DateTime? CurrentPriceDate { get; init; }
-
     public string? Notes { get; init; }
 }

@@ -16,7 +16,7 @@ BEGIN
 
         SELECT
             @CoinId = [CoinId]
-        FROM [dbo].[PriceHistory]
+        FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
         WHERE [PriceHistoryId] = @PriceHistoryId;
 
         IF @CoinId IS NULL

@@ -20,7 +20,7 @@ public sealed class SaleListItemViewModel
 
     public string? PreviousOwnerName { get; init; }
 
-    public int? BuyerId { get; init; }
+    public int BuyerId { get; init; }
 
     public string? BuyerName { get; init; }
 

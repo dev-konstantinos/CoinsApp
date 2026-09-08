@@ -223,15 +223,6 @@ internal sealed class CoinMenu
                 GradingCertificateNumber =
                     MenuInput.ReadNullableString("Grading Certificate Number"),
 
-                CurrentPrice =
-                    MenuInput.ReadNullable<decimal>("Current Price"),
-
-                CurrentPriceCurrencyId =
-                    MenuInput.ReadNullableId("Current Price Currency ID"),
-
-                CurrentPriceDate =
-                    MenuInput.ReadNullable<DateTime>("Current Price Date"),
-
                 Notes = MenuInput.ReadNullableString("Notes")
             };
 
@@ -492,21 +483,6 @@ internal sealed class CoinMenu
                     MenuInput.ReadKeepCurrentString(
                         "Grading Certificate Number",
                         coin.GradingCertificateNumber),
-
-                CurrentPrice =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Current Price",
-                        coin.CurrentPrice),
-
-                CurrentPriceCurrencyId =
-                    MenuInput.ReadKeepCurrentNullableId(
-                        "Current Price Currency ID",
-                        coin.CurrentPriceCurrencyId),
-
-                CurrentPriceDate =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Current Price Date",
-                        coin.CurrentPriceDate),
 
                 Notes =
                     MenuInput.ReadKeepCurrentString(

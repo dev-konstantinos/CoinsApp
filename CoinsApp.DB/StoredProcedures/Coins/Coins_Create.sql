@@ -20,9 +20,6 @@
     @Grade NVARCHAR(20) = NULL,
     @GradingCompany NVARCHAR(100) = NULL,
     @GradingCertificateNumber NVARCHAR(100) = NULL,
-    @CurrentPrice DECIMAL(19,4) = NULL,
-    @CurrentPriceCurrencyId INT = NULL,
-    @CurrentPriceDate DATETIME2(0) = NULL,
     @Notes NVARCHAR(2000) = NULL
 AS
 BEGIN
@@ -32,6 +29,7 @@ BEGIN
     (
         [CollectionId],
         [OwnerId],
+        [InitialOwnerId],
         [CountryId],
         [CurrencyId],
         [DenominationId],
@@ -51,14 +49,12 @@ BEGIN
         [Grade],
         [GradingCompany],
         [GradingCertificateNumber],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
     (
         @CollectionId,
+        @OwnerId,
         @OwnerId,
         @CountryId,
         @CurrencyId,
@@ -79,9 +75,6 @@ BEGIN
         @Grade,
         @GradingCompany,
         @GradingCertificateNumber,
-        @CurrentPrice,
-        @CurrentPriceCurrencyId,
-        @CurrentPriceDate,
         @Notes
     );
 

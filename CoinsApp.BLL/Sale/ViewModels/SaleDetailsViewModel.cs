@@ -19,7 +19,7 @@ public sealed class SaleDetailsViewModel
     public int? PreviousOwnerId { get; init; }
     public string? PreviousOwnerName { get; init; }
 
-    public int? BuyerId { get; init; }
+    public int BuyerId { get; init; }
     public string? BuyerName { get; init; }
 
     public string? Notes { get; init; }

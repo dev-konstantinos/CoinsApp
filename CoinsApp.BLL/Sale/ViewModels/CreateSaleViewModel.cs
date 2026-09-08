@@ -10,7 +10,7 @@ public sealed class CreateSaleViewModel
 
     public int CurrencyId { get; init; }
 
-    public int? BuyerId { get; init; }
+    public int BuyerId { get; init; }
 
     public string? Notes { get; init; }
 }

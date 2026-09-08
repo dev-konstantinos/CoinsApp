@@ -3,7 +3,7 @@
     @SaleDate DATETIME2(0),
     @SalePrice DECIMAL(19,4),
     @CurrencyId INT,
-    @BuyerId INT = NULL,
+    @BuyerId INT,
     @Notes NVARCHAR(2000) = NULL
 AS
 BEGIN
@@ -19,10 +19,6 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        ------------------------------------------------------------
-        -- 1. Get Sale
-        ------------------------------------------------------------
-
         SELECT
             @CoinId = [CoinId]
         FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
@@ -33,11 +29,6 @@ BEGIN
             RAISERROR('Sale not found.', 16, 1);
             RETURN;
         END;
-
-
-        ------------------------------------------------------------
-        -- 2. Lock Coin
-        ------------------------------------------------------------
 
         IF NOT EXISTS
         (
@@ -50,39 +41,22 @@ BEGIN
             RETURN;
         END;
 
-
-        ------------------------------------------------------------
-        -- 3. Determine the original owner
-        --
-        -- The first chronological Sale contains the owner that
-        -- existed before the Sales chain started.
-        ------------------------------------------------------------
-
-        SELECT TOP (1)
-            @InitialOwnerId = [PreviousOwnerId]
-        FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
-        WHERE [CoinId] = @CoinId
-        ORDER BY
-            [SaleDate] ASC,
-            [SaleId] ASC;
-
-
-        ------------------------------------------------------------
-        -- 4. Validate SaleDate
-        ------------------------------------------------------------
-
         IF @SaleDate > SYSUTCDATETIME()
         BEGIN
             RAISERROR('SaleDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 
+        IF @BuyerId <= 0
+        BEGIN
+            RAISERROR('BuyerId must be greater than zero.', 16, 1);
+            RETURN;
+        END;
 
-        ------------------------------------------------------------
-        -- 5. Update Sale
-        --
-        -- PreviousOwnerId is rebuilt below.
-        ------------------------------------------------------------
+        SELECT
+            @InitialOwnerId = [InitialOwnerId]
+        FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
+        WHERE [CoinId] = @CoinId;
 
         UPDATE [dbo].[Sales]
         SET
@@ -93,91 +67,44 @@ BEGIN
             [Notes] = @Notes
         WHERE [SaleId] = @SaleId;
 
-
-        ------------------------------------------------------------
-        -- 6. Rebuild the complete ownership chain
-        ------------------------------------------------------------
-
         SET @CurrentOwnerId = @InitialOwnerId;
 
         DECLARE SalesCursor CURSOR LOCAL FAST_FORWARD FOR
-            SELECT
-                [SaleId],
-                [BuyerId]
+            SELECT [SaleId], [BuyerId]
             FROM [dbo].[Sales]
             WHERE [CoinId] = @CoinId
-            ORDER BY
-                [SaleDate] ASC,
-                [SaleId] ASC;
+            ORDER BY [SaleDate] ASC, [SaleId] ASC;
 
         OPEN SalesCursor;
 
         FETCH NEXT FROM SalesCursor
-        INTO
-            @CurrentSaleId,
-            @CurrentBuyerId;
+        INTO @CurrentSaleId, @CurrentBuyerId;
 
         WHILE @@FETCH_STATUS = 0
         BEGIN
-
-            --------------------------------------------------------
-            -- Owner immediately before this Sale
-            --------------------------------------------------------
-
             UPDATE [dbo].[Sales]
             SET [PreviousOwnerId] = @CurrentOwnerId
             WHERE [SaleId] = @CurrentSaleId;
 
-
-            --------------------------------------------------------
-            -- Apply ownership transfer
-            --
-            -- NULL BuyerId means that the owner does not change.
-            --------------------------------------------------------
-
-            IF @CurrentBuyerId IS NOT NULL
-            BEGIN
-                SET @CurrentOwnerId = @CurrentBuyerId;
-            END;
-
+            SET @CurrentOwnerId = @CurrentBuyerId;
 
             FETCH NEXT FROM SalesCursor
-            INTO
-                @CurrentSaleId,
-                @CurrentBuyerId;
-
+            INTO @CurrentSaleId, @CurrentBuyerId;
         END;
 
         CLOSE SalesCursor;
         DEALLOCATE SalesCursor;
 
-
-        ------------------------------------------------------------
-        -- 7. Store the final owner on Coins
-        ------------------------------------------------------------
-
         UPDATE [dbo].[Coins]
         SET [OwnerId] = @CurrentOwnerId
         WHERE [CoinId] = @CoinId;
 
-
-        ------------------------------------------------------------
-        -- 8. Commit
-        ------------------------------------------------------------
-
         COMMIT TRANSACTION;
 
-
-        ------------------------------------------------------------
-        -- 9. Return SaleId
-        ------------------------------------------------------------
-
-        SELECT
-            @SaleId AS [SaleId];
+        SELECT @SaleId AS [SaleId];
 
     END TRY
     BEGIN CATCH
-
         IF CURSOR_STATUS('local', 'SalesCursor') >= 0
         BEGIN
             CLOSE SalesCursor;

@@ -66,11 +66,6 @@ public sealed class CoinService
             GradingCertificateNumber =
                 model.GradingCertificateNumber,
 
-            CurrentPrice = model.CurrentPrice,
-            CurrentPriceCurrencyId =
-                model.CurrentPriceCurrencyId,
-            CurrentPriceDate =
-                model.CurrentPriceDate,
 
             Notes = model.Notes
         };
@@ -197,11 +192,6 @@ public sealed class CoinService
             GradingCertificateNumber =
                 model.GradingCertificateNumber,
 
-            CurrentPrice = model.CurrentPrice,
-            CurrentPriceCurrencyId =
-                model.CurrentPriceCurrencyId,
-            CurrentPriceDate =
-                model.CurrentPriceDate,
 
             Notes = model.Notes
         };

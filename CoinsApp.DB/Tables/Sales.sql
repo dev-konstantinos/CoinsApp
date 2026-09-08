@@ -6,7 +6,7 @@
     [SalePrice] DECIMAL(19,4) NOT NULL,
     [CurrencyId] INT NOT NULL,
     [PreviousOwnerId] INT NULL,
-    [BuyerId] INT NULL,
+    [BuyerId] INT NOT NULL,
     [Notes] NVARCHAR(2000) NULL,
 
     CONSTRAINT [PK_Sales]
