@@ -15,6 +15,7 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('Coin not found.', 16, 1);
             RETURN;
         END;

@@ -6,18 +6,21 @@
     without inventing a buyer.
 */
 
-IF EXISTS
-(
-    SELECT 1
-    FROM [dbo].[Sales]
-    WHERE [BuyerId] IS NULL
-)
+IF OBJECT_ID(N'[dbo].[Sales]', N'U') IS NOT NULL
 BEGIN
-    RAISERROR(
-        'Sales migration blocked: existing Sales contain NULL BuyerId values. Repair these records before deploying the BuyerId rule.',
-        16,
-        1
-    );
+    IF EXISTS
+    (
+        SELECT 1
+        FROM [dbo].[Sales]
+        WHERE [BuyerId] IS NULL
+    )
+    BEGIN
+        RAISERROR(
+            'Sales migration blocked: existing Sales contain NULL BuyerId values. Repair these records before deploying the BuyerId rule.',
+            16,
+            1
+        );
 
-    RETURN;
+        RETURN;
+    END;
 END;

@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Coins_Create]
     @CollectionId INT,
-    @OwnerId INT = NULL,
     @CountryId INT,
     @CurrencyId INT,
     @DenominationId INT,
@@ -54,8 +53,8 @@ BEGIN
     VALUES
     (
         @CollectionId,
-        @OwnerId,
-        @OwnerId,
+        NULL,
+        NULL,
         @CountryId,
         @CurrencyId,
         @DenominationId,
@@ -78,6 +77,7 @@ BEGIN
         @Notes
     );
 
-    SELECT CAST(SCOPE_IDENTITY() AS INT) AS CoinId;
+    SELECT
+        CAST(SCOPE_IDENTITY() AS INT) AS [CoinId];
 END;
 GO

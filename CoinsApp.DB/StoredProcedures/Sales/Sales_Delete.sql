@@ -21,6 +21,7 @@ BEGIN
 
         IF @CoinId IS NULL
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('Sale not found.', 16, 1);
             RETURN;
         END;
@@ -32,6 +33,7 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('Coin not found.', 16, 1);
             RETURN;
         END;
@@ -46,6 +48,7 @@ BEGIN
 
         IF @@ROWCOUNT = 0
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('Sale could not be deleted.', 16, 1);
             RETURN;
         END;

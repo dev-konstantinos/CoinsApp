@@ -20,12 +20,14 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('Coin not found.', 16, 1);
             RETURN;
         END;
 
         IF @PriceDate > SYSUTCDATETIME()
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('PriceDate cannot be in the future.', 16, 1);
             RETURN;
         END;

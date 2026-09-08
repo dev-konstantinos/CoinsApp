@@ -13,6 +13,7 @@ BEGIN
 
         IF @@ROWCOUNT = 0
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('Purchase not found.', 16, 1);
             RETURN;
         END;

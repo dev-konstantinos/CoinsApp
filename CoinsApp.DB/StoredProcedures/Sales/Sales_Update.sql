@@ -26,6 +26,7 @@ BEGIN
 
         IF @CoinId IS NULL
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('Sale not found.', 16, 1);
             RETURN;
         END;
@@ -37,18 +38,21 @@ BEGIN
             WHERE [CoinId] = @CoinId
         )
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('Coin not found.', 16, 1);
             RETURN;
         END;
 
         IF @SaleDate > SYSUTCDATETIME()
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('SaleDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 
         IF @BuyerId <= 0
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR('BuyerId must be greater than zero.', 16, 1);
             RETURN;
         END;

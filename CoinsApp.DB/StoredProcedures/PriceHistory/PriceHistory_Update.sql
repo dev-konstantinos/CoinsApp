@@ -26,12 +26,14 @@ BEGIN
 
         IF @CoinId IS NULL
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('Price history entry not found.', 16, 1);
             RETURN;
         END;
 
         IF @PriceDate > SYSUTCDATETIME()
         BEGIN
+            ROLLBACK TRANSACTION;
             RAISERROR ('PriceDate cannot be in the future.', 16, 1);
             RETURN;
         END;

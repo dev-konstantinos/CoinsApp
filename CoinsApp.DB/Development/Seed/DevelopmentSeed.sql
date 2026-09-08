@@ -382,9 +382,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -406,9 +403,6 @@ BEGIN
         N'Round',
         N'German 2 Euro circulation coin.',
         N'UNC',
-        NULL,
-        NULL,
-        NULL,
         N'Development test coin.'
     );
 END;
@@ -449,9 +443,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -472,9 +463,6 @@ BEGIN
         N'Round',
         N'West German 5 Deutsche Mark silver coin.',
         N'VF',
-        NULL,
-        NULL,
-        NULL,
         N'Historical issuer development test coin.'
     );
 END;
@@ -515,9 +503,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -538,9 +523,6 @@ BEGIN
         N'Round',
         N'East German 5 Mark coin.',
         N'VF',
-        NULL,
-        NULL,
-        NULL,
         N'Historical issuer development test coin.'
     );
 END;
@@ -581,9 +563,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -604,9 +583,6 @@ BEGIN
         N'Round',
         N'Soviet 5 Rubles commemorative coin.',
         N'XF',
-        NULL,
-        NULL,
-        NULL,
         N'Historical issuer development test coin.'
     );
 END;
@@ -647,9 +623,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -670,9 +643,6 @@ BEGIN
         N'Round',
         N'Russian Empire 5 Rubles silver coin.',
         N'VF',
-        NULL,
-        NULL,
-        NULL,
         N'Historical issuer development test coin.'
     );
 END;
@@ -713,9 +683,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -736,9 +703,6 @@ BEGIN
         N'Round',
         N'Russian Federation 10 Rubles coin.',
         N'UNC',
-        NULL,
-        NULL,
-        NULL,
         N'Current issuer development test coin.'
     );
 END;
@@ -779,9 +743,6 @@ BEGIN
         [Shape],
         [Description],
         [Condition],
-        [CurrentPrice],
-        [CurrentPriceCurrencyId],
-        [CurrentPriceDate],
         [Notes]
     )
     VALUES
@@ -802,9 +763,6 @@ BEGIN
         N'Round',
         N'United States 1 Dollar coin.',
         N'UNC',
-        NULL,
-        NULL,
-        NULL,
         N'Development test coin.'
     );
 END;
