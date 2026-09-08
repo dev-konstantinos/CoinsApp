@@ -18,24 +18,26 @@ BEGIN
 
         ------------------------------------------------------------
         -- 1. Validate Coin and lock it
+        --
+        -- OwnerId may legitimately be NULL.
+        -- Therefore Coin existence must be checked separately.
         ------------------------------------------------------------
+
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [CoinId] = @CoinId
+        )
+        BEGIN
+            RAISERROR ('Coin not found.', 16, 1);
+            RETURN;
+        END;
 
         SELECT
             @PreviousOwnerId = [OwnerId]
         FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
         WHERE [CoinId] = @CoinId;
-
-        IF @PreviousOwnerId IS NULL
-           AND NOT EXISTS
-           (
-               SELECT 1
-               FROM [dbo].[Coins]
-               WHERE [CoinId] = @CoinId
-           )
-        BEGIN
-            RAISERROR ('Coin not found.', 16, 1);
-            RETURN;
-        END;
 
 
         ------------------------------------------------------------
@@ -74,13 +76,15 @@ BEGIN
             @Notes
         );
 
-
         SET @SaleId =
             CONVERT(INT, SCOPE_IDENTITY());
 
 
         ------------------------------------------------------------
         -- 4. Transfer ownership
+        --
+        -- A NULL BuyerId means that the buyer is unknown.
+        -- In that case the current OwnerId remains unchanged.
         ------------------------------------------------------------
 
         IF @BuyerId IS NOT NULL
