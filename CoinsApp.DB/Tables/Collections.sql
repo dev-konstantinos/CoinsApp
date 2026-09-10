@@ -17,5 +17,8 @@
         REFERENCES [dbo].[Users] ([UserId]),
 
     CONSTRAINT [UQ_Collections_User_Name]
-        UNIQUE ([UserId], [Name])
+        UNIQUE ([UserId], [Name]),
+
+    CONSTRAINT [CK_Collections_Name]
+        CHECK (LEN(LTRIM(RTRIM([Name]))) > 0)
 );
