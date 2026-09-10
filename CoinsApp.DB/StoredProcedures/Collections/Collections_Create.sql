@@ -9,14 +9,12 @@ BEGIN
 
     IF @UserId <= 0
     BEGIN
-        ROLLBACK TRANSACTION;
         RAISERROR('UserId must be greater than zero.', 16, 1);
         RETURN;
     END;
 
     IF @Name IS NULL OR LEN(LTRIM(RTRIM(@Name))) = 0
     BEGIN
-        ROLLBACK TRANSACTION;
         RAISERROR('Collection name is required.', 16, 1);
         RETURN;
     END;
@@ -30,7 +28,6 @@ BEGIN
         WHERE [UserId] = @UserId
     )
     BEGIN
-        ROLLBACK TRANSACTION;
         RAISERROR('The specified user does not exist.', 16, 1);
         RETURN;
     END;
@@ -43,8 +40,11 @@ BEGIN
           AND [Name] = @Name
     )
     BEGIN
-        ROLLBACK TRANSACTION;
-        RAISERROR('A collection with this name already exists for the specified user.', 16, 1);
+        RAISERROR(
+            'A collection with this name already exists for the specified user.',
+            16,
+            1
+        );
         RETURN;
     END;
 

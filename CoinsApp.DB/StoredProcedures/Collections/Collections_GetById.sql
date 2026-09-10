@@ -7,7 +7,7 @@ BEGIN
     SELECT
         c.[CollectionId],
         c.[UserId],
-        u.[UserName],
+        u.[Username] AS [UserName],
         c.[Name],
         c.[Description],
         c.[IsActive],
@@ -22,7 +22,7 @@ BEGIN
     GROUP BY
         c.[CollectionId],
         c.[UserId],
-        u.[UserName],
+        u.[Username],
         c.[Name],
         c.[Description],
         c.[IsActive],

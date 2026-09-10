@@ -6,7 +6,6 @@ BEGIN
 
     IF @CollectionId <= 0
     BEGIN
-        ROLLBACK TRANSACTION;
         RAISERROR('CollectionId must be greater than zero.', 16, 1);
         RETURN;
     END;
@@ -18,7 +17,6 @@ BEGIN
         WHERE [CollectionId] = @CollectionId
     )
     BEGIN
-        ROLLBACK TRANSACTION;
         RAISERROR('The specified collection does not exist.', 16, 1);
         RETURN;
     END;
@@ -30,8 +28,11 @@ BEGIN
         WHERE [CollectionId] = @CollectionId
     )
     BEGIN
-        ROLLBACK TRANSACTION;
-        RAISERROR('The collection cannot be deleted because it still contains coins. Move or delete the coins first.', 16, 1);
+        RAISERROR(
+            'The collection cannot be deleted because it still contains coins. Move or delete the coins first.',
+            16,
+            1
+        );
         RETURN;
     END;
 
