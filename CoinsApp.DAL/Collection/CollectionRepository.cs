@@ -1,125 +1,78 @@
-﻿using CoinsApp.DAL.Collection.Models;
+﻿using System.Data;
+using CoinsApp.DAL.Collection.Models;
+using CoinsApp.DAL.Database;
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace CoinsApp.DAL.Collection;
 
 public sealed class CollectionRepository
 {
-    private readonly string _connectionString;
+    private readonly DatabaseConnection _databaseConnection;
 
-    public CollectionRepository(string connectionString)
+    public CollectionRepository(DatabaseConnection databaseConnection)
     {
-        _connectionString = connectionString
-            ?? throw new ArgumentNullException(nameof(connectionString));
-    }
-
-    public async Task<int> CreateAsync(
-        CollectionCreateData data,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(data);
-
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
-
-        var command = new CommandDefinition(
-            "dbo.Collections_Create",
-            new
-            {
-                data.UserId,
-                data.Name,
-                data.Description,
-                data.IsActive
-            },
-            commandType: System.Data.CommandType.StoredProcedure,
-            cancellationToken: cancellationToken);
-
-        return await connection.QuerySingleAsync<int>(command);
+        _databaseConnection =
+            databaseConnection
+            ?? throw new ArgumentNullException(nameof(databaseConnection));
     }
 
     public async Task<IReadOnlyList<CollectionData>> GetAllAsync(
-        int? userId = null,
-        CancellationToken cancellationToken = default)
+        int? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
+        using var connection = _databaseConnection.Create();
 
-        var command = new CommandDefinition(
+        var collections = await connection.QueryAsync<CollectionData>(
             "dbo.Collections_GetAll",
-            new
-            {
-                UserId = userId
-            },
-            commandType: System.Data.CommandType.StoredProcedure,
-            cancellationToken: cancellationToken);
+            new { UserId = userId },
+            commandType: CommandType.StoredProcedure);
 
-        var result = await connection.QueryAsync<CollectionData>(command);
-
-        return result.AsList();
+        return collections.ToList();
     }
 
-    public async Task<CollectionData?> GetByIdAsync(
-        int collectionId,
-        CancellationToken cancellationToken = default)
+    public async Task<CollectionData?> GetByIdAsync(int collectionId)
     {
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
+        using var connection = _databaseConnection.Create();
 
-        var command = new CommandDefinition(
+        return await connection.QuerySingleOrDefaultAsync<CollectionData>(
             "dbo.Collections_GetById",
-            new
-            {
-                CollectionId = collectionId
-            },
-            commandType: System.Data.CommandType.StoredProcedure,
-            cancellationToken: cancellationToken);
+            new { CollectionId = collectionId },
+            commandType: CommandType.StoredProcedure);
+    }
 
-        return await connection.QuerySingleOrDefaultAsync<CollectionData>(command);
+    public async Task<int> CreateAsync(CollectionCreateData data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        using var connection = _databaseConnection.Create();
+
+        return await connection.QuerySingleAsync<int>(
+            "dbo.Collections_Create",
+            data,
+            commandType: CommandType.StoredProcedure);
     }
 
     public async Task<CollectionData?> UpdateAsync(
-        CollectionUpdateData data,
-        CancellationToken cancellationToken = default)
+        CollectionUpdateData data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
+        using var connection = _databaseConnection.Create();
 
-        var command = new CommandDefinition(
+        return await connection.QuerySingleOrDefaultAsync<CollectionData>(
             "dbo.Collections_Update",
-            new
-            {
-                data.CollectionId,
-                data.Name,
-                data.Description,
-                data.IsActive
-            },
-            commandType: System.Data.CommandType.StoredProcedure,
-            cancellationToken: cancellationToken);
-
-        return await connection.QuerySingleOrDefaultAsync<CollectionData>(command);
+            data,
+            commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> DeleteAsync(
-        CollectionDeleteData data,
-        CancellationToken cancellationToken = default)
+    public async Task<int> DeleteAsync(CollectionDeleteData data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
+        using var connection = _databaseConnection.Create();
 
-        var command = new CommandDefinition(
+        return await connection.QuerySingleAsync<int>(
             "dbo.Collections_Delete",
-            new
-            {
-                data.CollectionId
-            },
-            commandType: System.Data.CommandType.StoredProcedure,
-            cancellationToken: cancellationToken);
-
-        return await connection.QuerySingleAsync<int>(command);
+            data,
+            commandType: CommandType.StoredProcedure);
     }
 }

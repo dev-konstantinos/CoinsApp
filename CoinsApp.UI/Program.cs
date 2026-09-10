@@ -1,15 +1,17 @@
-﻿using CoinsApp.BLL.Sale;
-using CoinsApp.DAL.Sale;
-using CoinsApp.BLL.Coins;
+﻿using CoinsApp.BLL.Coins;
+using CoinsApp.BLL.Collection;
 using CoinsApp.BLL.Install;
 using CoinsApp.BLL.PriceHistory;
 using CoinsApp.BLL.Purchase;
 using CoinsApp.BLL.Reset;
+using CoinsApp.BLL.Sale;
 using CoinsApp.BLL.Status;
 using CoinsApp.DAL.Coins;
+using CoinsApp.DAL.Collection;
 using CoinsApp.DAL.Database;
 using CoinsApp.DAL.PriceHistory;
 using CoinsApp.DAL.Purchase;
+using CoinsApp.DAL.Sale;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
 
@@ -108,6 +110,19 @@ internal static class Program
             new SaleMenu(saleService);
 
         // -------------------------------------------------
+        // Collections
+        // -------------------------------------------------
+
+        var collectionRepository =
+            new CollectionRepository(databaseConnection);
+
+        var collectionService =
+            new CollectionService(collectionRepository);
+
+        var collectionMenu =
+            new CollectionMenu(collectionService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -125,7 +140,8 @@ internal static class Program
         var mainMenu =
             new MainMenu(
                 adminMenu,
-                coinMenu);
+                coinMenu,
+                collectionMenu);
 
         var menuRunner =
             new MenuRunner(mainMenu);
