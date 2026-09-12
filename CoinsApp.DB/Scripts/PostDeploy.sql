@@ -1,8 +1,16 @@
 ﻿/*
     CoinsApp Post-Deployment Script
 
-    Global seed only. Development test data is NOT executed here.
+    Global reference data and materialized price synchronization.
+
+    Ownership data is intentionally NOT modified here.
+    InitialOwnerId is application/domain data and must not be
+    recalculated during deployment.
 */
+
+------------------------------------------------------------
+-- Global reference data
+------------------------------------------------------------
 
 :r ..\Seed\Global\Countries.sql
 GO
@@ -25,40 +33,17 @@ GO
 :r ..\Seed\Global\Catalogs.sql
 GO
 
-------------------------------------------------------------
--- Ownership migration
--- Preserve the original owner for existing Coins.
--- If Sales already exist, the first chronological Sale is
--- the authoritative historical starting point.
-------------------------------------------------------------
-
-UPDATE c
-SET [InitialOwnerId] =
-    CASE
-        WHEN EXISTS
-        (
-            SELECT 1
-            FROM [dbo].[Sales] s
-            WHERE s.[CoinId] = c.[CoinId]
-        )
-        THEN
-        (
-            SELECT TOP (1)
-                s.[PreviousOwnerId]
-            FROM [dbo].[Sales] s
-            WHERE s.[CoinId] = c.[CoinId]
-            ORDER BY s.[SaleDate] ASC, s.[SaleId] ASC
-        )
-        ELSE c.[OwnerId]
-    END
-FROM [dbo].[Coins] c
-WHERE c.[InitialOwnerId] IS NULL;
-
 
 ------------------------------------------------------------
 -- Price migration
--- PriceHistory is the source of truth. Rebuild the materialized
--- current price for every existing coin.
+--
+-- PriceHistory is the source of truth.
+--
+-- Coins.CurrentPrice,
+-- Coins.CurrentPriceCurrencyId and
+-- Coins.CurrentPriceDate
+-- are materialized values and are synchronized from the latest
+-- PriceHistory record.
 ------------------------------------------------------------
 
 UPDATE c
@@ -79,6 +64,12 @@ OUTER APPLY
         [PriceDate] DESC,
         [PriceHistoryId] DESC
 ) AS ph;
+
+
+------------------------------------------------------------
+-- Coins without PriceHistory must not retain stale
+-- materialized price values.
+------------------------------------------------------------
 
 UPDATE c
 SET
