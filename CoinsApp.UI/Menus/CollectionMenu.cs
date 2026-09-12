@@ -327,13 +327,15 @@ internal sealed class CollectionMenu
 
             Console.WriteLine();
             Console.Write(
-                "Are you sure you want to delete this collection? " +
-                "(y/N): ");
+                "Type DELETE to confirm: ");
 
             var confirmation =
-                Console.ReadLine()?.Trim().ToLowerInvariant();
+                Console.ReadLine()?.Trim();
 
-            if (confirmation != "y")
+            if (!string.Equals(
+                    confirmation,
+                    "DELETE",
+                    StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");

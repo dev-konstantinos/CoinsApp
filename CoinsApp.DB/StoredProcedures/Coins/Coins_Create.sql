@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Coins_Create]
     @CollectionId INT,
+    @OwnerId INT = NULL,
     @CountryId INT,
     @CurrencyId INT,
     @DenominationId INT,

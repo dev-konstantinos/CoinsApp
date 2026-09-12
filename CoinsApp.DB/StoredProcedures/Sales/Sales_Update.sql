@@ -19,6 +19,11 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
+        ------------------------------------------------------------
+        -- Locate the Sale and lock it for the duration of the
+        -- transaction.
+        ------------------------------------------------------------
+
         SELECT
             @CoinId = [CoinId]
         FROM [dbo].[Sales] WITH (UPDLOCK, HOLDLOCK)
@@ -31,6 +36,15 @@ BEGIN
             RETURN;
         END;
 
+        ------------------------------------------------------------
+        -- Lock the related Coin.
+        --
+        -- All ownership-changing Sale operations use the Coin as
+        -- the synchronization point. This prevents concurrent
+        -- Sale Create / Update / Delete operations for the same Coin
+        -- from rebuilding its ownership chain simultaneously.
+        ------------------------------------------------------------
+
         IF NOT EXISTS
         (
             SELECT 1
@@ -42,6 +56,10 @@ BEGIN
             RAISERROR('Coin not found.', 16, 1);
             RETURN;
         END;
+
+        ------------------------------------------------------------
+        -- Validate the new Sale values.
+        ------------------------------------------------------------
 
         IF @SaleDate > SYSUTCDATETIME()
         BEGIN
@@ -57,10 +75,27 @@ BEGIN
             RETURN;
         END;
 
+        ------------------------------------------------------------
+        -- InitialOwnerId is a historical value.
+        --
+        -- It is intentionally READ ONLY in Sales_Update.
+        --
+        -- Updating a Sale may change the chronological ownership
+        -- chain, but it must never change the stored InitialOwnerId.
+        ------------------------------------------------------------
+
         SELECT
             @InitialOwnerId = [InitialOwnerId]
         FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
         WHERE [CoinId] = @CoinId;
+
+        ------------------------------------------------------------
+        -- Update the Sale itself.
+        --
+        -- PreviousOwnerId is intentionally NOT updated here.
+        -- It is recalculated below from the complete chronological
+        -- ownership chain.
+        ------------------------------------------------------------
 
         UPDATE [dbo].[Sales]
         SET
@@ -71,13 +106,32 @@ BEGIN
             [Notes] = @Notes
         WHERE [SaleId] = @SaleId;
 
+        ------------------------------------------------------------
+        -- Rebuild the complete ownership chain.
+        --
+        -- The chronological order is:
+        --
+        --     SaleDate ASC
+        --     SaleId   ASC
+        --
+        -- SaleId is used as a deterministic tie-breaker when two
+        -- Sales have the same SaleDate.
+        --
+        -- InitialOwnerId is only the starting point of the chain.
+        -- It is NEVER modified by this rebuild.
+        ------------------------------------------------------------
+
         SET @CurrentOwnerId = @InitialOwnerId;
 
         DECLARE SalesCursor CURSOR LOCAL FAST_FORWARD FOR
-            SELECT [SaleId], [BuyerId]
+            SELECT
+                [SaleId],
+                [BuyerId]
             FROM [dbo].[Sales]
             WHERE [CoinId] = @CoinId
-            ORDER BY [SaleDate] ASC, [SaleId] ASC;
+            ORDER BY
+                [SaleDate] ASC,
+                [SaleId] ASC;
 
         OPEN SalesCursor;
 
@@ -86,9 +140,18 @@ BEGIN
 
         WHILE @@FETCH_STATUS = 0
         BEGIN
+            --------------------------------------------------------
+            -- The owner immediately before this Sale is the owner
+            -- resulting from all chronologically preceding Sales.
+            --------------------------------------------------------
+
             UPDATE [dbo].[Sales]
             SET [PreviousOwnerId] = @CurrentOwnerId
             WHERE [SaleId] = @CurrentSaleId;
+
+            --------------------------------------------------------
+            -- This Sale transfers ownership to its Buyer.
+            --------------------------------------------------------
 
             SET @CurrentOwnerId = @CurrentBuyerId;
 
@@ -99,16 +162,26 @@ BEGIN
         CLOSE SalesCursor;
         DEALLOCATE SalesCursor;
 
+        ------------------------------------------------------------
+        -- The Buyer of the chronologically last Sale is the current
+        -- owner of the Coin.
+        --
+        -- If InitialOwnerId is NULL and Sales exist, the first Sale
+        -- starts with an unknown PreviousOwnerId. That is valid.
+        ------------------------------------------------------------
+
         UPDATE [dbo].[Coins]
         SET [OwnerId] = @CurrentOwnerId
         WHERE [CoinId] = @CoinId;
 
         COMMIT TRANSACTION;
 
-        SELECT @SaleId AS [SaleId];
+        SELECT
+            @SaleId AS [SaleId];
 
     END TRY
     BEGIN CATCH
+
         IF CURSOR_STATUS('local', 'SalesCursor') >= 0
         BEGIN
             CLOSE SalesCursor;

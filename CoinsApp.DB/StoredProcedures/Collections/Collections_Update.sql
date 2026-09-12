@@ -59,13 +59,27 @@ BEGIN
     WHERE [CollectionId] = @CollectionId;
 
     SELECT
-        [CollectionId],
-        [UserId],
-        [Name],
-        [Description],
-        [IsActive],
-        [CreatedAt]
-    FROM [dbo].[Collections]
-    WHERE [CollectionId] = @CollectionId;
+        c.[CollectionId],
+        c.[UserId],
+        u.[Username] AS [UserName],
+        c.[Name],
+        c.[Description],
+        c.[IsActive],
+        c.[CreatedAt],
+        COUNT(co.[CoinId]) AS [CoinCount]
+    FROM [dbo].[Collections] AS c
+    INNER JOIN [dbo].[Users] AS u
+        ON u.[UserId] = c.[UserId]
+    LEFT JOIN [dbo].[Coins] AS co
+        ON co.[CollectionId] = c.[CollectionId]
+    WHERE c.[CollectionId] = @CollectionId
+    GROUP BY
+        c.[CollectionId],
+        c.[UserId],
+        u.[Username],
+        c.[Name],
+        c.[Description],
+        c.[IsActive],
+        c.[CreatedAt];
 END;
 GO
