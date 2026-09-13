@@ -51,14 +51,14 @@ public sealed class ContactRepository
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> UpdateAsync(
+    public async Task<ContactData?> UpdateAsync(
         ContactUpdateData data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
         using var connection = _databaseConnection.Create();
 
-        return await connection.QuerySingleAsync<int>(
+        return await connection.QuerySingleOrDefaultAsync<ContactData>(
             "dbo.Contacts_Update",
             data,
             commandType: CommandType.StoredProcedure);

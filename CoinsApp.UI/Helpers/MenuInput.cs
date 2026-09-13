@@ -312,4 +312,85 @@ internal static class MenuInput
 
         return input;
     }
+
+    public static bool ReadRequiredBoolean(string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label} (y/n): ");
+
+            var input = Console.ReadLine()?.Trim();
+
+            if (input is not null)
+            {
+                if (input.Equals("y", StringComparison.OrdinalIgnoreCase) ||
+                    input.Equals("yes", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (input.Equals("n", StringComparison.OrdinalIgnoreCase) ||
+                    input.Equals("no", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            Console.WriteLine(
+                "Please enter yes/y or no/n.");
+        }
+    }
+
+    public static bool ReadKeepCurrentBoolean(
+        string label,
+        bool current)
+    {
+        while (true)
+        {
+            Console.Write(
+                $"{label} [{(current ? "active" : "inactive")}] " +
+                "(Enter = keep, y = active, n = inactive): ");
+
+            var input = Console.ReadLine()?.Trim();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return current;
+            }
+
+            if (input.Equals("y", StringComparison.OrdinalIgnoreCase) ||
+                input.Equals("yes", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (input.Equals("n", StringComparison.OrdinalIgnoreCase) ||
+                input.Equals("no", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            Console.WriteLine(
+                "Please enter Enter, yes/y, or no/n.");
+        }
+    }
+
+    public static string ReadRequiredString(
+    string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label}: ");
+
+            var input = Console.ReadLine()?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            }
+
+            Console.WriteLine(
+                "This value is required.");
+        }
+    }
 }

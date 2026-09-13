@@ -58,11 +58,19 @@ BEGIN
     END;
 
     ------------------------------------------------------------
-    -- Return the updated ContactId.
+    -- Return the updated Contact.
     ------------------------------------------------------------
 
     SELECT
-        [ContactId]
+        [ContactId],
+        [Name],
+        [CompanyName],
+        [Email],
+        [Phone],
+        [Address],
+        [Website],
+        [Notes],
+        [IsActive]
     FROM [dbo].[Contacts]
     WHERE [ContactId] = @ContactId;
 END;

@@ -65,7 +65,7 @@ public sealed class ContactService
         return await _repository.CreateAsync(data);
     }
 
-    public async Task<int> UpdateAsync(
+    public async Task<ContactDetailsViewModel?> UpdateAsync(
         UpdateContactViewModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
@@ -85,7 +85,12 @@ public sealed class ContactService
             IsActive = model.IsActive
         };
 
-        return await _repository.UpdateAsync(data);
+        var contact =
+            await _repository.UpdateAsync(data);
+
+        return contact is null
+            ? null
+            : MapToDetails(contact);
     }
 
     public async Task<int> DeleteAsync(
