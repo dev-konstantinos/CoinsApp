@@ -75,6 +75,7 @@
     <Folder Include="StoredProcedures\Purchases" />
     <Folder Include="StoredProcedures\Sales" />
     <Folder Include="StoredProcedures\Collections" />
+    <Folder Include="StoredProcedures\Contacts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
@@ -148,6 +149,11 @@
     <Build Include="StoredProcedures\Collections\Collections_GetById.sql" />
     <Build Include="StoredProcedures\Collections\Collections_Update.sql" />
     <Build Include="StoredProcedures\Collections\Collections_Delete.sql" />
+    <Build Include="StoredProcedures\Contacts\Contacts_Create.sql" />
+    <Build Include="StoredProcedures\Contacts\Contacts_GetAll.sql" />
+    <Build Include="StoredProcedures\Contacts\Contacts_GetById.sql" />
+    <Build Include="StoredProcedures\Contacts\Contacts_Delete.sql" />
+    <Build Include="StoredProcedures\Contacts\Contacts_Update.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
