@@ -13,6 +13,16 @@ BEGIN
     SET NOCOUNT ON;
 
     ------------------------------------------------------------
+    -- Validate ContactId.
+    ------------------------------------------------------------
+
+    IF @ContactId <= 0
+    BEGIN
+        RAISERROR('ContactId must be greater than zero.', 16, 1);
+        RETURN;
+    END;
+
+    ------------------------------------------------------------
     -- Validate required data.
     ------------------------------------------------------------
 
@@ -22,25 +32,6 @@ BEGIN
         RAISERROR('Contact name is required.', 16, 1);
         RETURN;
     END;
-
-    ------------------------------------------------------------
-    -- Verify that the Contact exists.
-    ------------------------------------------------------------
-
-    IF NOT EXISTS
-    (
-        SELECT 1
-        FROM [dbo].[Contacts]
-        WHERE [ContactId] = @ContactId
-    )
-    BEGIN
-        RAISERROR('Contact not found.', 16, 1);
-        RETURN;
-    END;
-
-    ------------------------------------------------------------
-    -- Normalize the contact name.
-    ------------------------------------------------------------
 
     SET @Name = LTRIM(RTRIM(@Name));
 
@@ -58,6 +49,21 @@ BEGIN
         [Website] = @Website,
         [Notes] = @Notes,
         [IsActive] = @IsActive
+    WHERE [ContactId] = @ContactId;
+
+    IF @@ROWCOUNT = 0
+    BEGIN
+        RAISERROR('Contact not found.', 16, 1);
+        RETURN;
+    END;
+
+    ------------------------------------------------------------
+    -- Return the updated ContactId.
+    ------------------------------------------------------------
+
+    SELECT
+        [ContactId]
+    FROM [dbo].[Contacts]
     WHERE [ContactId] = @ContactId;
 END;
 GO

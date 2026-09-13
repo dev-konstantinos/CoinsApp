@@ -6,6 +6,16 @@ BEGIN
     SET XACT_ABORT ON;
 
     ------------------------------------------------------------
+    -- Validate ContactId.
+    ------------------------------------------------------------
+
+    IF @ContactId <= 0
+    BEGIN
+        RAISERROR('ContactId must be greater than zero.', 16, 1);
+        RETURN;
+    END;
+
+    ------------------------------------------------------------
     -- Verify that the Contact exists.
     ------------------------------------------------------------
 
@@ -23,11 +33,18 @@ BEGIN
     ------------------------------------------------------------
     -- Delete the Contact.
     --
-    -- Existing foreign keys protect Contacts that are still
-    -- referenced by Coins, Purchases or Sales.
+    -- Foreign keys protect Contacts that are still referenced
+    -- by Coins, Purchases or Sales.
     ------------------------------------------------------------
 
     DELETE FROM [dbo].[Contacts]
     WHERE [ContactId] = @ContactId;
+
+    ------------------------------------------------------------
+    -- Return the deleted ContactId.
+    ------------------------------------------------------------
+
+    SELECT
+        @ContactId AS [ContactId];
 END;
 GO
