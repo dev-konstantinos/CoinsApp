@@ -15,7 +15,7 @@ internal sealed class ContactMenu
             ?? throw new ArgumentNullException(nameof(contactService));
     }
 
-    public async Task ShowAsync()
+    public async Task RunAsync()
     {
         while (true)
         {

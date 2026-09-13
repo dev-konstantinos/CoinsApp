@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Collection;
+using CoinsApp.BLL.Contacts;
 using CoinsApp.BLL.Install;
 using CoinsApp.BLL.PriceHistory;
 using CoinsApp.BLL.Purchase;
@@ -8,6 +9,7 @@ using CoinsApp.BLL.Sale;
 using CoinsApp.BLL.Status;
 using CoinsApp.DAL.Coins;
 using CoinsApp.DAL.Collection;
+using CoinsApp.DAL.Contacts;
 using CoinsApp.DAL.Database;
 using CoinsApp.DAL.PriceHistory;
 using CoinsApp.DAL.Purchase;
@@ -123,6 +125,19 @@ internal static class Program
             new CollectionMenu(collectionService);
 
         // -------------------------------------------------
+        // Contacts
+        // -------------------------------------------------
+
+        var contactRepository =
+            new ContactRepository(databaseConnection);
+
+        var contactService =
+            new ContactService(contactRepository);
+
+        var contactMenu =
+            new ContactMenu(contactService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -141,7 +156,8 @@ internal static class Program
             new MainMenu(
                 adminMenu,
                 coinMenu,
-                collectionMenu);
+                collectionMenu,
+                contactMenu);
 
         var menuRunner =
             new MenuRunner(mainMenu);
