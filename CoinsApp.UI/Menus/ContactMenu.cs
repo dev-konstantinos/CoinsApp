@@ -31,8 +31,18 @@ internal sealed class ContactMenu
             Console.WriteLine("0. Back");
             Console.WriteLine();
 
-            var choice =
-                MenuInput.ReadRequiredId("Select");
+            Console.Write("Select: ");
+
+            var input =
+                Console.ReadLine()?.Trim();
+
+            if (!int.TryParse(input, out var choice))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
 
             try
             {
@@ -76,7 +86,6 @@ internal sealed class ContactMenu
             }
         }
     }
-
     private async Task ListAsync()
     {
         Console.Clear();
