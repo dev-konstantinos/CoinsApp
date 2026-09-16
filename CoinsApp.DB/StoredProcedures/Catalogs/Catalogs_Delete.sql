@@ -6,7 +6,21 @@ BEGIN
     SET XACT_ABORT ON;
 
     IF @CatalogId <= 0
+    BEGIN
+        RAISERROR('CatalogId must be greater than zero.', 16, 1);
         RETURN;
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM [dbo].[Catalogs]
+        WHERE [CatalogId] = @CatalogId
+    )
+    BEGIN
+        RAISERROR('Catalog was not found.', 16, 1);
+        RETURN;
+    END;
 
     IF EXISTS
     (
@@ -15,9 +29,11 @@ BEGIN
         WHERE [CatalogId] = @CatalogId
     )
     BEGIN
-        SELECT
-            CAST(0 AS BIT) AS [Success];
-
+        RAISERROR(
+            'Catalog cannot be deleted because catalog entries exist.',
+            16,
+            1
+        );
         RETURN;
     END;
 
@@ -25,6 +41,6 @@ BEGIN
     WHERE [CatalogId] = @CatalogId;
 
     SELECT
-        CAST(CASE WHEN @@ROWCOUNT > 0 THEN 1 ELSE 0 END AS BIT) AS [Success];
+        @CatalogId AS [CatalogId];
 END;
 GO

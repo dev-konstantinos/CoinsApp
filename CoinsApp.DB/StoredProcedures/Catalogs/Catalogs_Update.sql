@@ -10,13 +10,22 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    IF @CatalogId <= 0
+    BEGIN
+        RAISERROR('CatalogId must be greater than zero.', 16, 1);
+        RETURN;
+    END;
+
     SET @Name = NULLIF(LTRIM(RTRIM(@Name)), N'');
     SET @ShortName = NULLIF(LTRIM(RTRIM(@ShortName)), N'');
     SET @Publisher = NULLIF(LTRIM(RTRIM(@Publisher)), N'');
     SET @Description = NULLIF(LTRIM(RTRIM(@Description)), N'');
 
-    IF @CatalogId <= 0 OR @Name IS NULL
+    IF @Name IS NULL
+    BEGIN
+        RAISERROR('Catalog name is required.', 16, 1);
         RETURN;
+    END;
 
     UPDATE [dbo].[Catalogs]
     SET
@@ -28,7 +37,10 @@ BEGIN
     WHERE [CatalogId] = @CatalogId;
 
     IF @@ROWCOUNT = 0
+    BEGIN
+        RAISERROR('Catalog was not found.', 16, 1);
         RETURN;
+    END;
 
     SELECT
         [CatalogId],

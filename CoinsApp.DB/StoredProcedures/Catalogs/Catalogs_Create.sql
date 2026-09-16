@@ -15,7 +15,10 @@ BEGIN
     SET @Description = NULLIF(LTRIM(RTRIM(@Description)), N'');
 
     IF @Name IS NULL
+    BEGIN
+        RAISERROR('Catalog name is required.', 16, 1);
         RETURN;
+    END;
 
     INSERT INTO [dbo].[Catalogs]
     (
