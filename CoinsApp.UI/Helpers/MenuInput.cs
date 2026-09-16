@@ -393,4 +393,25 @@ internal static class MenuInput
                 "This value is required.");
         }
     }
+
+    public static string ReadKeepCurrentRequiredString(
+    string label,
+    string current)
+    {
+        while (true)
+        {
+            Console.Write(
+                $"{label} [{current}] (Enter = keep current): ");
+
+            var input =
+                Console.ReadLine()?.Trim();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return current;
+            }
+
+            return input;
+        }
+    }
 }
