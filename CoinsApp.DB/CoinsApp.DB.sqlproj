@@ -127,6 +127,7 @@
     <Build Include="Indexes\IX_Coins_CurrencyId_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId_MintId.sql" />
     <Build Include="Indexes\IX_Coins_OwnerId.sql" />
+    <Build Include="Indexes\IX_CatalogEntries_CoinId.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetAll.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetById.sql" />
     <Build Include="StoredProcedures\Coins\Coins_Create.sql" />
@@ -162,10 +163,12 @@
     <Build Include="StoredProcedures\Catalogs\Catalogs_Update.sql" />
     <Build Include="StoredProcedures\Catalogs\Catalogs_Delete.sql" />
     <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_GetAll.sql" />
-    <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_GetById.sql" />
     <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_Create.sql" />
     <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_Update.sql" />
     <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_Delete.sql" />
+    <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_GetByCoin.sql" />
+    <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_GetByCatalog.sql" />
+    <Build Include="StoredProcedures\CatalogEntries\CatalogEntries_GetById.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
