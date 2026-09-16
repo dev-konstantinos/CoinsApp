@@ -10,6 +10,14 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    SET @Name = NULLIF(LTRIM(RTRIM(@Name)), N'');
+    SET @ShortName = NULLIF(LTRIM(RTRIM(@ShortName)), N'');
+    SET @Publisher = NULLIF(LTRIM(RTRIM(@Publisher)), N'');
+    SET @Description = NULLIF(LTRIM(RTRIM(@Description)), N'');
+
+    IF @CatalogId <= 0 OR @Name IS NULL
+        RETURN;
+
     UPDATE [dbo].[Catalogs]
     SET
         [Name] = @Name,

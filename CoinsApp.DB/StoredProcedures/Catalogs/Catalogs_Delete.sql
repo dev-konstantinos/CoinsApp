@@ -5,6 +5,9 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    IF @CatalogId <= 0
+        RETURN;
+
     IF EXISTS
     (
         SELECT 1
