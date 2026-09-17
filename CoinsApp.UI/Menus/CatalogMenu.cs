@@ -267,7 +267,7 @@ internal sealed class CatalogMenu
                     current.CatalogId,
 
                 Name =
-                    ReadKeepCurrentRequiredString(
+                    MenuInput.ReadKeepCurrentRequiredString(
                         "Name",
                         current.Name),
 
@@ -416,27 +416,5 @@ internal sealed class CatalogMenu
 
         Console.WriteLine(
             $"Status:      {(catalog.IsActive ? "Active" : "Inactive")}");
-    }
-
-    private static string ReadKeepCurrentRequiredString(
-        string label,
-        string current)
-    {
-        while (true)
-        {
-            Console.Write(
-                $"{label} [{current}] " +
-                "(Enter = keep current): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            return input;
-        }
     }
 }
