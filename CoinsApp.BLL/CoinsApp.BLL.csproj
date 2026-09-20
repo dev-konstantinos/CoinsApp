@@ -10,4 +10,8 @@
     <ProjectReference Include="..\CoinsApp.DAL\CoinsApp.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CoinImages\ViewModels\" />
+  </ItemGroup>
+
 </Project>
