@@ -847,44 +847,6 @@ internal sealed class CoinMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Coin Images ===");
-        Console.WriteLine();
-
-        var coinId =
-            MenuInput.ReadRequiredId("Coin ID");
-
-        try
-        {
-            var coin =
-                await _coinService.GetByIdAsync(coinId);
-
-            if (coin is null)
-            {
-                Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId} was not found.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
-
-                Console.ReadLine();
-                return;
-            }
-
-            await _coinImageMenu.RunAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine("Error loading coin images.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-            Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to continue...");
-
-            Console.ReadLine();
-        }
+        await _coinImageMenu.RunAsync();
     }
 }
