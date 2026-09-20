@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.CatalogEntries;
 using CoinsApp.BLL.Catalogs;
+using CoinsApp.BLL.CoinImages;
 using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Collection;
 using CoinsApp.BLL.Contacts;
@@ -11,6 +12,7 @@ using CoinsApp.BLL.Sale;
 using CoinsApp.BLL.Status;
 using CoinsApp.DAL.CatalogEntries;
 using CoinsApp.DAL.Catalogs;
+using CoinsApp.DAL.CoinImages;
 using CoinsApp.DAL.Coins;
 using CoinsApp.DAL.Collection;
 using CoinsApp.DAL.Contacts;
@@ -168,6 +170,19 @@ internal static class Program
             new CatalogEntryMenu(catalogEntryService);
 
         // -------------------------------------------------
+        // Coin Images
+        // -------------------------------------------------
+
+        var coinImageRepository =
+            new CoinImageRepository(databaseConnection);
+
+        var coinImageService =
+            new CoinImageService(coinImageRepository);
+
+        var coinImageMenu =
+            new CoinImageMenu(coinImageService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -176,7 +191,8 @@ internal static class Program
                 coinService,
                 priceHistoryMenu,
                 purchaseMenu,
-                saleMenu);
+                saleMenu,
+                coinImageMenu);
 
         // -------------------------------------------------
         // Main Menu

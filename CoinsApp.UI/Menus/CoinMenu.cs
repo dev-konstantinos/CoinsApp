@@ -9,14 +9,15 @@ internal sealed class CoinMenu
     private readonly CoinService _coinService;
     private readonly PriceHistoryMenu _priceHistoryMenu;
     private readonly PurchaseMenu _purchaseMenu;
-
     private readonly SaleMenu _saleMenu;
+    private readonly CoinImageMenu _coinImageMenu;
 
     public CoinMenu(
         CoinService coinService,
         PriceHistoryMenu priceHistoryMenu,
         PurchaseMenu purchaseMenu,
-        SaleMenu saleMenu)
+        SaleMenu saleMenu,
+        CoinImageMenu coinImageMenu)
     {
         _coinService =
             coinService
@@ -33,6 +34,10 @@ internal sealed class CoinMenu
         _saleMenu =
             saleMenu
             ?? throw new ArgumentNullException(nameof(saleMenu));
+
+        _coinImageMenu =
+            coinImageMenu
+            ?? throw new ArgumentNullException(nameof(coinImageMenu));
     }
 
     public async Task RunAsync()
@@ -51,6 +56,7 @@ internal sealed class CoinMenu
             Console.WriteLine("6. Price history");
             Console.WriteLine("7. Purchases");
             Console.WriteLine("8. Sales");
+            Console.WriteLine("9. Images");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -89,6 +95,10 @@ internal sealed class CoinMenu
 
                 case "8":
                     await SalesAsync();
+                    break;
+
+                case "9":
+                    await ImagesAsync();
                     break;
 
                 case "0":
@@ -829,6 +839,51 @@ internal sealed class CoinMenu
             Console.WriteLine(ex.Message);
             Console.WriteLine();
             Console.WriteLine("Press Enter to continue...");
+            Console.ReadLine();
+        }
+    }
+
+    private async Task ImagesAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine("=== Coin Images ===");
+        Console.WriteLine();
+
+        var coinId =
+            MenuInput.ReadRequiredId("Coin ID");
+
+        try
+        {
+            var coin =
+                await _coinService.GetByIdAsync(coinId);
+
+            if (coin is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"Coin with ID {coinId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine(
+                    "Press Enter to continue...");
+
+                Console.ReadLine();
+                return;
+            }
+
+            await _coinImageMenu.RunAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading coin images.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+            Console.WriteLine();
+            Console.WriteLine(
+                "Press Enter to continue...");
+
             Console.ReadLine();
         }
     }
