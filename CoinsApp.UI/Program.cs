@@ -4,6 +4,7 @@ using CoinsApp.BLL.CoinImages;
 using CoinsApp.BLL.Coins;
 using CoinsApp.BLL.Collection;
 using CoinsApp.BLL.Contacts;
+using CoinsApp.BLL.Countries;
 using CoinsApp.BLL.Install;
 using CoinsApp.BLL.PriceHistory;
 using CoinsApp.BLL.Purchase;
@@ -16,6 +17,7 @@ using CoinsApp.DAL.CoinImages;
 using CoinsApp.DAL.Coins;
 using CoinsApp.DAL.Collection;
 using CoinsApp.DAL.Contacts;
+using CoinsApp.DAL.Countries;
 using CoinsApp.DAL.Database;
 using CoinsApp.DAL.PriceHistory;
 using CoinsApp.DAL.Purchase;
@@ -183,6 +185,19 @@ internal static class Program
             new CoinImageMenu(coinImageService);
 
         // -------------------------------------------------
+        // Countries
+        // -------------------------------------------------
+
+        var countryRepository =
+            new CountryRepository(databaseConnection);
+
+        var countryService =
+            new CountryService(countryRepository);
+
+        var countryMenu =
+            new CountryMenu(countryService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -205,7 +220,8 @@ internal static class Program
                 collectionMenu,
                 contactMenu,
                 catalogMenu,
-                catalogEntryMenu);
+                catalogEntryMenu,
+                countryMenu);
 
         var menuRunner =
             new MenuRunner(mainMenu);

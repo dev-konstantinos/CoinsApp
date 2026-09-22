@@ -8,6 +8,7 @@ internal sealed class MainMenu
     private readonly ContactMenu _contactMenu;
     private readonly CatalogMenu _catalogMenu;
     private readonly CatalogEntryMenu _catalogEntryMenu;
+    private readonly CountryMenu _countryMenu;
 
     public IReadOnlyList<MenuItem> Items { get; }
 
@@ -17,7 +18,8 @@ internal sealed class MainMenu
         CollectionMenu collectionMenu,
         ContactMenu contactMenu,
         CatalogMenu catalogMenu,
-        CatalogEntryMenu catalogEntryMenu)
+        CatalogEntryMenu catalogEntryMenu,
+        CountryMenu countryMenu)
     {
         _administrationMenu =
             administrationMenu
@@ -43,6 +45,10 @@ internal sealed class MainMenu
             catalogEntryMenu
             ?? throw new ArgumentNullException(nameof(catalogEntryMenu));
 
+        _countryMenu =
+            countryMenu
+            ?? throw new ArgumentNullException(nameof(countryMenu));
+
         Items =
         [
             new MenuItem("1", "Dashboard"),
@@ -51,7 +57,8 @@ internal sealed class MainMenu
             new MenuItem("4", "Contacts", _contactMenu.RunAsync),
             new MenuItem("5", "Catalogs", _catalogMenu.RunAsync),
             new MenuItem("6", "Catalog Entries", _catalogEntryMenu.RunAsync),
-            new MenuItem("7", "Administration", _administrationMenu.RunAsync),
+            new MenuItem("7", "Countries", _countryMenu.RunAsync),
+            new MenuItem("8", "Administration", _administrationMenu.RunAsync),
         ];
     }
 }
