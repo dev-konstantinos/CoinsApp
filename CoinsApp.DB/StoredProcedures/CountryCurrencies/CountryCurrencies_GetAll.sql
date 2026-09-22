@@ -4,13 +4,28 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        [CountryCurrencyId],
-        [CountryId],
-        [CurrencyId],
-        [IsActive]
-    FROM [dbo].[CountryCurrencies]
+        cc.[CountryCurrencyId],
+
+        cc.[CountryId],
+        c.[Name] AS [CountryName],
+        c.[Code] AS [CountryCode],
+
+        cc.[CurrencyId],
+        cur.[Name] AS [CurrencyName],
+        cur.[Code] AS [CurrencyCode],
+        cur.[Symbol] AS [CurrencySymbol],
+
+        cc.[IsActive]
+    FROM [dbo].[CountryCurrencies] AS cc
+
+    INNER JOIN [dbo].[Countries] AS c
+        ON c.[CountryId] = cc.[CountryId]
+
+    INNER JOIN [dbo].[Currencies] AS cur
+        ON cur.[CurrencyId] = cc.[CurrencyId]
+
     ORDER BY
-        [CountryId],
-        [CurrencyId],
-        [CountryCurrencyId];
+        c.[Name],
+        cur.[Name],
+        cc.[CountryCurrencyId];
 END;

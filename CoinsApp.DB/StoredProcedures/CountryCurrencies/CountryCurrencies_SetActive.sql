@@ -22,10 +22,25 @@ BEGIN
     WHERE [CountryCurrencyId] = @CountryCurrencyId;
 
     SELECT
-        [CountryCurrencyId],
-        [CountryId],
-        [CurrencyId],
-        [IsActive]
-    FROM [dbo].[CountryCurrencies]
-    WHERE [CountryCurrencyId] = @CountryCurrencyId;
+        cc.[CountryCurrencyId],
+
+        cc.[CountryId],
+        c.[Name] AS [CountryName],
+        c.[Code] AS [CountryCode],
+
+        cc.[CurrencyId],
+        cur.[Name] AS [CurrencyName],
+        cur.[Code] AS [CurrencyCode],
+        cur.[Symbol] AS [CurrencySymbol],
+
+        cc.[IsActive]
+    FROM [dbo].[CountryCurrencies] AS cc
+
+    INNER JOIN [dbo].[Countries] AS c
+        ON c.[CountryId] = cc.[CountryId]
+
+    INNER JOIN [dbo].[Currencies] AS cur
+        ON cur.[CurrencyId] = cc.[CurrencyId]
+
+    WHERE cc.[CountryCurrencyId] = @CountryCurrencyId;
 END;

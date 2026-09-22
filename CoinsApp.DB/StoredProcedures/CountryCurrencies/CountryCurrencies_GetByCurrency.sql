@@ -8,13 +8,29 @@ BEGIN
         THROW 50107, 'Currency ID must be greater than zero.', 1;
 
     SELECT
-        [CountryCurrencyId],
-        [CountryId],
-        [CurrencyId],
-        [IsActive]
-    FROM [dbo].[CountryCurrencies]
-    WHERE [CurrencyId] = @CurrencyId
+        cc.[CountryCurrencyId],
+
+        cc.[CountryId],
+        c.[Name] AS [CountryName],
+        c.[Code] AS [CountryCode],
+
+        cc.[CurrencyId],
+        cur.[Name] AS [CurrencyName],
+        cur.[Code] AS [CurrencyCode],
+        cur.[Symbol] AS [CurrencySymbol],
+
+        cc.[IsActive]
+    FROM [dbo].[CountryCurrencies] AS cc
+
+    INNER JOIN [dbo].[Countries] AS c
+        ON c.[CountryId] = cc.[CountryId]
+
+    INNER JOIN [dbo].[Currencies] AS cur
+        ON cur.[CurrencyId] = cc.[CurrencyId]
+
+    WHERE cc.[CurrencyId] = @CurrencyId
+
     ORDER BY
-        [CountryId],
-        [CountryCurrencyId];
+        c.[Name],
+        cc.[CountryCurrencyId];
 END;
