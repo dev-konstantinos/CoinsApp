@@ -9,6 +9,7 @@ internal sealed class MainMenu
     private readonly CatalogMenu _catalogMenu;
     private readonly CatalogEntryMenu _catalogEntryMenu;
     private readonly CountryMenu _countryMenu;
+    private readonly CurrencyMenu _currencyMenu;
 
     public IReadOnlyList<MenuItem> Items { get; }
 
@@ -19,7 +20,8 @@ internal sealed class MainMenu
         ContactMenu contactMenu,
         CatalogMenu catalogMenu,
         CatalogEntryMenu catalogEntryMenu,
-        CountryMenu countryMenu)
+        CountryMenu countryMenu,
+        CurrencyMenu currencyMenu)
     {
         _administrationMenu =
             administrationMenu
@@ -48,17 +50,21 @@ internal sealed class MainMenu
         _countryMenu =
             countryMenu
             ?? throw new ArgumentNullException(nameof(countryMenu));
+        
+        _currencyMenu =
+            currencyMenu
+            ?? throw new ArgumentNullException(nameof(currencyMenu));
 
         Items =
         [
-            new MenuItem("1", "Dashboard"),
-            new MenuItem("2", "Coins", _coinMenu.RunAsync),
-            new MenuItem("3", "Collections", _collectionMenu.RunAsync),
-            new MenuItem("4", "Contacts", _contactMenu.RunAsync),
-            new MenuItem("5", "Catalogs", _catalogMenu.RunAsync),
-            new MenuItem("6", "Catalog Entries", _catalogEntryMenu.RunAsync),
-            new MenuItem("7", "Countries", _countryMenu.RunAsync),
-            new MenuItem("8", "Administration", _administrationMenu.RunAsync),
+            new MenuItem("A", "Administration", _administrationMenu.RunAsync),
+            new MenuItem("B", "Coins", _coinMenu.RunAsync),
+            new MenuItem("C", "Collections", _collectionMenu.RunAsync),
+            new MenuItem("D", "Contacts", _contactMenu.RunAsync),
+            new MenuItem("E", "Catalogs", _catalogMenu.RunAsync),
+            new MenuItem("F", "Catalog Entries", _catalogEntryMenu.RunAsync),
+            new MenuItem("G", "Countries", _countryMenu.RunAsync),
+            new MenuItem("H", "Currencies", _currencyMenu.RunAsync)
         ];
     }
 }
