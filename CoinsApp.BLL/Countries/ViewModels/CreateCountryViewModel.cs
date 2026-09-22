@@ -1,0 +1,8 @@
+﻿namespace CoinsApp.BLL.Countries.ViewModels;
+
+public sealed class CreateCountryViewModel
+{
+    public string Name { get; init; } = string.Empty;
+    public string Code { get; init; } = string.Empty;
+    public bool IsActive { get; init; } = true;
+}
