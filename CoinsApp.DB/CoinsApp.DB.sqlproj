@@ -82,6 +82,7 @@
     <Folder Include="StoredProcedures\Countries" />
     <Folder Include="StoredProcedures\Currencies" />
     <Folder Include="StoredProcedures\CountryCurrencies" />
+    <Folder Include="StoredProcedures\Mints" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoinsApp.DB.publish.xml" />
@@ -196,6 +197,12 @@
     <Build Include="StoredProcedures\CountryCurrencies\CountryCurrencies_GetByCountry.sql" />
     <Build Include="StoredProcedures\CountryCurrencies\CountryCurrencies_GetByCurrency.sql" />
     <Build Include="StoredProcedures\CountryCurrencies\CountryCurrencies_SetActive.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_GetAll.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_GetByCountry.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_GetById.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_Create.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_Update.sql" />
+    <Build Include="StoredProcedures\Mints\Mints_SetActive.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>

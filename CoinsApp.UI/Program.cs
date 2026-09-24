@@ -28,6 +28,7 @@ using CoinsApp.DAL.Purchase;
 using CoinsApp.DAL.Sale;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 
 namespace CoinsApp.UI;
 
@@ -35,6 +36,9 @@ internal static class Program
 {
     private static async Task Main()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
+
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile(
