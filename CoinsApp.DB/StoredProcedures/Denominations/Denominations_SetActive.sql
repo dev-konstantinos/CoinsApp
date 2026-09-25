@@ -16,6 +16,7 @@ BEGIN
         c.[Name] AS [CurrencyName],
         c.[Code] AS [CurrencyCode],
         d.[Value],
+        d.[DisplayName],
         d.[IsActive]
     FROM [dbo].[Denominations] AS d
     INNER JOIN [dbo].[Currencies] AS c

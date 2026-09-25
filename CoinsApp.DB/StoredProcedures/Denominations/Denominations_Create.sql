@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Denominations_Create]
     @CurrencyId INT,
     @Value DECIMAL(18, 4),
+    @DisplayName NVARCHAR(50),
     @IsActive BIT
 AS
 BEGIN
@@ -10,12 +11,14 @@ BEGIN
     (
         [CurrencyId],
         [Value],
+        [DisplayName],
         [IsActive]
     )
     VALUES
     (
         @CurrencyId,
         @Value,
+        @DisplayName,
         @IsActive
     );
 
@@ -28,6 +31,7 @@ BEGIN
         c.[Name] AS [CurrencyName],
         c.[Code] AS [CurrencyCode],
         d.[Value],
+        d.[DisplayName],
         d.[IsActive]
     FROM [dbo].[Denominations] AS d
     INNER JOIN [dbo].[Currencies] AS c
