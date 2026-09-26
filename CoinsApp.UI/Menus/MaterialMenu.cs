@@ -1,18 +1,18 @@
-﻿using CoinsApp.BLL.Mints;
-using CoinsApp.BLL.Mints.ViewModels;
+﻿using CoinsApp.BLL.Materials;
+using CoinsApp.BLL.Materials.ViewModels;
 using CoinsApp.UI.Helpers;
 
 namespace CoinsApp.UI.Menus;
 
-internal sealed class MintMenu
+internal sealed class MaterialMenu
 {
-    private readonly MintService _mintService;
+    private readonly MaterialService _materialService;
 
-    public MintMenu(MintService mintService)
+    public MaterialMenu(MaterialService materialService)
     {
-        _mintService =
-            mintService
-            ?? throw new ArgumentNullException(nameof(mintService));
+        _materialService =
+            materialService
+            ?? throw new ArgumentNullException(nameof(materialService));
     }
 
     public async Task RunAsync()
@@ -21,13 +21,13 @@ internal sealed class MintMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Mints ===");
+            Console.WriteLine("=== Materials ===");
             Console.WriteLine();
-            Console.WriteLine("1. List Mints");
-            Console.WriteLine("2. Mint Details");
-            Console.WriteLine("3. Create Mint");
-            Console.WriteLine("4. Update Mint");
-            Console.WriteLine("5. Activate / Deactivate Mint");
+            Console.WriteLine("1. List materials");
+            Console.WriteLine("2. Material details");
+            Console.WriteLine("3. Create material");
+            Console.WriteLine("4. Update material");
+            Console.WriteLine("5. Activate / Deactivate material");
             Console.WriteLine("0. Back");
             Console.WriteLine();
             Console.Write("Select: ");
@@ -70,44 +70,41 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Mints ===");
+        Console.WriteLine("=== Materials ===");
         Console.WriteLine();
 
         try
         {
-            var items = await _mintService.GetAllAsync();
+            var items =
+                await _materialService.GetAllAsync();
 
             if (items.Count == 0)
             {
-                Console.WriteLine("No mints found.");
+                Console.WriteLine("No materials found.");
                 Pause();
                 return;
             }
 
             Console.WriteLine(
-                $"{"ID",4}  {"Country",-24} {"Name",-30} " +
-                $"{"Code",-8} {"City",-18} {"Active",-7}");
+                $"{"ID",4}  {"Name",-24} {"Symbol",-10} " +
+                $"{"Precious",-10} {"Active",-7}");
 
-            Console.WriteLine(new string('-', 91));
+            Console.WriteLine(new string('-', 61));
 
             foreach (var item in items)
             {
-                var country =
-                    $"{item.CountryName} ({item.CountryCode})";
-
                 Console.WriteLine(
-                    $"{item.MintId,4}  " +
-                    $"{country,-24} " +
-                    $"{item.Name,-30} " +
-                    $"{item.Code ?? "-",-8} " +
-                    $"{item.City ?? "-",-18} " +
+                    $"{item.MaterialId,4}  " +
+                    $"{item.Name,-24} " +
+                    $"{item.Symbol ?? "-",-10} " +
+                    $"{(item.IsPreciousMetal ? "Yes" : "No"),-10} " +
                     $"{(item.IsActive ? "Yes" : "No"),-7}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error loading mints.");
+            Console.WriteLine("Error loading materials.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -119,33 +116,33 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Mint Details ===");
+        Console.WriteLine("=== Material Details ===");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var materialId =
+            MenuInput.ReadRequiredId("Material ID");
 
         try
         {
-            var mint =
-                await _mintService.GetByIdAsync(mintId);
+            var material =
+                await _materialService.GetByIdAsync(materialId);
 
-            if (mint is null)
+            if (material is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                    $"Material with ID {materialId} was not found.");
             }
             else
             {
                 Console.WriteLine();
-                PrintDetails(mint);
+                PrintDetails(material);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error loading mint.");
+            Console.WriteLine("Error loading material.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -157,50 +154,49 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Mint ===");
+        Console.WriteLine("=== Create Material ===");
         Console.WriteLine();
 
         try
         {
-            var model = new CreateMintViewModel
+            var model = new CreateMaterialViewModel
             {
-                CountryId =
-                    MenuInput.ReadRequiredId("Country ID"),
-
                 Name =
                     MenuInput.ReadRequiredString("Name"),
 
-                Code =
-                    MenuInput.ReadNullableString("Code"),
+                Symbol =
+                    MenuInput.ReadNullableString("Symbol"),
 
-                City =
-                    MenuInput.ReadNullableString("City"),
+                IsPreciousMetal =
+                    MenuInput.ReadRequiredBoolean(
+                        "Is precious metal"),
 
                 IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                    MenuInput.ReadRequiredBoolean(
+                        "Active")
             };
 
-            var mint =
-                await _mintService.CreateAsync(model);
+            var material =
+                await _materialService.CreateAsync(model);
 
             Console.WriteLine();
 
-            if (mint is null)
+            if (material is null)
             {
                 Console.WriteLine(
-                    "Mint could not be created.");
+                    "Material could not be created.");
             }
             else
             {
                 Console.WriteLine(
-                    $"Mint created successfully. " +
-                    $"Mint ID: {mint.MintId}");
+                    $"Material created successfully. " +
+                    $"Material ID: {material.MaterialId}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error creating mint.");
+            Console.WriteLine("Error creating material.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -212,22 +208,22 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Mint ===");
+        Console.WriteLine("=== Update Material ===");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var materialId =
+            MenuInput.ReadRequiredId("Material ID");
 
         try
         {
             var current =
-                await _mintService.GetByIdAsync(mintId);
+                await _materialService.GetByIdAsync(materialId);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                    $"Material with ID {materialId} was not found.");
 
                 Pause();
                 return;
@@ -237,33 +233,28 @@ internal sealed class MintMenu
             Console.WriteLine(
                 "Press Enter to keep the current value.");
             Console.WriteLine(
-                "Type null to clear optional values.");
+                "Type null to clear the optional symbol.");
             Console.WriteLine();
 
-            var model = new UpdateMintViewModel
+            var model = new UpdateMaterialViewModel
             {
-                MintId =
-                    current.MintId,
-
-                CountryId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Country ID",
-                        current.CountryId),
+                MaterialId =
+                    current.MaterialId,
 
                 Name =
                     MenuInput.ReadKeepCurrentRequiredString(
                         "Name",
                         current.Name),
 
-                Code =
+                Symbol =
                     MenuInput.ReadKeepCurrentString(
-                        "Code",
-                        current.Code),
+                        "Symbol",
+                        current.Symbol),
 
-                City =
-                    MenuInput.ReadKeepCurrentString(
-                        "City",
-                        current.City),
+                IsPreciousMetal =
+                    MenuInput.ReadKeepCurrentBoolean(
+                        "Precious metal",
+                        current.IsPreciousMetal),
 
                 IsActive =
                     MenuInput.ReadKeepCurrentBoolean(
@@ -271,20 +262,20 @@ internal sealed class MintMenu
                         current.IsActive)
             };
 
-            var mint =
-                await _mintService.UpdateAsync(model);
+            var material =
+                await _materialService.UpdateAsync(model);
 
             Console.WriteLine();
 
             Console.WriteLine(
-                mint is null
-                    ? "Mint could not be updated."
-                    : "Mint updated successfully.");
+                material is null
+                    ? "Material could not be updated."
+                    : "Material updated successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error updating mint.");
+            Console.WriteLine("Error updating material.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -296,22 +287,23 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Activate / Deactivate Mint ===");
+        Console.WriteLine(
+            "=== Activate / Deactivate Material ===");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var materialId =
+            MenuInput.ReadRequiredId("Material ID");
 
         try
         {
             var current =
-                await _mintService.GetByIdAsync(mintId);
+                await _materialService.GetByIdAsync(materialId);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                    $"Material with ID {materialId} was not found.");
 
                 Pause();
                 return;
@@ -321,7 +313,8 @@ internal sealed class MintMenu
                 !current.IsActive;
 
             Console.WriteLine();
-            Console.WriteLine($"Mint: {current.Name}");
+            Console.WriteLine(
+                $"Material: {current.Name}");
             Console.WriteLine(
                 $"Current status: " +
                 $"{(current.IsActive ? "Active" : "Inactive")}");
@@ -336,44 +329,49 @@ internal sealed class MintMenu
 
             if (!string.Equals(
                     confirmation,
-                    newStatus ? "ACTIVATE" : "DEACTIVATE",
+                    newStatus
+                        ? "ACTIVATE"
+                        : "DEACTIVATE",
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
-                Console.WriteLine("Action cancelled.");
+                Console.WriteLine("Action was cancelled.");
 
                 Pause();
                 return;
             }
 
-            var mint =
-                await _mintService.SetActiveAsync(
-                    new SetMintActiveViewModel
+            var material =
+                await _materialService.SetActiveAsync(
+                    new SetMaterialActiveViewModel
                     {
-                        MintId = mintId,
-                        IsActive = newStatus
+                        MaterialId =
+                            current.MaterialId,
+
+                        IsActive =
+                            newStatus
                     });
 
             Console.WriteLine();
 
-            if (mint is null)
+            if (material is null)
             {
                 Console.WriteLine(
-                    "Mint status could not be changed.");
+                    "Material status could not be changed.");
             }
             else
             {
                 Console.WriteLine(
                     newStatus
-                        ? "Mint activated successfully."
-                        : "Mint deactivated successfully.");
+                        ? "Material activated successfully."
+                        : "Material deactivated successfully.");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
             Console.WriteLine(
-                "Error changing mint status.");
+                "Error changing material status.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -382,19 +380,24 @@ internal sealed class MintMenu
     }
 
     private static void PrintDetails(
-        MintDetailsViewModel mint)
+        MaterialDetailsViewModel material)
     {
-        Console.WriteLine($"ID:       {mint.MintId}");
         Console.WriteLine(
-            $"Country:  {mint.CountryName} " +
-            $"({mint.CountryCode}) " +
-            $"[ID {mint.CountryId}]");
-        Console.WriteLine($"Name:     {mint.Name}");
-        Console.WriteLine($"Code:     {mint.Code ?? "-"}");
-        Console.WriteLine($"City:     {mint.City ?? "-"}");
+            $"Material ID: {material.MaterialId}");
+
         Console.WriteLine(
-            $"Status:   " +
-            $"{(mint.IsActive ? "Active" : "Inactive")}");
+            $"Name: {material.Name}");
+
+        Console.WriteLine(
+            $"Symbol: {material.Symbol ?? "-"}");
+
+        Console.WriteLine(
+            $"Precious Metal: " +
+            $"{(material.IsPreciousMetal ? "Yes" : "No")}");
+
+        Console.WriteLine(
+            $"Active: " +
+            $"{(material.IsActive ? "Yes" : "No")}");
     }
 
     private static void Pause()
