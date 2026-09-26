@@ -63,4 +63,16 @@ public sealed class MaterialRepository
             data,
             commandType: CommandType.StoredProcedure);
     }
+
+    public async Task<MaterialData?> SetActiveAsync(MaterialSetActiveData data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        using var connection = _databaseConnection.Create();
+
+        return await connection.QuerySingleOrDefaultAsync<MaterialData>(
+            "dbo.Materials_SetActive",
+            data,
+            commandType: CommandType.StoredProcedure);
+    }
 }

@@ -215,6 +215,7 @@
     <Build Include="StoredProcedures\Materials\Materials_GetById.sql" />
     <Build Include="StoredProcedures\Materials\Materials_Create.sql" />
     <Build Include="StoredProcedures\Materials\Materials_Update.sql" />
+    <Build Include="StoredProcedures\Materials\Materials_SetActive.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
