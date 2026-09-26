@@ -1,7 +1,8 @@
 CREATE PROCEDURE [dbo].[Materials_Create]
     @Name NVARCHAR(100),
     @Symbol NVARCHAR(20) = NULL,
-    @IsPreciousMetal BIT = 0
+    @IsPreciousMetal BIT = 0,
+    @IsActive BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -24,20 +25,23 @@ BEGIN
     (
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     )
     VALUES
     (
         @Name,
         @Symbol,
-        @IsPreciousMetal
+        @IsPreciousMetal,
+        @IsActive
     );
 
     SELECT
         [MaterialId],
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     FROM [dbo].[Materials]
     WHERE [MaterialId] = SCOPE_IDENTITY();
 END;

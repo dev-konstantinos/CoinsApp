@@ -9,12 +9,14 @@ BEGIN
     (
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     )
     VALUES
     (
         N'Silver',
         N'Ag',
+        1,
         1
     );
 END;
@@ -31,12 +33,14 @@ BEGIN
     (
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     )
     VALUES
     (
         N'Gold',
         N'Au',
+        1,
         1
     );
 END;
@@ -53,12 +57,14 @@ BEGIN
     (
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     )
     VALUES
     (
         N'Copper',
         N'Cu',
-        0
+        0,
+        1
     );
 END;

@@ -11,7 +11,8 @@ BEGIN
         [MaterialId],
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     FROM [dbo].[Materials]
     WHERE [MaterialId] = @MaterialId;
 END;

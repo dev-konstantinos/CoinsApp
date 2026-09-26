@@ -2,7 +2,8 @@ CREATE PROCEDURE [dbo].[Materials_Update]
     @MaterialId INT,
     @Name NVARCHAR(100),
     @Symbol NVARCHAR(20) = NULL,
-    @IsPreciousMetal BIT
+    @IsPreciousMetal BIT,
+    @IsActive BIT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -37,14 +38,16 @@ BEGIN
     SET
         [Name] = @Name,
         [Symbol] = @Symbol,
-        [IsPreciousMetal] = @IsPreciousMetal
+        [IsPreciousMetal] = @IsPreciousMetal,
+        [IsActive] = @IsActive
     WHERE [MaterialId] = @MaterialId;
 
     SELECT
         [MaterialId],
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     FROM [dbo].[Materials]
     WHERE [MaterialId] = @MaterialId;
 END;

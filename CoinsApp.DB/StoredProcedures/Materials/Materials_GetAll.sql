@@ -7,7 +7,8 @@ BEGIN
         [MaterialId],
         [Name],
         [Symbol],
-        [IsPreciousMetal]
+        [IsPreciousMetal],
+        [IsActive]
     FROM [dbo].[Materials]
     ORDER BY
         [Name],
