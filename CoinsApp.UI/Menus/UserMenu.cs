@@ -246,7 +246,7 @@ internal sealed class UserMenu
         Console.WriteLine();
 
         var username =
-            ReadKeepCurrentRequiredString(
+            MenuInput.ReadKeepCurrentRequiredString(
                 "Username",
                 current.Username);
 
@@ -395,27 +395,5 @@ internal sealed class UserMenu
             $"User {userId} deleted successfully.");
 
         Console.ReadLine();
-    }
-
-    private static string ReadKeepCurrentRequiredString(
-        string label,
-        string current)
-    {
-        while (true)
-        {
-            Console.Write(
-                $"{label} [{current}] " +
-                "(Enter = keep current): ");
-
-            var input =
-                Console.ReadLine()?.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            return input;
-        }
     }
 }

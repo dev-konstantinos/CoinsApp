@@ -16,6 +16,7 @@ using CoinsApp.BLL.Purchase;
 using CoinsApp.BLL.Reset;
 using CoinsApp.BLL.Sale;
 using CoinsApp.BLL.Status;
+using CoinsApp.BLL.Users;
 using CoinsApp.DAL.CatalogEntries;
 using CoinsApp.DAL.Catalogs;
 using CoinsApp.DAL.CoinImages;
@@ -32,6 +33,7 @@ using CoinsApp.DAL.Mints;
 using CoinsApp.DAL.PriceHistory;
 using CoinsApp.DAL.Purchase;
 using CoinsApp.DAL.Sale;
+using CoinsApp.DAL.Users;
 using CoinsApp.UI.Menus;
 using Microsoft.Extensions.Configuration;
 using System.Text;
@@ -277,6 +279,24 @@ internal static class Program
             new MaterialMenu(materialService);
 
         // -------------------------------------------------
+        // Users
+        // -------------------------------------------------
+
+        var userRepository =
+            new UserRepository(databaseConnection);
+
+        var passwordHasher =
+            new PasswordHasher();
+
+        var userService =
+            new UserService(
+                userRepository,
+                passwordHasher);
+
+        var userMenu =
+            new UserMenu(userService);
+
+        // -------------------------------------------------
         // Coin Menu
         // -------------------------------------------------
 
@@ -305,7 +325,8 @@ internal static class Program
                 countryCurrencyMenu,
                 mintMenu,
                 denominationMenu,
-                materialMenu);
+                materialMenu,
+                userMenu);
 
         var menuRunner =
             new MenuRunner(mainMenu);

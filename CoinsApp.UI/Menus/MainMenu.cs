@@ -14,6 +14,7 @@ internal sealed class MainMenu
     private readonly MintMenu _mintMenu;
     private readonly DenominationMenu _denominationMenu;
     private readonly MaterialMenu _materialMenu;
+    private readonly UserMenu _userMenu;
 
     public IReadOnlyList<MenuItem> Items { get; }
 
@@ -29,7 +30,8 @@ internal sealed class MainMenu
         CountryCurrencyMenu countryCurrencyMenu,
         MintMenu mintMenu,
         DenominationMenu denominationMenu,
-        MaterialMenu materialMenu)
+        MaterialMenu materialMenu,
+        UserMenu userMenu)
     {
         _administrationMenu =
             administrationMenu
@@ -79,6 +81,10 @@ internal sealed class MainMenu
             materialMenu
             ?? throw new ArgumentNullException(nameof(materialMenu));
 
+        _userMenu =
+            userMenu
+            ?? throw new ArgumentNullException(nameof(userMenu));
+
         Items =
         [
             new MenuItem("A", "Administration", _administrationMenu.RunAsync),
@@ -92,7 +98,8 @@ internal sealed class MainMenu
             new MenuItem("I", "Country Currencies", _countryCurrencyMenu.RunAsync),
             new MenuItem("J", "Mints", _mintMenu.RunAsync),
             new MenuItem("K", "Denominations", _denominationMenu.RunAsync),
-            new MenuItem("L", "Materials", _materialMenu.RunAsync)
+            new MenuItem("L", "Materials", _materialMenu.RunAsync),
+            new MenuItem("M", "Users", _userMenu.RunAsync),
         ];
     }
 }
