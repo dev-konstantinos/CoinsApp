@@ -70,8 +70,6 @@ BEGIN
 
     ------------------------------------------------------------
     -- Check Email uniqueness.
-    --
-    -- NULL is allowed.
     ------------------------------------------------------------
 
     IF @Email IS NOT NULL
@@ -99,5 +97,27 @@ BEGIN
         [Email] = @Email,
         [IsActive] = @IsActive
     WHERE [UserId] = @UserId;
+
+    ------------------------------------------------------------
+    -- Return the updated User.
+    ------------------------------------------------------------
+
+    SELECT
+        u.[UserId],
+        u.[Username],
+        u.[Email],
+        u.[IsActive],
+        u.[CreatedAt],
+        COUNT(c.[CollectionId]) AS [CollectionCount]
+    FROM [dbo].[Users] AS u
+    LEFT JOIN [dbo].[Collections] AS c
+        ON c.[UserId] = u.[UserId]
+    WHERE u.[UserId] = @UserId
+    GROUP BY
+        u.[UserId],
+        u.[Username],
+        u.[Email],
+        u.[IsActive],
+        u.[CreatedAt];
 END;
 GO

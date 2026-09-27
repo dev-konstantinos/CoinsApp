@@ -49,13 +49,13 @@ public sealed class UserRepository
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> UpdateAsync(UserUpdateData data)
+    public async Task<UserData?> UpdateAsync(UserUpdateData data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
         using var connection = _databaseConnection.Create();
 
-        return await connection.QuerySingleAsync<int>(
+        return await connection.QuerySingleOrDefaultAsync<UserData>(
             "dbo.Users_Update",
             data,
             commandType: CommandType.StoredProcedure);
