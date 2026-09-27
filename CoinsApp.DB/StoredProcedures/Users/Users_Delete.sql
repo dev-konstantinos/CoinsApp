@@ -56,5 +56,14 @@ BEGIN
 
     DELETE FROM [dbo].[Users]
     WHERE [UserId] = @UserId;
+
+    ------------------------------------------------------------
+    -- Return the deleted UserId.
+    --
+    -- UserRepository.DeleteAsync() expects a single INT.
+    ------------------------------------------------------------
+
+    SELECT
+        @UserId AS [UserId];
 END;
 GO

@@ -1,4 +1,6 @@
-﻿namespace CoinsApp.UI.Helpers;
+﻿using System.Text;
+
+namespace CoinsApp.UI.Helpers;
 
 internal static class MenuInput
 {
@@ -376,7 +378,7 @@ internal static class MenuInput
     }
 
     public static string ReadRequiredString(
-    string label)
+        string label)
     {
         while (true)
         {
@@ -395,8 +397,8 @@ internal static class MenuInput
     }
 
     public static string ReadKeepCurrentRequiredString(
-    string label,
-    string current)
+        string label,
+        string current)
     {
         while (true)
         {
@@ -412,6 +414,62 @@ internal static class MenuInput
             }
 
             return input;
+        }
+    }
+
+    public static string ReadRequiredPassword(
+        string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label}: ");
+
+            var password = ReadPassword();
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                return password;
+            }
+
+            Console.WriteLine(
+                "Password is required.");
+        }
+    }
+
+    private static string ReadPassword()
+    {
+        var password = new StringBuilder();
+
+        while (true)
+        {
+            var keyInfo = Console.ReadKey(intercept: true);
+
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                return password.ToString();
+            }
+
+            if (keyInfo.Key == ConsoleKey.Backspace)
+            {
+                if (password.Length > 0)
+                {
+                    password.Length--;
+
+                    Console.Write("\b \b");
+                }
+
+                continue;
+            }
+
+            if (char.IsControl(keyInfo.KeyChar))
+            {
+                continue;
+            }
+
+            password.Append(keyInfo.KeyChar);
+
+            Console.Write('*');
         }
     }
 }

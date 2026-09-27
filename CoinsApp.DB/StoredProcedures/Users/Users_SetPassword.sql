@@ -53,5 +53,14 @@ BEGIN
     SET
         [PasswordHash] = @PasswordHash
     WHERE [UserId] = @UserId;
+
+    ------------------------------------------------------------
+    -- Return the UserId.
+    --
+    -- UserRepository.SetPasswordAsync() expects a single INT.
+    ------------------------------------------------------------
+
+    SELECT
+        @UserId AS [UserId];
 END;
 GO
