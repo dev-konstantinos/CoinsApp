@@ -9,9 +9,9 @@ BEGIN
     -- Validate UserId.
     ------------------------------------------------------------
 
-    IF @UserId IS NULL
+    IF @UserId IS NULL OR @UserId <= 0
     BEGIN
-        RAISERROR('UserId is required.', 16, 1);
+        RAISERROR('UserId must be greater than zero.', 16, 1);
         RETURN;
     END;
 
