@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Collection;
 
-public sealed class CollectionRepository
+public sealed class CollectionRepository : ICollectionRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

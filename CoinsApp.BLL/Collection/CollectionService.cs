@@ -4,11 +4,11 @@ using CoinsApp.DAL.Collection.Models;
 
 namespace CoinsApp.BLL.Collection;
 
-public sealed class CollectionService
+public sealed class CollectionService : ICollectionService
 {
-    private readonly CollectionRepository _repository;
+    private readonly ICollectionRepository _repository;
 
-    public CollectionService(CollectionRepository repository)
+    public CollectionService(ICollectionRepository repository)
     {
         _repository =
             repository

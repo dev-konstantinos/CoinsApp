@@ -4,11 +4,11 @@ using CoinsApp.DAL.Countries.Models;
 
 namespace CoinsApp.BLL.Countries;
 
-public sealed class CountryService
+public sealed class CountryService : ICountryService
 {
-    private readonly CountryRepository _repository;
+    private readonly ICountryRepository _repository;
 
-    public CountryService(CountryRepository repository)
+    public CountryService(ICountryRepository repository)
     {
         _repository =
             repository

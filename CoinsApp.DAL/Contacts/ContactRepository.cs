@@ -5,7 +5,7 @@ using System.Data;
 
 namespace CoinsApp.DAL.Contacts;
 
-public sealed class ContactRepository
+public sealed class ContactRepository : IContactRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

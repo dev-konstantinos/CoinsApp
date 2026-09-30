@@ -4,11 +4,11 @@ using CoinsApp.DAL.Contacts.Models;
 
 namespace CoinsApp.BLL.Contacts;
 
-public sealed class ContactService
+public sealed class ContactService : IContactService
 {
-    private readonly ContactRepository _repository;
+    private readonly IContactRepository _repository;
 
-    public ContactService(ContactRepository repository)
+    public ContactService(IContactRepository repository)
     {
         _repository =
             repository

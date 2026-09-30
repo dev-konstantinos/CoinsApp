@@ -4,11 +4,11 @@ using CoinsApp.DAL.Coins.Models;
 
 namespace CoinsApp.BLL.Coins;
 
-public sealed class CoinService
+public sealed class CoinService : ICoinService
 {
-    private readonly CoinRepository _coinRepository;
+    private readonly ICoinRepository _coinRepository;
 
-    public CoinService(CoinRepository coinRepository)
+    public CoinService(ICoinRepository coinRepository)
     {
         _coinRepository =
             coinRepository
