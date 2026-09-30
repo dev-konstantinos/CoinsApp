@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.CountryCurrencies;
 
-public sealed class CountryCurrencyRepository
+public sealed class CountryCurrencyRepository : ICountryCurrencyRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

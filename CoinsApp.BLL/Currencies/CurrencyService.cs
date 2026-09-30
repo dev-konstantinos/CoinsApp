@@ -4,11 +4,11 @@ using CoinsApp.DAL.Currencies.Models;
 
 namespace CoinsApp.BLL.Currencies;
 
-public sealed class CurrencyService
+public sealed class CurrencyService : ICurrencyService
 {
-    private readonly CurrencyRepository _repository;
+    private readonly ICurrencyRepository _repository;
 
-    public CurrencyService(CurrencyRepository repository)
+    public CurrencyService(ICurrencyRepository repository)
     {
         _repository =
             repository

@@ -4,11 +4,11 @@ using CoinsApp.DAL.Denominations.Models;
 
 namespace CoinsApp.BLL.Denominations;
 
-public sealed class DenominationService
+public sealed class DenominationService : IDenominationService
 {
-    private readonly DenominationRepository _repository;
+    private readonly IDenominationRepository _repository;
 
-    public DenominationService(DenominationRepository repository)
+    public DenominationService(IDenominationRepository repository)
     {
         _repository =
             repository

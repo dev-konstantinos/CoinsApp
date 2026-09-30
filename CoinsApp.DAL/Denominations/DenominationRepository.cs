@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Denominations;
 
-public sealed class DenominationRepository
+public sealed class DenominationRepository : IDenominationRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 
