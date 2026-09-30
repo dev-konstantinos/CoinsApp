@@ -1,5 +1,6 @@
 ﻿using CoinsApp.BLL.Catalogs.ViewModels;
-using CoinsApp.BLL.Catalogs.Models;
+using CoinsApp.DAL.Catalogs;
+using CoinsApp.DAL.Catalogs.Models;
 
 namespace CoinsApp.BLL.Catalogs;
 

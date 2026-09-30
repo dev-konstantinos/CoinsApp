@@ -1,6 +1,5 @@
 ﻿using System.Data;
-using CoinsApp.BLL.Catalogs;
-using CoinsApp.BLL.Catalogs.Models;
+using CoinsApp.DAL.Catalogs.Models;
 using CoinsApp.DAL.Database;
 using Dapper;
 

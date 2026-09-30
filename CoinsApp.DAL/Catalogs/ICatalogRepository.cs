@@ -1,6 +1,6 @@
-﻿using CoinsApp.BLL.Catalogs.Models;
+﻿using CoinsApp.DAL.Catalogs.Models;
 
-namespace CoinsApp.BLL.Catalogs;
+namespace CoinsApp.DAL.Catalogs;
 
 public interface ICatalogRepository
 {

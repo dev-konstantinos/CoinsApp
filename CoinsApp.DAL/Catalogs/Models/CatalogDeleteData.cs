@@ -1,4 +1,4 @@
-﻿namespace CoinsApp.BLL.Catalogs.Models;
+﻿namespace CoinsApp.DAL.Catalogs.Models;
 
 public sealed class CatalogDeleteData
 {
