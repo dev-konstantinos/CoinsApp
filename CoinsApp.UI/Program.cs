@@ -35,7 +35,9 @@ using CoinsApp.DAL.Purchase;
 using CoinsApp.DAL.Sale;
 using CoinsApp.DAL.Users;
 using CoinsApp.UI.Menus;
+
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 
 namespace CoinsApp.UI;
@@ -60,276 +62,167 @@ internal static class Program
             ?? throw new InvalidOperationException(
                 "Connection string 'CoinsApp' was not found.");
 
+        var services = new ServiceCollection();
+
+        services.AddSingleton(new DatabaseConnection(connectionString));
+
         // -------------------------------------------------
         // Administration
         // -------------------------------------------------
 
-        var installService =
-            new InstallService(connectionString);
-
-        var resetService =
-            new ResetService(connectionString);
-
-        var databaseStatusService =
-            new DatabaseStatusService(connectionString);
-
-        var adminMenu =
-            new AdminMenu(
-                installService,
-                resetService,
-                databaseStatusService);
-
-        // -------------------------------------------------
-        // Database
-        // -------------------------------------------------
-
-        var databaseConnection =
-            new DatabaseConnection(connectionString);
+        services.AddScoped<InstallService>();
+        services.AddScoped<ResetService>();
+        services.AddScoped<DatabaseStatusService>();
+        services.AddScoped<AdminMenu>();
 
         // -------------------------------------------------
         // Coins
         // -------------------------------------------------
 
-        var coinRepository =
-            new CoinRepository(databaseConnection);
-
-        var coinService =
-            new CoinService(coinRepository);
+        services.AddScoped<ICoinRepository, CoinRepository>();
+        services.AddScoped<ICoinService, CoinService>();
 
         // -------------------------------------------------
         // Price History
         // -------------------------------------------------
 
-        var priceHistoryRepository =
-            new PriceHistoryRepository(databaseConnection);
+        services.AddScoped<IPriceHistoryRepository, PriceHistoryRepository>();
+        services.AddScoped<IPriceHistoryService, PriceHistoryService>();
 
-        var priceHistoryService =
-            new PriceHistoryService(priceHistoryRepository);
+        // -------------------------------------------------
+        // Purchases
+        // -------------------------------------------------
 
-        var priceHistoryMenu =
-            new PriceHistoryMenu(priceHistoryService);
-
-    // -------------------------------------------------
-    // Purchases
-    // -------------------------------------------------
-
-        var purchaseRepository =
-            new PurchaseRepository(databaseConnection);
-
-        var purchaseService =
-            new PurchaseService(purchaseRepository);
-
-        var purchaseMenu =
-            new PurchaseMenu(purchaseService);
+        services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+        services.AddScoped<IPurchaseService, PurchaseService>();
 
         // -------------------------------------------------
         // Sales
         // -------------------------------------------------
 
-        var saleRepository =
-            new SaleRepository(databaseConnection);
-
-        var saleService =
-            new SaleService(saleRepository);
-
-        var saleMenu =
-            new SaleMenu(saleService);
+        services.AddScoped<ISaleRepository, SaleRepository>();
+        services.AddScoped<ISaleService, SaleService>();
 
         // -------------------------------------------------
         // Collections
         // -------------------------------------------------
 
-        var collectionRepository =
-            new CollectionRepository(databaseConnection);
-
-        var collectionService =
-            new CollectionService(collectionRepository);
-
-        var collectionMenu =
-            new CollectionMenu(collectionService);
+        services.AddScoped<ICollectionRepository, CollectionRepository>();
+        services.AddScoped<ICollectionService, CollectionService>();
 
         // -------------------------------------------------
         // Contacts
         // -------------------------------------------------
 
-        var contactRepository =
-            new ContactRepository(databaseConnection);
-
-        var contactService =
-            new ContactService(contactRepository);
-
-        var contactMenu =
-            new ContactMenu(contactService);
+        services.AddScoped<IContactRepository, ContactRepository>();
+        services.AddScoped<IContactService, ContactService>();
 
         // -------------------------------------------------
         // Catalogs
         // -------------------------------------------------
 
-        var catalogRepository =
-            new CatalogRepository(databaseConnection);
-
-        var catalogService =
-            new CatalogService(catalogRepository);
-
-        var catalogMenu =
-            new CatalogMenu(catalogService);
+        services.AddScoped<ICatalogRepository, CatalogRepository>();
+        services.AddScoped<ICatalogService, CatalogService>();
 
         // -------------------------------------------------
         // Catalog Entries
         // -------------------------------------------------
 
-        var catalogEntryRepository =
-            new CatalogEntryRepository(databaseConnection);
-
-        var catalogEntryService =
-            new CatalogEntryService(catalogEntryRepository);
-
-        var catalogEntryMenu =
-            new CatalogEntryMenu(catalogEntryService);
+        services.AddScoped<ICatalogEntryRepository, CatalogEntryRepository>();
+        services.AddScoped<ICatalogEntryService, CatalogEntryService>();
 
         // -------------------------------------------------
         // Coin Images
         // -------------------------------------------------
 
-        var coinImageRepository =
-            new CoinImageRepository(databaseConnection);
-
-        var coinImageService =
-            new CoinImageService(coinImageRepository);
-
-        var coinImageMenu =
-            new CoinImageMenu(coinImageService);
+        services.AddScoped<ICoinImageRepository, CoinImageRepository>();
+        services.AddScoped<ICoinImageService, CoinImageService>();
 
         // -------------------------------------------------
         // Countries
         // -------------------------------------------------
 
-        var countryRepository =
-            new CountryRepository(databaseConnection);
-
-        var countryService =
-            new CountryService(countryRepository);
-
-        var countryMenu =
-            new CountryMenu(countryService);
+        services.AddScoped<ICountryRepository, CountryRepository>();
+        services.AddScoped<ICountryService, CountryService>();
 
         // -------------------------------------------------
         // Currencies
         // -------------------------------------------------
 
-        var currencyRepository =
-            new CurrencyRepository(databaseConnection);
-
-        var currencyService =
-            new CurrencyService(currencyRepository);
-
-        var currencyMenu =
-            new CurrencyMenu(currencyService);
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+        services.AddScoped<ICurrencyService, CurrencyService>();
 
         // -------------------------------------------------
         // Denominations
         // -------------------------------------------------
 
-        var denominationRepository =
-            new DenominationRepository(databaseConnection);
-
-        var denominationService =
-            new DenominationService(denominationRepository);
-
-        var denominationMenu =
-            new DenominationMenu(denominationService);
+        services.AddScoped<IDenominationRepository, DenominationRepository>();
+        services.AddScoped<IDenominationService, DenominationService>();
 
         // -------------------------------------------------
         // CountryCurrency
         // -------------------------------------------------
 
-        var countryCurrencyRepository =
-            new CountryCurrencyRepository(databaseConnection);
-
-        var countryCurrencyService =
-            new CountryCurrencyService(countryCurrencyRepository);
-
-        var countryCurrencyMenu =
-            new CountryCurrencyMenu(countryCurrencyService);
+        services.AddScoped<ICountryCurrencyRepository, CountryCurrencyRepository>();
+        services.AddScoped<ICountryCurrencyService, CountryCurrencyService>();
 
         // -------------------------------------------------
         // Mints
         // -------------------------------------------------
 
-        var mintRepository =
-            new MintRepository(databaseConnection);
-
-        var mintService =
-            new MintService(mintRepository);
-
-        var mintMenu =
-            new MintMenu(mintService);
+        services.AddScoped<IMintRepository, MintRepository>();
+        services.AddScoped<IMintService, MintService>();
 
         // -------------------------------------------------
         // Materials
         // -------------------------------------------------
 
-        var materialRepository =
-            new MaterialRepository(databaseConnection);
-
-        var materialService =
-            new MaterialService(materialRepository);
-
-        var materialMenu =
-            new MaterialMenu(materialService);
+        services.AddScoped<IMaterialRepository, MaterialRepository>();
+        services.AddScoped<IMaterialService, MaterialService>();
 
         // -------------------------------------------------
         // Users
         // -------------------------------------------------
 
-        var userRepository =
-            new UserRepository(databaseConnection);
-
-        var passwordHasher =
-            new PasswordHasher();
-
-        var userService =
-            new UserService(
-                userRepository,
-                passwordHasher);
-
-        var userMenu =
-            new UserMenu(userService);
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<PasswordHasher>();
+        services.AddScoped<IUserService, UserService>();
 
         // -------------------------------------------------
-        // Coin Menu
+        // UI Menus
         // -------------------------------------------------
 
-        var coinMenu =
-            new CoinMenu(
-                coinService,
-                priceHistoryMenu,
-                purchaseMenu,
-                saleMenu,
-                coinImageMenu);
+        services.AddScoped<PriceHistoryMenu>();
+        services.AddScoped<PurchaseMenu>();
+        services.AddScoped<SaleMenu>();
+        services.AddScoped<CollectionMenu>();
+        services.AddScoped<ContactMenu>();
+        services.AddScoped<CatalogMenu>();
+        services.AddScoped<CatalogEntryMenu>();
+        services.AddScoped<CoinMenu>();
+        services.AddScoped<CoinImageMenu>();
+        services.AddScoped<CountryMenu>();
+        services.AddScoped<CurrencyMenu>();
+        services.AddScoped<DenominationMenu>();
+        services.AddScoped<CountryCurrencyMenu>();
+        services.AddScoped<MintMenu>();
+        services.AddScoped<MaterialMenu>();
+        services.AddScoped<UserMenu>();
 
         // -------------------------------------------------
         // Main Menu
         // -------------------------------------------------
 
-        var mainMenu =
-            new MainMenu(
-                adminMenu,
-                coinMenu,
-                collectionMenu,
-                contactMenu,
-                catalogMenu,
-                catalogEntryMenu,
-                countryMenu,
-                currencyMenu,
-                countryCurrencyMenu,
-                mintMenu,
-                denominationMenu,
-                materialMenu,
-                userMenu);
+        services.AddScoped<MainMenu>();
+        services.AddScoped<MenuRunner>();
 
-        var menuRunner =
-            new MenuRunner(mainMenu);
+        // -------------------------------------------------
+        // Build the service provider and run the application
+        // -------------------------------------------------
+
+        using var serviceProvider = services.BuildServiceProvider();
+
+        var menuRunner = serviceProvider.GetRequiredService<MenuRunner>();
 
         await menuRunner.RunAsync();
     }
