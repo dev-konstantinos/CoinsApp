@@ -4,11 +4,11 @@ using CoinsApp.DAL.Mints.Models;
 
 namespace CoinsApp.BLL.Mints;
 
-public sealed class MintService
+public sealed class MintService : IMintService
 {
-    private readonly MintRepository _mintRepository;
+    private readonly IMintRepository _mintRepository;
 
-    public MintService(MintRepository mintRepository)
+    public MintService(IMintRepository mintRepository)
     {
         _mintRepository =
             mintRepository

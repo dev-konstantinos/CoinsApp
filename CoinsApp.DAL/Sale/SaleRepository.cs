@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Sale;
 
-public sealed class SaleRepository
+public sealed class SaleRepository : ISaleRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

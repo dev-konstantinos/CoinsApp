@@ -4,11 +4,11 @@ using CoinsApp.DAL.Purchase;
 
 namespace CoinsApp.BLL.Purchase;
 
-public sealed class PurchaseService
+public sealed class PurchaseService : IPurchaseService
 {
-    private readonly PurchaseRepository _repository;
+    private readonly IPurchaseRepository _repository;
 
-    public PurchaseService(PurchaseRepository repository)
+    public PurchaseService(IPurchaseRepository repository)
     {
         _repository =
             repository

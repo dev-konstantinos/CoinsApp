@@ -5,7 +5,7 @@ using System.Data;
 
 namespace CoinsApp.DAL.Purchase;
 
-public sealed class PurchaseRepository
+public sealed class PurchaseRepository : IPurchaseRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

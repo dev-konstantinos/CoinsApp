@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Mints;
 
-public sealed class MintRepository
+public sealed class MintRepository : IMintRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

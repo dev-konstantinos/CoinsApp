@@ -4,11 +4,11 @@ using CoinsApp.DAL.Sale.Models;
 
 namespace CoinsApp.BLL.Sale;
 
-public sealed class SaleService
+public sealed class SaleService : ISaleService
 {
-    private readonly SaleRepository _repository;
+    private readonly ISaleRepository _repository;
 
-    public SaleService(SaleRepository repository)
+    public SaleService(ISaleRepository repository)
     {
         _repository =
             repository

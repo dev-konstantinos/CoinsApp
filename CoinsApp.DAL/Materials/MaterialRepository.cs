@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Materials;
 
-public sealed class MaterialRepository
+public sealed class MaterialRepository : IMaterialRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

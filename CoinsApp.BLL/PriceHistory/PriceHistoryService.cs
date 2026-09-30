@@ -4,11 +4,11 @@ using CoinsApp.DAL.PriceHistory.Models;
 
 namespace CoinsApp.BLL.PriceHistory;
 
-public sealed class PriceHistoryService
+public sealed class PriceHistoryService : IPriceHistoryService
 {
-    private readonly PriceHistoryRepository _repository;
+    private readonly IPriceHistoryRepository _repository;
 
-    public PriceHistoryService(PriceHistoryRepository repository)
+    public PriceHistoryService(IPriceHistoryRepository repository)
     {
         _repository =
             repository

@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.PriceHistory;
 
-public sealed class PriceHistoryRepository
+public sealed class PriceHistoryRepository : IPriceHistoryRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

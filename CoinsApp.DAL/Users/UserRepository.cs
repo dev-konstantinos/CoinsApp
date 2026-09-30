@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.Users;
 
-public sealed class UserRepository
+public sealed class UserRepository : IUserRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 

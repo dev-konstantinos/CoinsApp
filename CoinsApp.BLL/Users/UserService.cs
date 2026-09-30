@@ -4,15 +4,15 @@ using CoinsApp.DAL.Users.Models;
 
 namespace CoinsApp.BLL.Users;
 
-public sealed class UserService
+public sealed class UserService : IUserService
 {
     private const int MinimumPasswordLength = 8;
 
-    private readonly UserRepository _repository;
+    private readonly IUserRepository _repository;
     private readonly PasswordHasher _passwordHasher;
 
     public UserService(
-        UserRepository repository,
+        IUserRepository repository,
         PasswordHasher passwordHasher)
     {
         _repository =

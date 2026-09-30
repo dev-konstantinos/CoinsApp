@@ -4,11 +4,11 @@ using CoinsApp.DAL.Materials.Models;
 
 namespace CoinsApp.BLL.Materials;
 
-public sealed class MaterialService
+public sealed class MaterialService : IMaterialService
 {
-    private readonly MaterialRepository _repository;
+    private readonly IMaterialRepository _repository;
 
-    public MaterialService(MaterialRepository repository)
+    public MaterialService(IMaterialRepository repository)
     {
         _repository =
             repository
