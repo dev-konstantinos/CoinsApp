@@ -4,11 +4,11 @@ using CoinsApp.DAL.CatalogEntries.Models;
 
 namespace CoinsApp.BLL.CatalogEntries;
 
-public sealed class CatalogEntryService
+public sealed class CatalogEntryService : ICatalogEntryService
 {
-    private readonly CatalogEntryRepository _repository;
+    private readonly ICatalogEntryRepository _repository;
 
-    public CatalogEntryService(CatalogEntryRepository repository)
+    public CatalogEntryService(ICatalogEntryRepository repository)
     {
         _repository =
             repository

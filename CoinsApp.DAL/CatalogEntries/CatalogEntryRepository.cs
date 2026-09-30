@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.CatalogEntries;
 
-public sealed class CatalogEntryRepository
+public sealed class CatalogEntryRepository : ICatalogEntryRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 
