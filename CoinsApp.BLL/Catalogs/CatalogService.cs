@@ -1,14 +1,13 @@
 ﻿using CoinsApp.BLL.Catalogs.ViewModels;
-using CoinsApp.DAL.Catalogs;
-using CoinsApp.DAL.Catalogs.Models;
+using CoinsApp.BLL.Catalogs.Models;
 
 namespace CoinsApp.BLL.Catalogs;
 
-public sealed class CatalogService
+public sealed class CatalogService : ICatalogService
 {
-    private readonly CatalogRepository _repository;
+    private readonly ICatalogRepository _repository;
 
-    public CatalogService(CatalogRepository repository)
+    public CatalogService(ICatalogRepository repository)
     {
         _repository =
             repository

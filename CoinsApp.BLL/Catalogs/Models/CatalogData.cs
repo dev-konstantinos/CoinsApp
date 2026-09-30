@@ -1,7 +1,9 @@
-﻿namespace CoinsApp.DAL.Catalogs.Models;
+﻿namespace CoinsApp.BLL.Catalogs.Models;
 
-public sealed class CatalogCreateData
+public sealed class CatalogData
 {
+    public int CatalogId { get; init; }
+
     public string Name { get; init; } = string.Empty;
 
     public string? ShortName { get; init; }
@@ -10,5 +12,5 @@ public sealed class CatalogCreateData
 
     public string? Description { get; init; }
 
-    public bool IsActive { get; init; } = true;
+    public bool IsActive { get; init; }
 }

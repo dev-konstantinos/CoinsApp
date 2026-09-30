@@ -1,6 +1,6 @@
-﻿namespace CoinsApp.DAL.Catalogs.Models;
+﻿namespace CoinsApp.BLL.Catalogs.Models;
 
-public sealed class CatalogData
+public sealed class CatalogUpdateData
 {
     public int CatalogId { get; init; }
 

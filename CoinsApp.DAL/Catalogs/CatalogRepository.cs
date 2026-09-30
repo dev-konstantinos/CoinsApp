@@ -1,11 +1,12 @@
 ﻿using System.Data;
-using CoinsApp.DAL.Catalogs.Models;
+using CoinsApp.BLL.Catalogs;
+using CoinsApp.BLL.Catalogs.Models;
 using CoinsApp.DAL.Database;
 using Dapper;
 
 namespace CoinsApp.DAL.Catalogs;
 
-public sealed class CatalogRepository
+public sealed class CatalogRepository : ICatalogRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 
