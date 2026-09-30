@@ -348,52 +348,77 @@ internal sealed class UserMenu
         var userId =
             MenuInput.ReadRequiredId("User ID");
 
-        var current =
-            await _userService.GetByIdAsync(userId);
-
-        if (current is null)
+        try
         {
+            var current =
+                await _userService.GetByIdAsync(userId);
+
+            if (current is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"User with ID {userId} was not found.");
+
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
             Console.WriteLine();
-            Console.WriteLine(
-                $"User with ID {userId} was not found.");
+            PrintDetails(current);
 
-            Console.ReadLine();
-            return;
-        }
-
-        Console.WriteLine(
-            $"User: {current.Username}");
-
-        Console.WriteLine(
-            $"Email: {current.Email ?? "-"}");
-
-        Console.WriteLine(
-            $"Collections: {current.CollectionCount}");
-
-        Console.WriteLine();
-
-        var confirmed =
-            MenuInput.ReadRequiredBoolean(
-                "Delete this user");
-
-        if (!confirmed)
-        {
             Console.WriteLine();
-            Console.WriteLine("Delete cancelled.");
-            Console.ReadLine();
-            return;
-        }
+            Console.Write(
+                "Type DELETE to confirm: ");
 
-        await _userService.DeleteAsync(
-            new DeleteUserViewModel
+            var confirmation =
+                Console.ReadLine()?.Trim();
+
+            if (!string.Equals(
+                    confirmation,
+                    "DELETE",
+                    StringComparison.Ordinal))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Delete cancelled.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            var model = new DeleteUserViewModel
             {
                 UserId = userId
-            });
+            };
+
+            await _userService.DeleteAsync(model);
+
+            Console.WriteLine();
+            Console.WriteLine(
+                "User deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error deleting user.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
 
         Console.WriteLine();
-        Console.WriteLine(
-            $"User {userId} deleted successfully.");
-
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
+    }
+
+    private static void PrintDetails(UserDetailsViewModel user)
+    {
+        Console.WriteLine($"User ID:          {user.UserId}");
+        Console.WriteLine($"Username:         {user.Username}");
+        Console.WriteLine($"Email:            {user.Email ?? "(none)"}");
+        Console.WriteLine($"Active:           {user.IsActive}");
+        Console.WriteLine($"Created At:       {user.CreatedAt}");
+        Console.WriteLine($"Collection Count: {user.CollectionCount}");
     }
 }
