@@ -4,11 +4,11 @@ using CoinsApp.DAL.CoinImages.Models;
 
 namespace CoinsApp.BLL.CoinImages;
 
-public sealed class CoinImageService
+public sealed class CoinImageService : ICoinImageService
 {
-    private readonly CoinImageRepository _repository;
+    private readonly ICoinImageRepository _repository;
 
-    public CoinImageService(CoinImageRepository repository)
+    public CoinImageService(ICoinImageRepository repository)
     {
         _repository =
             repository

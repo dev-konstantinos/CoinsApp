@@ -5,7 +5,7 @@ using Dapper;
 
 namespace CoinsApp.DAL.CoinImages;
 
-public sealed class CoinImageRepository
+public sealed class CoinImageRepository : ICoinImageRepository
 {
     private readonly DatabaseConnection _databaseConnection;
 
