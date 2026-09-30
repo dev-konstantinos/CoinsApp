@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class CurrencyMenu
 {
-    private readonly CurrencyService _currencyService;
+    private readonly ICurrencyService _currencyService;
 
-    public CurrencyMenu(CurrencyService currencyService)
+    public CurrencyMenu(ICurrencyService currencyService)
     {
         _currencyService =
             currencyService

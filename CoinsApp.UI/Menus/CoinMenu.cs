@@ -6,14 +6,14 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class CoinMenu
 {
-    private readonly CoinService _coinService;
+    private readonly ICoinService _coinService;
     private readonly PriceHistoryMenu _priceHistoryMenu;
     private readonly PurchaseMenu _purchaseMenu;
     private readonly SaleMenu _saleMenu;
     private readonly CoinImageMenu _coinImageMenu;
 
     public CoinMenu(
-        CoinService coinService,
+        ICoinService coinService,
         PriceHistoryMenu priceHistoryMenu,
         PurchaseMenu purchaseMenu,
         SaleMenu saleMenu,

@@ -6,10 +6,10 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class PriceHistoryMenu
 {
-    private readonly PriceHistoryService _priceHistoryService;
+    private readonly IPriceHistoryService _priceHistoryService;
 
     public PriceHistoryMenu(
-        PriceHistoryService priceHistoryService)
+        IPriceHistoryService priceHistoryService)
     {
         _priceHistoryService =
             priceHistoryService

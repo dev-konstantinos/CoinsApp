@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class DenominationMenu
 {
-    private readonly DenominationService _denominationService;
+    private readonly IDenominationService _denominationService;
 
-    public DenominationMenu(DenominationService denominationService)
+    public DenominationMenu(IDenominationService denominationService)
     {
         _denominationService =
             denominationService

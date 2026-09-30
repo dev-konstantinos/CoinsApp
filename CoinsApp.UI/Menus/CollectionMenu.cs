@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class CollectionMenu
 {
-    private readonly CollectionService _collectionService;
+    private readonly ICollectionService _collectionService;
 
-    public CollectionMenu(CollectionService collectionService)
+    public CollectionMenu(ICollectionService collectionService)
     {
         _collectionService =
             collectionService

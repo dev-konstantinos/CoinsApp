@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class ContactMenu
 {
-    private readonly ContactService _contactService;
+    private readonly IContactService _contactService;
 
-    public ContactMenu(ContactService contactService)
+    public ContactMenu(IContactService contactService)
     {
         _contactService =
             contactService

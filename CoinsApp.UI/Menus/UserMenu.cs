@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class UserMenu
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UserMenu(UserService userService)
+    public UserMenu(IUserService userService)
     {
         _userService =
             userService

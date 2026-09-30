@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class MintMenu
 {
-    private readonly MintService _mintService;
+    private readonly IMintService _mintService;
 
-    public MintMenu(MintService mintService)
+    public MintMenu(IMintService mintService)
     {
         _mintService =
             mintService

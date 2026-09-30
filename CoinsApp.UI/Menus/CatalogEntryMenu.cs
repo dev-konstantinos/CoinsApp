@@ -6,10 +6,10 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class CatalogEntryMenu
 {
-    private readonly CatalogEntryService _catalogEntryService;
+    private readonly ICatalogEntryService _catalogEntryService;
 
     public CatalogEntryMenu(
-        CatalogEntryService catalogEntryService)
+        ICatalogEntryService catalogEntryService)
     {
         _catalogEntryService =
             catalogEntryService

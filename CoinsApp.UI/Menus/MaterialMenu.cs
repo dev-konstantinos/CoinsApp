@@ -6,9 +6,9 @@ namespace CoinsApp.UI.Menus;
 
 internal sealed class MaterialMenu
 {
-    private readonly MaterialService _materialService;
+    private readonly IMaterialService _materialService;
 
-    public MaterialMenu(MaterialService materialService)
+    public MaterialMenu(IMaterialService materialService)
     {
         _materialService =
             materialService
