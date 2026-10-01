@@ -8,10 +8,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Views\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
@@ -27,18 +23,13 @@
 		</None>
 	</ItemGroup>
 
-	<Target Name="BuildDatabaseProject"
-			BeforeTargets="Build">
+	<Target Name="BuildDatabaseProject" BeforeTargets="Build">
 
-		<MSBuild
-			Projects="$(MSBuildProjectDirectory)\..\CoinsApp.DB\CoinsApp.DB.sqlproj"
-			Targets="Build"
-			Properties="Configuration=$(Configuration)" />
+		<MSBuild Projects="$(MSBuildProjectDirectory)\..\CoinsApp.DB\CoinsApp.DB.sqlproj" Targets="Build" Properties="Configuration=$(Configuration)" />
 
 	</Target>
 
-	<Target Name="CopyResetArtifacts"
-			AfterTargets="Build">
+	<Target Name="CopyResetArtifacts" AfterTargets="Build">
 
 		<ItemGroup>
 			<ResetArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\Reset\ResetDevelopment.sql" />
@@ -47,15 +38,11 @@
 
 		<MakeDir Directories="$(OutputPath)Reset" />
 
-		<Copy
-			SourceFiles="@(ResetArtifact)"
-			DestinationFolder="$(OutputPath)Reset"
-			SkipUnchangedFiles="false" />
+		<Copy SourceFiles="@(ResetArtifact)" DestinationFolder="$(OutputPath)Reset" SkipUnchangedFiles="false" />
 
 	</Target>
 
-	<Target Name="CopyDatabaseDacpac"
-			AfterTargets="Build">
+	<Target Name="CopyDatabaseDacpac" AfterTargets="Build">
 
 		<ItemGroup>
 			<DatabaseArtifact Include="$(MSBuildProjectDirectory)\..\CoinsApp.DB\bin\$(Configuration)\CoinsApp.DB.dacpac" />
@@ -63,10 +50,7 @@
 
 		<MakeDir Directories="$(OutputPath)Database" />
 
-		<Copy
-			SourceFiles="@(DatabaseArtifact)"
-			DestinationFolder="$(OutputPath)Database"
-			SkipUnchangedFiles="false" />
+		<Copy SourceFiles="@(DatabaseArtifact)" DestinationFolder="$(OutputPath)Database" SkipUnchangedFiles="false" />
 
 	</Target>
 

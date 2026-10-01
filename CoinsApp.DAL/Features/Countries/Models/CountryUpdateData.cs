@@ -1,0 +1,9 @@
+﻿namespace CoinsApp.DAL.Features.Countries.Models;
+
+public sealed class CountryUpdateData
+{
+    public int CountryId { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string Code { get; init; } = string.Empty;
+    public bool IsActive { get; init; }
+}

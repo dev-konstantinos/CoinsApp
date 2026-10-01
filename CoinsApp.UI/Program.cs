@@ -1,41 +1,42 @@
-﻿using CoinsApp.BLL.CatalogEntries;
-using CoinsApp.BLL.Catalogs;
-using CoinsApp.BLL.CoinImages;
-using CoinsApp.BLL.Coins;
-using CoinsApp.BLL.Collection;
-using CoinsApp.BLL.Contacts;
-using CoinsApp.BLL.Countries;
-using CoinsApp.BLL.CountryCurrencies;
-using CoinsApp.BLL.Currencies;
-using CoinsApp.BLL.Denominations;
-using CoinsApp.BLL.Install;
-using CoinsApp.BLL.Materials;
-using CoinsApp.BLL.Mints;
-using CoinsApp.BLL.PriceHistory;
-using CoinsApp.BLL.Purchase;
-using CoinsApp.BLL.Reset;
-using CoinsApp.BLL.Sale;
-using CoinsApp.BLL.Status;
-using CoinsApp.BLL.Users;
-using CoinsApp.DAL.CatalogEntries;
-using CoinsApp.DAL.Catalogs;
-using CoinsApp.DAL.CoinImages;
-using CoinsApp.DAL.Coins;
-using CoinsApp.DAL.Collection;
-using CoinsApp.DAL.Contacts;
-using CoinsApp.DAL.Countries;
-using CoinsApp.DAL.CountryCurrencies;
-using CoinsApp.DAL.Currencies;
-using CoinsApp.DAL.Database;
-using CoinsApp.DAL.Denominations;
-using CoinsApp.DAL.Materials;
-using CoinsApp.DAL.Mints;
-using CoinsApp.DAL.PriceHistory;
-using CoinsApp.DAL.Purchase;
-using CoinsApp.DAL.Sale;
-using CoinsApp.DAL.Users;
-using CoinsApp.UI.Menus;
-
+﻿using CoinsApp.BLL.Features.CatalogEntries;
+using CoinsApp.BLL.Features.Catalogs;
+using CoinsApp.BLL.Features.CoinImages;
+using CoinsApp.BLL.Features.Coins;
+using CoinsApp.BLL.Features.Collections;
+using CoinsApp.BLL.Features.Contacts;
+using CoinsApp.BLL.Features.Countries;
+using CoinsApp.BLL.Features.CountryCurrencies;
+using CoinsApp.BLL.Features.Currencies;
+using CoinsApp.BLL.Features.Denominations;
+using CoinsApp.BLL.Features.Materials;
+using CoinsApp.BLL.Features.Mints;
+using CoinsApp.BLL.Features.PriceHistories;
+using CoinsApp.BLL.Features.Purchases;
+using CoinsApp.BLL.Features.Sales;
+using CoinsApp.BLL.Features.Users;
+using CoinsApp.BLL.Technical.Install;
+using CoinsApp.BLL.Technical.Reset;
+using CoinsApp.BLL.Technical.Status;
+using CoinsApp.DAL.Technical.Database;
+using CoinsApp.DAL.Features.CatalogEntries;
+using CoinsApp.DAL.Features.Catalogs;
+using CoinsApp.DAL.Features.CoinImages;
+using CoinsApp.DAL.Features.Coins;
+using CoinsApp.DAL.Features.Collections;
+using CoinsApp.DAL.Features.Contacts;
+using CoinsApp.DAL.Features.Countries;
+using CoinsApp.DAL.Features.CountryCurrencies;
+using CoinsApp.DAL.Features.Currencies;
+using CoinsApp.DAL.Features.Denominations;
+using CoinsApp.DAL.Features.Materials;
+using CoinsApp.DAL.Features.Mints;
+using CoinsApp.DAL.Features.PriceHistories;
+using CoinsApp.DAL.Features.Purchases;
+using CoinsApp.DAL.Features.Sales;
+using CoinsApp.DAL.Features.Users;
+using CoinsApp.UI.Menus.ControlMenus;
+using CoinsApp.UI.Menus.FeatureMenus;
+using CoinsApp.UI.Technical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
@@ -70,9 +71,12 @@ internal static class Program
         // Administration
         // -------------------------------------------------
 
-        services.AddScoped<InstallService>();
-        services.AddScoped<ResetService>();
-        services.AddScoped<DatabaseStatusService>();
+        services.AddScoped(_ => new InstallService(connectionString));
+
+        services.AddScoped(_ => new ResetService(connectionString));
+
+        services.AddScoped(_ => new DatabaseStatusService(connectionString));
+
         services.AddScoped<AdminMenu>();
 
         // -------------------------------------------------
