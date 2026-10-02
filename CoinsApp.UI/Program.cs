@@ -34,12 +34,12 @@ using CoinsApp.DAL.Features.PriceHistories;
 using CoinsApp.DAL.Features.Purchases;
 using CoinsApp.DAL.Features.Sales;
 using CoinsApp.DAL.Features.Users;
-using CoinsApp.UI.Menus.ControlMenus;
 using CoinsApp.UI.Menus.FeatureMenus;
 using CoinsApp.UI.Technical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using CoinsApp.UI.Menus;
 
 namespace CoinsApp.UI;
 

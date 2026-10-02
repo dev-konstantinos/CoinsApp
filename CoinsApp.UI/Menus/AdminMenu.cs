@@ -2,7 +2,7 @@
 using CoinsApp.BLL.Technical.Reset;
 using CoinsApp.BLL.Technical.Status;
 
-namespace CoinsApp.UI.Menus.ControlMenus;
+namespace CoinsApp.UI.Menus;
 
 internal sealed class AdminMenu
 {

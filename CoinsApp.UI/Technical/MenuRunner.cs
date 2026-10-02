@@ -1,4 +1,4 @@
-﻿using CoinsApp.UI.Menus.ControlMenus;
+﻿using CoinsApp.UI.Menus;
 
 namespace CoinsApp.UI.Technical;
 

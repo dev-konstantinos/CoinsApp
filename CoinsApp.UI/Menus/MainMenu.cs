@@ -1,7 +1,7 @@
 ﻿using CoinsApp.UI.Menus.FeatureMenus;
 using CoinsApp.UI.Technical;
 
-namespace CoinsApp.UI.Menus.ControlMenus;
+namespace CoinsApp.UI.Menus;
 
 internal sealed class MainMenu
 {
