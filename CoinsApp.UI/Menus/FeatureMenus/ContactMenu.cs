@@ -35,7 +35,8 @@ internal sealed class ContactMenu
 
             Console.Write("Select: ");
 
-            var input = Console.ReadLine()?.Trim();
+            var input =
+                Console.ReadLine()?.Trim();
 
             if (!int.TryParse(input, out var choice))
             {
@@ -45,49 +46,36 @@ internal sealed class ContactMenu
                 continue;
             }
 
-            try
+            switch (choice)
             {
-                switch (choice)
-                {
-                    case 1:
-                        await ListAsync();
-                        break;
+                case 1:
+                    await ListAsync();
+                    break;
 
-                    case 2:
-                        await DetailsAsync();
-                        break;
+                case 2:
+                    await DetailsAsync();
+                    break;
 
-                    case 3:
-                        await CreateAsync();
-                        break;
+                case 3:
+                    await CreateAsync();
+                    break;
 
-                    case 4:
-                        await UpdateAsync();
-                        break;
+                case 4:
+                    await UpdateAsync();
+                    break;
 
-                    case 5:
-                        await DeleteAsync();
-                        break;
+                case 5:
+                    await DeleteAsync();
+                    break;
 
-                    case 0:
-                        return;
+                case 0:
+                    return;
 
-                    default:
-                        Console.WriteLine();
-                        Console.WriteLine("Invalid selection.");
-                        Console.WriteLine("Press Enter to continue...");
-                        Console.ReadLine();
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine();
-                Console.WriteLine("An error occurred while processing your request.");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("Invalid selection.");
+                    Console.ReadLine();
+                    break;
             }
         }
     }
@@ -98,10 +86,7 @@ internal sealed class ContactMenu
 
     private async Task ListAsync()
     {
-        Console.Clear();
-
-        Console.WriteLine("=== Contacts ===");
-        Console.WriteLine();
+        PrintHeader("Contacts");
 
         try
         {
@@ -147,15 +132,12 @@ internal sealed class ContactMenu
 
         Console.ReadLine();
     }
+
     private async Task DetailsAsync()
     {
-        Console.Clear();
+        PrintHeader("Contact Details");
 
-        Console.WriteLine("=== Contact Details ===");
-        Console.WriteLine();
-
-        var contactId =
-            MenuInput.ReadIdOrExit("Contact ID");
+        var contactId = MenuInput.ReadIdOrExit("Contact ID");
 
         if (contactId is null)
             return;
@@ -168,28 +150,12 @@ internal sealed class ContactMenu
             {
                 Console.WriteLine();
                 Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
-                
+
                 Console.ReadLine();
                 return;
             }
 
-            Console.WriteLine($"ID:          {contact.ContactId}");
-
-            Console.WriteLine($"Name:        {contact.Name}");
-
-            Console.WriteLine($"Company:     {contact.CompanyName ?? "-"}");
-
-            Console.WriteLine($"Email:       {contact.Email ?? "-"}");
-
-            Console.WriteLine($"Phone:       {contact.Phone ?? "-"}");
-
-            Console.WriteLine($"Address:     {contact.Address ?? "-"}");
-
-            Console.WriteLine($"Website:     {contact.Website ?? "-"}");
-
-            Console.WriteLine($"Notes:       {contact.Notes ?? "-"}");
-
-            Console.WriteLine($"Status:      {(contact.IsActive ? "Active" : "Inactive")}");
+            PrintDetails(contact);
         }
         catch (Exception ex)
         {
@@ -199,6 +165,7 @@ internal sealed class ContactMenu
 
         Console.ReadLine();
     }
+
     private async Task CreateAsync()
     {
         Console.Clear();
@@ -377,5 +344,45 @@ internal sealed class ContactMenu
         }
 
         Console.ReadLine();
+    }
+
+
+
+    private static void PrintHeader(string title)
+    {
+        Console.Clear();
+
+        Console.WriteLine($"=== {title} ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintDetails(ContactDetailsViewModel contact)
+    {
+        Console.WriteLine(
+            $"ID:          {contact.ContactId}");
+
+        Console.WriteLine(
+            $"Name:        {contact.Name}");
+
+        Console.WriteLine(
+            $"Company:     {contact.CompanyName ?? "-"}");
+
+        Console.WriteLine(
+            $"Email:       {contact.Email ?? "-"}");
+
+        Console.WriteLine(
+            $"Phone:       {contact.Phone ?? "-"}");
+
+        Console.WriteLine(
+            $"Address:     {contact.Address ?? "-"}");
+
+        Console.WriteLine(
+            $"Website:     {contact.Website ?? "-"}");
+
+        Console.WriteLine(
+            $"Notes:       {contact.Notes ?? "-"}");
+
+        Console.WriteLine(
+            $"Status:      {(contact.IsActive ? "Active" : "Inactive")}");
     }
 }
