@@ -327,14 +327,16 @@ internal sealed class PriceHistoryMenu
             }
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Delete this price history entry? (y/n)");
+            Console.WriteLine("Type DELETE to confirm:");
             Console.Write("Confirm: ");
 
             var confirmation =
-                Console.ReadLine()?.Trim().ToLowerInvariant();
+                Console.ReadLine()?.Trim();
 
-            if (confirmation != "y")
+            if (!string.Equals(
+                    confirmation,
+                    "DELETE",
+                    StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");

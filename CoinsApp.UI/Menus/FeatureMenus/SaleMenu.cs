@@ -361,15 +361,16 @@ internal sealed class SaleMenu
             PrintDetails(current);
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Delete this sale? (y/n)");
+            Console.WriteLine("Type DELETE to confirm:");
             Console.Write("Confirm: ");
 
             var confirmation =
-                Console.ReadLine()?.Trim()
-                    .ToLowerInvariant();
+                Console.ReadLine()?.Trim();
 
-            if (confirmation != "y")
+            if (!string.Equals(
+                    confirmation,
+                    "DELETE",
+                    StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
