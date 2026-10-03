@@ -37,34 +37,43 @@ internal sealed class CollectionMenu
 
             var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 4:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await DeleteAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
+                    Console.WriteLine("Press Enter to continue...");
                     Console.ReadLine();
                     break;
             }

@@ -10,10 +10,7 @@ internal sealed class CatalogMenu
 
     public CatalogMenu(ICatalogService catalogService)
     {
-        _catalogService =
-            catalogService
-            ?? throw new ArgumentNullException(
-                nameof(catalogService));
+        _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
     }
 
     // ============================================================
@@ -38,37 +35,45 @@ internal sealed class CatalogMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 4:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await DeleteAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
+                    Console.WriteLine("Press Enter to continue...");
                     Console.ReadLine();
                     break;
             }
@@ -88,34 +93,20 @@ internal sealed class CatalogMenu
 
         try
         {
-            var catalogs =
-                await _catalogService.GetAllAsync();
+            var catalogs = await _catalogService.GetAllAsync();
 
             if (catalogs.Count == 0)
             {
                 Console.WriteLine("No catalogs found.");
+                Pause();
+                return;
             }
-            else
+
+            PrintHeader();
+
+            foreach (var catalog in catalogs)
             {
-                Console.WriteLine(
-                    $"{"ID",4}  " +
-                    $"{"Name",-30} " +
-                    $"{"Short Name",-15} " +
-                    $"{"Publisher",-25} " +
-                    $"{"Active",-7}");
-
-                Console.WriteLine(
-                    new string('-', 90));
-
-                foreach (var catalog in catalogs)
-                {
-                    Console.WriteLine(
-                        $"{catalog.CatalogId,4}  " +
-                        $"{catalog.Name,-30} " +
-                        $"{catalog.ShortName ?? "-",-15} " +
-                        $"{catalog.Publisher ?? "-",-25} " +
-                        $"{(catalog.IsActive ? "Yes" : "No"),-7}");
-                }
+                PrintCatalog(catalog);
             }
         }
         catch (Exception ex)
@@ -126,9 +117,7 @@ internal sealed class CatalogMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task DetailsAsync()
@@ -138,35 +127,24 @@ internal sealed class CatalogMenu
         Console.WriteLine("=== Catalog Details ===");
         Console.WriteLine();
 
-        var catalogId =
-            MenuInput.ReadIdOrExit("Catalog ID");
+        var catalogId = MenuInput.ReadIdOrExit("Catalog ID");
 
         if (catalogId is null)
-        {
             return;
-        }
 
         try
         {
-            var catalog =
-                await _catalogService.GetByIdAsync(
-                    catalogId.Value);
+            var catalog = await _catalogService.GetByIdAsync(catalogId.Value);
 
             if (catalog is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Catalog with ID {catalogId.Value} was not found.");
+                Console.WriteLine($"Catalog with ID {catalogId.Value} was not found.");
+                Pause();
+                return;
             }
-            else
-            {
-                Console.Clear();
 
-                Console.WriteLine("=== Catalog Details ===");
-                Console.WriteLine();
-
-                PrintDetails(catalog);
-            }
+            PrintDetails(catalog);
         }
         catch (Exception ex)
         {
@@ -176,9 +154,7 @@ internal sealed class CatalogMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task CreateAsync()
@@ -192,40 +168,27 @@ internal sealed class CatalogMenu
         {
             var model = new CreateCatalogViewModel
             {
-                Name =
-                    MenuInput.ReadRequiredString("Name"),
-
-                ShortName =
-                    MenuInput.ReadNullableString("Short name"),
-
-                Publisher =
-                    MenuInput.ReadNullableString("Publisher"),
-
-                Description =
-                    MenuInput.ReadNullableString("Description"),
-
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                Name = MenuInput.ReadRequiredString("Name"),
+                ShortName = MenuInput.ReadNullableString("Short name"),
+                Publisher = MenuInput.ReadNullableString("Publisher"),
+                Description = MenuInput.ReadNullableString("Description"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
             Console.WriteLine();
             Console.WriteLine("Creating catalog...");
 
-            var catalog =
-                await _catalogService.CreateAsync(model);
+            var catalog = await _catalogService.CreateAsync(model);
+
+            Console.WriteLine();
 
             if (catalog is null)
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Catalog could not be created.");
+                Console.WriteLine("Catalog could not be created.");
             }
             else
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    $"Catalog created successfully. " +
-                    $"Catalog ID: {catalog.CatalogId}");
+                Console.WriteLine($"Catalog created successfully. Catalog ID: {catalog.CatalogId}");
             }
         }
         catch (Exception ex)
@@ -236,9 +199,7 @@ internal sealed class CatalogMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task UpdateAsync()
@@ -248,93 +209,79 @@ internal sealed class CatalogMenu
         Console.WriteLine("=== Update Catalog ===");
         Console.WriteLine();
 
-        var catalogId =
-            MenuInput.ReadIdOrExit("Catalog ID");
+        var catalogId = MenuInput.ReadIdOrExit("Catalog ID");
 
         if (catalogId is null)
-        {
             return;
-        }
 
         try
         {
-            var current =
-                await _catalogService.GetByIdAsync(
-                    catalogId.Value);
+            var current = await _catalogService.GetByIdAsync(catalogId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Catalog with ID {catalogId.Value} was not found.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
-
-                Console.ReadLine();
+                Console.WriteLine($"Catalog with ID {catalogId.Value} was not found.");
+                Pause();
                 return;
             }
 
             Console.Clear();
 
             Console.WriteLine("=== Update Catalog ===");
-            Console.WriteLine(
-                $"Catalog ID: {current.CatalogId}");
             Console.WriteLine();
 
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
+            Console.WriteLine("--- Current Catalog ---");
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("--- Enter New Values ---");
+            Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
             var model = new UpdateCatalogViewModel
             {
-                CatalogId =
-                    current.CatalogId,
-
-                Name =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Name",
-                        current.Name),
-
-                ShortName =
-                    MenuInput.ReadKeepCurrentString(
-                        "Short name",
-                        current.ShortName),
-
-                Publisher =
-                    MenuInput.ReadKeepCurrentString(
-                        "Publisher",
-                        current.Publisher),
-
-                Description =
-                    MenuInput.ReadKeepCurrentString(
-                        "Description",
-                        current.Description),
-
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                CatalogId = current.CatalogId,
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name),
+                ShortName = MenuInput.ReadKeepCurrentString("Short name", current.ShortName),
+                Publisher = MenuInput.ReadKeepCurrentString("Publisher", current.Publisher),
+                Description = MenuInput.ReadKeepCurrentString("Description", current.Description),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
+
+            Console.WriteLine();
+            Console.WriteLine("=== Update Preview ===");
+            Console.WriteLine();
+
+            PrintUpdateSummary(model);
+
+            Console.WriteLine();
+            Console.Write("Save changes? (y/n): ");
+
+            var confirmation = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (confirmation != "y" && confirmation != "yes")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Update cancelled.");
+                Pause();
+                return;
+            }
 
             Console.WriteLine();
             Console.WriteLine("Updating catalog...");
 
-            var updated =
-                await _catalogService.UpdateAsync(model);
+            var updated = await _catalogService.UpdateAsync(model);
+
+            Console.WriteLine();
 
             if (updated is null)
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Catalog could not be updated.");
+                Console.WriteLine("Catalog could not be updated.");
             }
             else
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Catalog updated successfully.");
+                Console.WriteLine($"Catalog {updated.CatalogId} updated successfully.");
             }
         }
         catch (Exception ex)
@@ -345,9 +292,7 @@ internal sealed class CatalogMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task DeleteAsync()
@@ -357,69 +302,50 @@ internal sealed class CatalogMenu
         Console.WriteLine("=== Delete Catalog ===");
         Console.WriteLine();
 
-        var catalogId =
-            MenuInput.ReadIdOrExit("Catalog ID");
+        var catalogId = MenuInput.ReadIdOrExit("Catalog ID");
 
         if (catalogId is null)
-        {
             return;
-        }
 
         try
         {
-            var current =
-                await _catalogService.GetByIdAsync(
-                    catalogId.Value);
+            var current = await _catalogService.GetByIdAsync(catalogId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Catalog with ID {catalogId.Value} was not found.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
-
-                Console.ReadLine();
+                Console.WriteLine($"Catalog with ID {catalogId.Value} was not found.");
+                Pause();
                 return;
             }
 
-            Console.WriteLine();
             PrintDetails(current);
 
             Console.WriteLine();
-            Console.Write(
-                "Type DELETE to confirm: ");
+            Console.WriteLine("=== WARNING ===");
+            Console.WriteLine();
+            Console.WriteLine("Deleting this catalog is permanent.");
+            Console.WriteLine();
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            Console.Write("Type DELETE to confirm: ");
 
-            if (!string.Equals(
-                    confirmation,
-                    "DELETE",
-                    StringComparison.Ordinal))
+            var confirmation = Console.ReadLine()?.Trim();
+
+            if (!string.Equals(confirmation, "DELETE", StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
-
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
-            await _catalogService.DeleteAsync(
-                new DeleteCatalogViewModel
-                {
-                    CatalogId =
-                        catalogId.Value
-                });
+            await _catalogService.DeleteAsync(new DeleteCatalogViewModel
+            {
+                CatalogId = catalogId.Value
+            });
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Catalog deleted successfully.");
+            Console.WriteLine($"Catalog {catalogId.Value} deleted successfully.");
         }
         catch (Exception ex)
         {
@@ -429,35 +355,62 @@ internal sealed class CatalogMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     // ============================================================
     // Display helpers
     // ============================================================
 
-    private static void PrintDetails(
-        CatalogDetailsViewModel catalog)
+    private static void PrintHeader()
     {
-        Console.WriteLine(
-            $"ID:          {catalog.CatalogId}");
+        Console.WriteLine($"{"ID",4}  {"Name",-30} {"Short Name",-15} {"Publisher",-25} {"Active",-7}");
+        Console.WriteLine(new string('-', 90));
+    }
 
-        Console.WriteLine(
-            $"Name:        {catalog.Name}");
+    private static void PrintCatalog(CatalogListItemViewModel catalog)
+    {
+        Console.WriteLine($"{catalog.CatalogId,4}  {catalog.Name,-30} {catalog.ShortName ?? "-",-15} {catalog.Publisher ?? "-",-25} {(catalog.IsActive ? "Yes" : "No"),-7}");
+    }
 
-        Console.WriteLine(
-            $"Short name:  {catalog.ShortName ?? "-"}");
+    private static void PrintDetails(CatalogDetailsViewModel catalog)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Catalog ID:    {catalog.CatalogId}");
+        Console.WriteLine($"Name:          {catalog.Name}");
+        Console.WriteLine($"Short Name:    {catalog.ShortName ?? "-"}");
+        Console.WriteLine($"Publisher:     {catalog.Publisher ?? "-"}");
 
-        Console.WriteLine(
-            $"Publisher:   {catalog.Publisher ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(catalog.Description ?? "-");
 
-        Console.WriteLine(
-            $"Description: {catalog.Description ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(catalog.IsActive ? "Yes" : "No")}");
+    }
 
-        Console.WriteLine(
-            $"Status:      " +
-            $"{(catalog.IsActive ? "Active" : "Inactive")}");
+    private static void PrintUpdateSummary(UpdateCatalogViewModel model)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Catalog ID:    {model.CatalogId}");
+        Console.WriteLine($"Name:          {model.Name}");
+        Console.WriteLine($"Short Name:    {model.ShortName ?? "null"}");
+        Console.WriteLine($"Publisher:     {model.Publisher ?? "null"}");
+
+        Console.WriteLine();
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(model.Description ?? "null");
+
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(model.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void Pause()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
     }
 }

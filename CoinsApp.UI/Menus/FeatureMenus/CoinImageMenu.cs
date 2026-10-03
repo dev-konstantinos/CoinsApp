@@ -8,13 +8,9 @@ internal sealed class CoinImageMenu
 {
     private readonly ICoinImageService _coinImageService;
 
-    public CoinImageMenu(
-        ICoinImageService coinImageService)
+    public CoinImageMenu(ICoinImageService coinImageService)
     {
-        _coinImageService =
-            coinImageService
-            ?? throw new ArgumentNullException(
-                nameof(coinImageService));
+        _coinImageService = coinImageService ?? throw new ArgumentNullException(nameof(coinImageService));
     }
 
     // ============================================================
@@ -27,8 +23,8 @@ internal sealed class CoinImageMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Coin Images ===");
-            Console.WriteLine();
+            PrintHeader();
+
             Console.WriteLine("1. List coin images");
             Console.WriteLine("2. Image details");
             Console.WriteLine("3. List images by Coin");
@@ -40,42 +36,50 @@ internal sealed class CoinImageMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await ListByCoinAsync();
                     break;
 
-                case "4":
+                case 4:
                     await CreateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await UpdateAsync();
                     break;
 
-                case "6":
+                case 6:
                     await DeleteAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Pause();
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
                     break;
             }
         }
@@ -89,21 +93,19 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Coin Images ===");
-        Console.WriteLine();
+        PrintHeader();
 
         try
         {
-            var images =
-                await _coinImageService.GetAllAsync();
+            var images = await _coinImageService.GetAllAsync();
 
+            Console.WriteLine();
             PrintImages(images);
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error loading coin images.");
+            Console.WriteLine("Error loading coin images.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -115,11 +117,11 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Coin Image Details ===");
+        PrintHeader();
+        Console.WriteLine("Details");
         Console.WriteLine();
 
-        var coinImageId =
-            MenuInput.ReadIdOrExit("Coin Image ID");
+        var coinImageId = MenuInput.ReadIdOrExit("Coin Image ID");
 
         if (coinImageId is null)
         {
@@ -128,16 +130,12 @@ internal sealed class CoinImageMenu
 
         try
         {
-            var image =
-                await _coinImageService.GetByIdAsync(
-                    coinImageId.Value);
+            var image = await _coinImageService.GetByIdAsync(coinImageId.Value);
 
             if (image is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin image with ID " +
-                    $"{coinImageId.Value} was not found.");
+                Console.WriteLine($"Coin image with ID {coinImageId.Value} was not found.");
             }
             else
             {
@@ -148,8 +146,7 @@ internal sealed class CoinImageMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error loading coin image.");
+            Console.WriteLine("Error loading coin image.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -161,64 +158,44 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Coin Image ===");
+        PrintHeader();
+        Console.WriteLine("Create");
         Console.WriteLine();
 
         try
         {
             var model = new CreateCoinImageViewModel
             {
-                CoinId =
-                    MenuInput.ReadRequiredId("Coin ID"),
-
-                ImageType =
-                    MenuInput.ReadRequiredString(
-                        "Image type"),
-
-                FileName =
-                    MenuInput.ReadRequiredString(
-                        "File name"),
-
-                FilePath =
-                    MenuInput.ReadRequiredString(
-                        "File path"),
-
-                Description =
-                    MenuInput.ReadNullableString(
-                        "Description"),
-
-                SortOrder =
-                    ReadCreateSortOrder()
+                CoinId = MenuInput.ReadRequiredId("Coin ID"),
+                ImageType = MenuInput.ReadRequiredString("Image type"),
+                FileName = MenuInput.ReadRequiredString("File name"),
+                FilePath = MenuInput.ReadRequiredString("File path"),
+                Description = MenuInput.ReadNullableString("Description"),
+                SortOrder = ReadCreateSortOrder()
             };
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Creating coin image...");
+            Console.WriteLine("Creating coin image...");
 
-            var image =
-                await _coinImageService.CreateAsync(model);
+            var image = await _coinImageService.CreateAsync(model);
 
             if (image is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Coin image could not be created.");
+                Console.WriteLine("Coin image could not be created.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Coin image created successfully.");
+                Console.WriteLine("Coin image created successfully.");
 
-                Console.WriteLine(
-                    $"Coin Image ID: {image.CoinImageId}");
+                Console.WriteLine($"Coin Image ID: {image.CoinImageId}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error creating coin image.");
+            Console.WriteLine("Error creating coin image.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -230,11 +207,11 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Coin Image ===");
+        PrintHeader();
+        Console.WriteLine("Update");
         Console.WriteLine();
 
-        var coinImageId =
-            MenuInput.ReadIdOrExit("Coin Image ID");
+        var coinImageId = MenuInput.ReadIdOrExit("Coin Image ID");
 
         if (coinImageId is null)
         {
@@ -251,8 +228,7 @@ internal sealed class CoinImageMenu
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Coin image with ID " +
-                    $"{coinImageId.Value} was not found.");
+                    $"Coin image with ID {coinImageId.Value} was not found.");
 
                 Pause();
                 return;
@@ -260,73 +236,64 @@ internal sealed class CoinImageMenu
 
             Console.Clear();
 
-            Console.WriteLine("=== Update Coin Image ===");
+            PrintHeader();
+            Console.WriteLine("Update");
             Console.WriteLine();
 
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
             Console.WriteLine(
                 "Press Enter to keep the current value.");
             Console.WriteLine();
 
             var model = new UpdateCoinImageViewModel
             {
-                CoinImageId =
-                    current.CoinImageId,
-
-                CoinId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Coin ID",
-                        current.CoinId),
-
-                ImageType =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Image type",
-                        current.ImageType),
-
-                FileName =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "File name",
-                        current.FileName),
-
-                FilePath =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "File path",
-                        current.FilePath),
-
-                Description =
-                    MenuInput.ReadKeepCurrentString(
-                        "Description",
-                        current.Description),
-
-                SortOrder =
-                    ReadKeepCurrentSortOrder(
-                        current.SortOrder)
+                CoinImageId = current.CoinImageId,
+                CoinId = MenuInput.ReadKeepCurrentId(
+                    "Coin ID",
+                    current.CoinId),
+                ImageType = MenuInput.ReadKeepCurrentRequiredString(
+                    "Image type",
+                    current.ImageType),
+                FileName = MenuInput.ReadKeepCurrentRequiredString(
+                    "File name",
+                    current.FileName),
+                FilePath = MenuInput.ReadKeepCurrentRequiredString(
+                    "File path",
+                    current.FilePath),
+                Description = MenuInput.ReadKeepCurrentString(
+                    "Description",
+                    current.Description),
+                SortOrder = ReadKeepCurrentSortOrder(
+                    current.SortOrder)
             };
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Updating coin image...");
+            PrintUpdateSummary(model);
 
-            var updated =
-                await _coinImageService.UpdateAsync(model);
+            Console.WriteLine();
+            Console.WriteLine("Updating coin image...");
+
+            var updated = await _coinImageService.UpdateAsync(model);
 
             if (updated is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Coin image could not be updated.");
+                Console.WriteLine("Coin image could not be updated.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Coin image updated successfully.");
+                Console.WriteLine("Coin image updated successfully.");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error updating coin image.");
+            Console.WriteLine("Error updating coin image.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -338,11 +305,11 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Delete Coin Image ===");
+        PrintHeader();
+        Console.WriteLine("Delete");
         Console.WriteLine();
 
-        var coinImageId =
-            MenuInput.ReadIdOrExit("Coin Image ID");
+        var coinImageId = MenuInput.ReadIdOrExit("Coin Image ID");
 
         if (coinImageId is null)
         {
@@ -351,40 +318,33 @@ internal sealed class CoinImageMenu
 
         try
         {
-            var current =
-                await _coinImageService.GetByIdAsync(
-                    coinImageId.Value);
+            var current = await _coinImageService.GetByIdAsync(coinImageId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin image with ID " +
-                    $"{coinImageId.Value} was not found.");
+                Console.WriteLine($"Coin image with ID {coinImageId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
+            Console.WriteLine("--- Coin Image ---");
             Console.WriteLine();
             PrintDetails(current);
 
             Console.WriteLine();
-            Console.Write(
-                "Type DELETE to confirm: ");
+            Console.WriteLine("This action permanently deletes the coin image.");
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            Console.WriteLine();
+            Console.Write("Type DELETE to confirm: ");
 
-            if (!string.Equals(
-                    confirmation,
-                    "DELETE",
-                    StringComparison.Ordinal))
+            var confirmation = Console.ReadLine()?.Trim();
+
+            if (!string.Equals(confirmation, "DELETE", StringComparison.Ordinal))
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Delete cancelled.");
-
+                Console.WriteLine("Delete cancelled.");
                 Pause();
                 return;
             }
@@ -393,20 +353,16 @@ internal sealed class CoinImageMenu
                 await _coinImageService.DeleteAsync(
                     new DeleteCoinImageViewModel
                     {
-                        CoinImageId =
-                            coinImageId.Value
+                        CoinImageId = coinImageId.Value
                     });
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Coin image {deletedId} " +
-                "deleted successfully.");
+            Console.WriteLine($"Coin image {deletedId} deleted successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error deleting coin image.");
+            Console.WriteLine("Error deleting coin image.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -422,12 +378,11 @@ internal sealed class CoinImageMenu
     {
         Console.Clear();
 
-        Console.WriteLine(
-            "=== Coin Images by Coin ===");
+        PrintHeader();
+        Console.WriteLine("Images by Coin");
         Console.WriteLine();
 
-        var coinId =
-            MenuInput.ReadIdOrExit("Coin ID");
+        var coinId = MenuInput.ReadIdOrExit("Coin ID");
 
         if (coinId is null)
         {
@@ -436,16 +391,13 @@ internal sealed class CoinImageMenu
 
         try
         {
-            var images =
-                await _coinImageService.GetByCoinAsync(
-                    coinId.Value);
+            var images = await _coinImageService.GetByCoinAsync(coinId.Value);
+
+            Console.WriteLine();
 
             if (images.Count == 0)
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    $"No images found for Coin ID " +
-                    $"{coinId.Value}.");
+                Console.WriteLine($"No images found for Coin ID {coinId.Value}.");
             }
             else
             {
@@ -455,8 +407,7 @@ internal sealed class CoinImageMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error loading coin images.");
+            Console.WriteLine("Error loading coin images.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -472,58 +423,43 @@ internal sealed class CoinImageMenu
     {
         while (true)
         {
-            Console.Write(
-                "Sort order [0]: ");
+            Console.Write("Sort order [0]: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             if (string.IsNullOrWhiteSpace(input))
             {
                 return 0;
             }
 
-            if (int.TryParse(
-                    input,
-                    out var value) &&
-                value >= 0)
+            if (int.TryParse(input, out var value) && value >= 0)
             {
                 return value;
             }
 
-            Console.WriteLine(
-                "Please enter a non-negative integer.");
+            Console.WriteLine("Please enter a non-negative integer.");
         }
     }
 
-    private static int ReadKeepCurrentSortOrder(
-        int current)
+    private static int ReadKeepCurrentSortOrder(int current)
     {
         while (true)
         {
-            Console.Write(
-                $"Sort order [{current}] " +
-                "(Enter = keep current): ");
+            Console.Write($"Sort order [{current}] " + "(Enter = keep current): ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             if (string.IsNullOrWhiteSpace(input))
             {
                 return current;
             }
 
-            if (int.TryParse(
-                    input,
-                    out var value) &&
-                value >= 0)
+            if (int.TryParse(input, out var value) && value >= 0)
             {
                 return value;
             }
 
-            Console.WriteLine(
-                "Please enter a non-negative integer " +
-                "or press Enter to keep the current value.");
+            Console.WriteLine("Please enter a non-negative integer " + "or press Enter to keep the current value.");
         }
     }
 
@@ -531,14 +467,17 @@ internal sealed class CoinImageMenu
     // Display helpers
     // ============================================================
 
-    private static void PrintImages(
-        IReadOnlyList<CoinImageListItemViewModel> images)
+    private static void PrintHeader()
+    {
+        Console.WriteLine("=== Coin Images ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintImages(IReadOnlyList<CoinImageListItemViewModel> images)
     {
         if (images.Count == 0)
         {
-            Console.WriteLine(
-                "No coin images found.");
-
+            Console.WriteLine("No coin images found.");
             return;
         }
 
@@ -566,36 +505,67 @@ internal sealed class CoinImageMenu
     private static void PrintDetails(
         CoinImageDetailsViewModel image)
     {
-        Console.WriteLine(
-            $"Coin Image ID : {image.CoinImageId}");
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Coin Image ID: {image.CoinImageId}");
 
-        Console.WriteLine(
-            $"Coin ID       : {image.CoinId}");
+        Console.WriteLine($"Coin ID:       {image.CoinId}");
 
-        Console.WriteLine(
-            $"Image Type    : {image.ImageType}");
+        Console.WriteLine();
 
-        Console.WriteLine(
-            $"File Name     : {image.FileName}");
+        Console.WriteLine("--- Image ---");
+        Console.WriteLine($"Type:          {image.ImageType}");
 
-        Console.WriteLine(
-            $"File Path     : {image.FilePath}");
+        Console.WriteLine($"File Name:     {image.FileName}");
 
-        Console.WriteLine(
-            $"Description   : " +
-            $"{image.Description ?? "(none)"}");
+        Console.WriteLine($"File Path:     {image.FilePath}");
 
-        Console.WriteLine(
-            $"Sort Order    : {image.SortOrder}");
+        Console.WriteLine();
 
-        Console.WriteLine(
-            $"Created At    : " +
-            $"{image.CreatedAt:yyyy-MM-dd HH:mm:ss} UTC");
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(image.Description ?? "-");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Ordering ---");
+        Console.WriteLine($"Sort Order:    {image.SortOrder}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Metadata ---");
+        Console.WriteLine($"Created At:    {image.CreatedAt:yyyy-MM-dd HH:mm:ss} UTC");
     }
 
-    private static string Truncate(
-        string value,
-        int maxLength)
+    private static void PrintUpdateSummary(UpdateCoinImageViewModel image)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Coin Image ID: {image.CoinImageId}");
+
+        Console.WriteLine($"Coin ID:       {image.CoinId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Image ---");
+        Console.WriteLine($"Type:          {image.ImageType}");
+
+        Console.WriteLine($"File Name:     {image.FileName}");
+
+        Console.WriteLine($"File Path:     {image.FilePath}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(image.Description ?? "-");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Ordering ---");
+        Console.WriteLine($"Sort Order:    {image.SortOrder}");
+    }
+
+    private static string Truncate(string value, int maxLength)
     {
         if (value.Length <= maxLength)
         {
@@ -608,9 +578,7 @@ internal sealed class CoinImageMenu
     private static void Pause()
     {
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
-
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 }

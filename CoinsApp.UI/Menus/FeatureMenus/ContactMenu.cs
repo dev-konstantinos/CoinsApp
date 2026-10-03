@@ -73,6 +73,7 @@ internal sealed class ContactMenu
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
+                    Console.WriteLine("Press Enter to continue...");
                     Console.ReadLine();
                     break;
             }
