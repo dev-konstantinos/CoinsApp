@@ -1,5 +1,5 @@
-﻿using CoinsApp.BLL.Features.Contacts.ViewModels;
-using CoinsApp.BLL.Features.Contacts;
+﻿using CoinsApp.BLL.Features.Contacts;
+using CoinsApp.BLL.Features.Contacts.ViewModels;
 using CoinsApp.UI.Helpers;
 
 namespace CoinsApp.UI.Menus.FeatureMenus;
@@ -35,8 +35,7 @@ internal sealed class ContactMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             if (!int.TryParse(input, out var choice))
             {
@@ -86,56 +85,50 @@ internal sealed class ContactMenu
 
     private async Task ListAsync()
     {
-        PrintHeader("Contacts");
+        Console.Clear();
+
+        Console.WriteLine("=== Contacts ===");
+        Console.WriteLine();
 
         try
         {
-            var contacts =
-                await _contactService.GetAllAsync();
+            var contacts = await _contactService.GetAllAsync();
 
             if (contacts.Count == 0)
             {
                 Console.WriteLine("No contacts found.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
                 return;
             }
 
+            PrintHeader();
+
             foreach (var contact in contacts)
             {
-                Console.WriteLine($"{contact.ContactId}: {contact.Name}");
-
-                if (!string.IsNullOrWhiteSpace(contact.CompanyName))
-                {
-                    Console.WriteLine($"   Company: {contact.CompanyName}");
-                }
-
-                if (!string.IsNullOrWhiteSpace(contact.Email))
-                {
-                    Console.WriteLine($"   Email: {contact.Email}");
-                }
-
-                if (!string.IsNullOrWhiteSpace(contact.Phone))
-                {
-                    Console.WriteLine($"   Phone: {contact.Phone}");
-                }
-
-                Console.WriteLine($"   Status: {(contact.IsActive ? "Active" : "Inactive")}");
-
-                Console.WriteLine();
+                PrintContact(contact);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"Error loading contacts: {ex.Message}");
+            Console.WriteLine("Error loading contacts.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
     private async Task DetailsAsync()
     {
-        PrintHeader("Contact Details");
+        Console.Clear();
+
+        Console.WriteLine("=== Contact Details ===");
+        Console.WriteLine();
 
         var contactId = MenuInput.ReadIdOrExit("Contact ID");
 
@@ -150,7 +143,6 @@ internal sealed class ContactMenu
             {
                 Console.WriteLine();
                 Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
-
                 Console.ReadLine();
                 return;
             }
@@ -160,9 +152,13 @@ internal sealed class ContactMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"Error loading contact: {ex.Message}");
+            Console.WriteLine("Error loading contact.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -178,35 +174,33 @@ internal sealed class ContactMenu
             var model = new CreateContactViewModel
             {
                 Name = MenuInput.ReadRequiredString("Name"),
-
                 CompanyName = MenuInput.ReadNullableString("Company"),
-
                 Email = MenuInput.ReadNullableString("Email"),
-
                 Phone = MenuInput.ReadNullableString("Phone"),
-
                 Address = MenuInput.ReadNullableString("Address"),
-
                 Website = MenuInput.ReadNullableString("Website"),
-
                 Notes = MenuInput.ReadNullableString("Notes"),
-
                 IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
             var contactId = await _contactService.CreateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine($"Contact created successfully. ID: {contactId}");
+            Console.WriteLine($"Contact created successfully. Contact ID: {contactId}");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"Error creating contact: {ex.Message}");
+            Console.WriteLine("Error creating contact.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
+
     private async Task UpdateAsync()
     {
         Console.Clear();
@@ -221,44 +215,51 @@ internal sealed class ContactMenu
 
         try
         {
-            var current = await _contactService.GetByIdAsync(contactId.Value);
+            var contact = await _contactService.GetByIdAsync(contactId.Value);
 
-            if (current is null)
+            if (contact is null)
             {
                 Console.WriteLine();
                 Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
-
                 Console.ReadLine();
                 return;
             }
 
-            Console.WriteLine();
             Console.WriteLine("Enter the new values.");
             Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
-            var name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name);
-
             var model = new UpdateContactViewModel
             {
-                ContactId = contactId.Value,
-
-                Name = name,
-
-                CompanyName =MenuInput.ReadKeepCurrentString("Company", current.CompanyName),
-
-                Email = MenuInput.ReadKeepCurrentString("Email", current.Email),
-
-                Phone = MenuInput.ReadKeepCurrentString("Phone", current.Phone),
-
-                Address = MenuInput.ReadKeepCurrentString("Address", current.Address),
-
-                Website = MenuInput.ReadKeepCurrentString("Website", current.Website),
-
-                Notes = MenuInput.ReadKeepCurrentString("Notes", current.Notes),
-
-                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
+                ContactId = contact.ContactId,
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", contact.Name),
+                CompanyName = MenuInput.ReadKeepCurrentString("Company", contact.CompanyName),
+                Email = MenuInput.ReadKeepCurrentString("Email", contact.Email),
+                Phone = MenuInput.ReadKeepCurrentString("Phone", contact.Phone),
+                Address = MenuInput.ReadKeepCurrentString("Address", contact.Address),
+                Website = MenuInput.ReadKeepCurrentString("Website", contact.Website),
+                Notes = MenuInput.ReadKeepCurrentString("Notes", contact.Notes),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", contact.IsActive)
             };
+
+            Console.WriteLine();
+            Console.WriteLine("=== Update Preview ===");
+            Console.WriteLine();
+
+            PrintUpdateSummary(model);
+
+            Console.WriteLine();
+            Console.Write("Save changes? (y/n): ");
+
+            var confirmation = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (confirmation != "y" && confirmation != "yes")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Update cancelled.");
+                Console.ReadLine();
+                return;
+            }
 
             var updated = await _contactService.UpdateAsync(model);
 
@@ -267,6 +268,7 @@ internal sealed class ContactMenu
             if (updated is null)
             {
                 Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
+                Console.ReadLine();
                 return;
             }
 
@@ -275,11 +277,16 @@ internal sealed class ContactMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"Error updating contact: {ex.Message}");
+            Console.WriteLine("Error updating contact.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
+
     private async Task DeleteAsync()
     {
         Console.Clear();
@@ -294,29 +301,25 @@ internal sealed class ContactMenu
 
         try
         {
-            var current = await _contactService.GetByIdAsync(contactId.Value);
+            var contact = await _contactService.GetByIdAsync(contactId.Value);
 
-            if (current is null)
+            if (contact is null)
             {
                 Console.WriteLine();
                 Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
-
                 Console.ReadLine();
                 return;
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"Contact: {current.Name}");
-
-            if (!string.IsNullOrWhiteSpace(current.CompanyName))
-            {
-                Console.WriteLine($"Company: {current.CompanyName}");
-            }
+            PrintDetails(contact);
 
             Console.WriteLine();
+            Console.WriteLine("=== WARNING ===");
+            Console.WriteLine();
+            Console.WriteLine("Deleting this contact is permanent.");
+            Console.WriteLine();
 
-            Console.WriteLine("Type DELETE to confirm:");
-            Console.Write("Confirm: ");
+            Console.Write("Type DELETE to confirm: ");
 
             var confirmation = Console.ReadLine()?.Trim();
 
@@ -328,11 +331,10 @@ internal sealed class ContactMenu
                 return;
             }
 
-            await _contactService.DeleteAsync(
-                new DeleteContactViewModel
-                {
-                    ContactId = contactId.Value
-                });
+            await _contactService.DeleteAsync(new DeleteContactViewModel
+            {
+                ContactId = contact.ContactId
+            });
 
             Console.WriteLine();
             Console.WriteLine($"Contact {contactId.Value} deleted successfully.");
@@ -340,49 +342,90 @@ internal sealed class ContactMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"Error deleting contact: {ex.Message}");
+            Console.WriteLine("Error deleting contact.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
+        Console.WriteLine();
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
 
-
-    private static void PrintHeader(string title)
+    private static void PrintHeader()
     {
-        Console.Clear();
+        Console.WriteLine(
+            $"{"ID",4}  {"Name",-28} {"Company",-28} {"Email",-34} {"Phone",-18} {"Status",-10}");
 
-        Console.WriteLine($"=== {title} ===");
-        Console.WriteLine();
+        Console.WriteLine(new string('-', 132));
+    }
+
+    private static void PrintContact(ContactListItemViewModel contact)
+    {
+        Console.WriteLine(
+            $"{contact.ContactId,4}  {Truncate(contact.Name, 28),-28} {Truncate(contact.CompanyName, 28),-28} {Truncate(contact.Email, 34),-34} {Truncate(contact.Phone, 18),-18} {(contact.IsActive ? "Active" : "Inactive"),-10}");
     }
 
     private static void PrintDetails(ContactDetailsViewModel contact)
     {
-        Console.WriteLine(
-            $"ID:          {contact.ContactId}");
+        Console.WriteLine("--- Contact ---");
+        Console.WriteLine($"Contact ID:     {contact.ContactId}");
+        Console.WriteLine($"Name:           {contact.Name}");
+        Console.WriteLine($"Company:        {contact.CompanyName ?? "-"}");
 
-        Console.WriteLine(
-            $"Name:        {contact.Name}");
+        Console.WriteLine();
+        Console.WriteLine("--- Contact Information ---");
+        Console.WriteLine($"Email:          {contact.Email ?? "-"}");
+        Console.WriteLine($"Phone:          {contact.Phone ?? "-"}");
+        Console.WriteLine($"Address:        {contact.Address ?? "-"}");
+        Console.WriteLine($"Website:        {contact.Website ?? "-"}");
 
-        Console.WriteLine(
-            $"Company:     {contact.CompanyName ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Status:         {(contact.IsActive ? "Active" : "Inactive")}");
 
-        Console.WriteLine(
-            $"Email:       {contact.Email ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Notes ---");
+        Console.WriteLine(contact.Notes ?? "-");
+    }
 
-        Console.WriteLine(
-            $"Phone:       {contact.Phone ?? "-"}");
+    private static void PrintUpdateSummary(UpdateContactViewModel model)
+    {
+        Console.WriteLine("--- Contact ---");
+        Console.WriteLine($"Contact ID:     {model.ContactId}");
+        Console.WriteLine($"Name:           {model.Name}");
+        Console.WriteLine($"Company:        {model.CompanyName ?? "null"}");
 
-        Console.WriteLine(
-            $"Address:     {contact.Address ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Contact Information ---");
+        Console.WriteLine($"Email:          {model.Email ?? "null"}");
+        Console.WriteLine($"Phone:          {model.Phone ?? "null"}");
+        Console.WriteLine($"Address:        {model.Address ?? "null"}");
+        Console.WriteLine($"Website:        {model.Website ?? "null"}");
 
-        Console.WriteLine(
-            $"Website:     {contact.Website ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Status:         {(model.IsActive ? "Active" : "Inactive")}");
 
-        Console.WriteLine(
-            $"Notes:       {contact.Notes ?? "-"}");
+        Console.WriteLine();
+        Console.WriteLine("--- Notes ---");
+        Console.WriteLine(model.Notes ?? "null");
+    }
 
-        Console.WriteLine(
-            $"Status:      {(contact.IsActive ? "Active" : "Inactive")}");
+    private static string Truncate(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "-";
+
+        value = value.Trim();
+
+        if (value.Length <= maxLength)
+            return value;
+
+        return value[..(maxLength - 3)] + "...";
     }
 }

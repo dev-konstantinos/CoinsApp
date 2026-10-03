@@ -231,45 +231,25 @@ internal sealed class CoinMenu
             var model = new CreateCoinViewModel
             {
                 CollectionId = MenuInput.ReadRequiredId("Collection ID"),
-
                 CountryId = MenuInput.ReadRequiredId("Country ID"),
-
                 CurrencyId = MenuInput.ReadRequiredId("Currency ID"),
-
                 DenominationId = MenuInput.ReadRequiredId("Denomination ID"),
-
                 MintId = MenuInput.ReadNullableId("Mint ID"),
-
                 MaterialId = MenuInput.ReadNullableId("Material ID"),
-
                 Year = MenuInput.ReadNullable<short>("Year"),
-
                 MintMark = MenuInput.ReadNullableString("Mint Mark"),
-
                 Fineness = MenuInput.ReadNullable<decimal>("Fineness"),
-
                 Weight = MenuInput.ReadNullable<decimal>("Weight"),
-
                 Diameter = MenuInput.ReadNullable<decimal>("Diameter"),
-
                 Thickness = MenuInput.ReadNullable<decimal>("Thickness"),
-
                 Shape = MenuInput.ReadNullableString("Shape"),
-
                 Description = MenuInput.ReadNullableString("Description"),
-
                 Designer = MenuInput.ReadNullableString("Designer"),
-
                 Mintage = MenuInput.ReadNullable<long>("Mintage"),
-
                 Condition = MenuInput.ReadNullableString("Condition"),
-
                 Grade = MenuInput.ReadNullableString("Grade"),
-
                 GradingCompany = MenuInput.ReadNullableString("Grading Company"),
-
                 GradingCertificateNumber = MenuInput.ReadNullableString("Grading Certificate Number"),
-
                 Notes = MenuInput.ReadNullableString("Notes")
             };
 
@@ -341,45 +321,25 @@ internal sealed class CoinMenu
                 CoinId = coin.CoinId,
 
                 CollectionId = MenuInput.ReadKeepCurrentId("Collection ID", coin.CollectionId),
-
                 CountryId = MenuInput.ReadKeepCurrentId("Country ID", coin.CountryId),
-
                 CurrencyId = MenuInput.ReadKeepCurrentId("Currency ID", coin.CurrencyId),
-
                 DenominationId = MenuInput.ReadKeepCurrentId("Denomination ID", coin.DenominationId),
-
                 MintId = MenuInput.ReadKeepCurrentNullableId("Mint ID", coin.MintId),
-
                 MaterialId = MenuInput.ReadKeepCurrentNullableId("Material ID", coin.MaterialId),
-
                 Year = MenuInput.ReadKeepCurrentNullable("Year", coin.Year),
-
                 MintMark = MenuInput.ReadKeepCurrentString("Mint Mark", coin.MintMark),
-
                 Fineness = MenuInput.ReadKeepCurrentNullable("Fineness", coin.Fineness),
-
                 Weight = MenuInput.ReadKeepCurrentNullable("Weight", coin.Weight),
-
                 Diameter = MenuInput.ReadKeepCurrentNullable("Diameter", coin.Diameter),
-
                 Thickness = MenuInput.ReadKeepCurrentNullable("Thickness", coin.Thickness),
-
                 Shape = MenuInput.ReadKeepCurrentString("Shape", coin.Shape),
-
                 Description = MenuInput.ReadKeepCurrentString("Description", coin.Description),
-
                 Designer = MenuInput.ReadKeepCurrentString("Designer", coin.Designer),
-
                 Mintage = MenuInput.ReadKeepCurrentNullable("Mintage", coin.Mintage),
-
                 Condition = MenuInput.ReadKeepCurrentString("Condition", coin.Condition),
-
                 Grade = MenuInput.ReadKeepCurrentString("Grade", coin.Grade),
-
                 GradingCompany = MenuInput.ReadKeepCurrentString("Grading Company", coin.GradingCompany),
-
                 GradingCertificateNumber = MenuInput.ReadKeepCurrentString("Grading Certificate Number", coin.GradingCertificateNumber),
-
                 Notes = MenuInput.ReadKeepCurrentString("Notes", coin.Notes)
             };
 
@@ -670,59 +630,38 @@ internal sealed class CoinMenu
         Console.WriteLine("--- Identity ---");
 
         Console.WriteLine($"Coin ID:        {model.CoinId}");
-
         Console.WriteLine($"Collection ID:  {model.CollectionId}");
-
         Console.WriteLine($"Country ID:     {model.CountryId}");
-
         Console.WriteLine($"Currency ID:    {model.CurrencyId}");
-
         Console.WriteLine($"Denomination ID:{model.DenominationId}");
-
         Console.WriteLine($"Mint ID:        {model.MintId?.ToString() ?? "null"}");
-
         Console.WriteLine($"Material ID:    {model.MaterialId?.ToString() ?? "null"}");
-
         Console.WriteLine($"Year:           {model.Year?.ToString() ?? "null"}");
-
         Console.WriteLine($"Mint Mark:      {model.MintMark ?? "null"}");
-
         Console.WriteLine();
 
         Console.WriteLine("--- Physical ---");
 
         Console.WriteLine($"Fineness:       {FormatDecimal(model.Fineness)}");
-
         Console.WriteLine($"Weight:         {FormatDecimal(model.Weight)}");
-
         Console.WriteLine($"Diameter:       {FormatDecimal(model.Diameter)}");
-
         Console.WriteLine($"Thickness:      {FormatDecimal(model.Thickness)}");
-
         Console.WriteLine($"Shape:          {model.Shape ?? "null"}");
-
         Console.WriteLine();
 
         Console.WriteLine("--- Description ---");
 
         Console.WriteLine($"Designer:       {model.Designer ?? "null"}");
-
         Console.WriteLine($"Mintage:        {model.Mintage?.ToString() ?? "null"}");
-
         Console.WriteLine($"Description:    {model.Description ?? "null"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Condition ---");
-
         Console.WriteLine($"Condition:      {model.Condition ?? "null"}");
-
         Console.WriteLine($"Grade:           {model.Grade ?? "null"}");
-
         Console.WriteLine($"Grading Company:{model.GradingCompany ?? "null"}");
-
         Console.WriteLine($"Certificate:    " + $"{model.GradingCertificateNumber ?? "null"}");
-
         Console.WriteLine();
 
         Console.WriteLine("--- Notes ---");
@@ -775,47 +714,30 @@ internal sealed class CoinMenu
         Console.WriteLine("--- Identity ---");
 
         Console.WriteLine($"Coin ID:        {coin.CoinId}");
-
         Console.WriteLine($"Collection ID:  {coin.CollectionId}");
-
         Console.WriteLine($"Country:        {coin.CountryName}");
-
         Console.WriteLine($"Currency:       {coin.CurrencyCode} - {coin.CurrencyName}");
-
         Console.WriteLine($"Denomination:   {coin.DenominationDisplayName}");
-
         Console.WriteLine($"Year:           {coin.Year?.ToString() ?? "-"}");
-
         Console.WriteLine($"Mint:           {coin.MintName ?? "-"}");
-
         Console.WriteLine($"Mint Mark:      {coin.MintMark ?? "-"}");
-
         Console.WriteLine($"Owner:          {coin.OwnerName ?? "-"}");
-
         Console.WriteLine();
 
         Console.WriteLine("--- Physical ---");
 
         Console.WriteLine($"Material:       {coin.MaterialName ?? "-"}");
-
         Console.WriteLine($"Fineness:       {FormatDecimal(coin.Fineness)}");
-
         Console.WriteLine($"Weight:         {FormatDecimal(coin.Weight)}");
-
         Console.WriteLine($"Diameter:       {FormatDecimal(coin.Diameter)}");
-
         Console.WriteLine($"Thickness:      {FormatDecimal(coin.Thickness)}");
-
         Console.WriteLine($"Shape:          {coin.Shape ?? "-"}");
-
         Console.WriteLine();
 
         Console.WriteLine("--- Description ---");
 
         Console.WriteLine($"Designer:       {coin.Designer ?? "-"}");
-
         Console.WriteLine($"Mintage:        {coin.Mintage?.ToString() ?? "-"}");
-
         Console.WriteLine($"Description:    {coin.Description ?? "-"}");
 
         Console.WriteLine();
@@ -823,11 +745,8 @@ internal sealed class CoinMenu
         Console.WriteLine("--- Condition ---");
 
         Console.WriteLine($"Condition:      {coin.Condition ?? "-"}");
-
         Console.WriteLine($"Grade:           {coin.Grade ?? "-"}");
-
         Console.WriteLine($"Grading Company:{coin.GradingCompany ?? "-"}");
-
         Console.WriteLine($"Certificate:    {coin.GradingCertificateNumber ?? "-"}");
 
         Console.WriteLine();
