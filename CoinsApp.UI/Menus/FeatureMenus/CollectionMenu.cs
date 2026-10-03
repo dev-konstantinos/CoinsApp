@@ -1,6 +1,6 @@
-﻿using CoinsApp.UI.Helpers;
-using CoinsApp.BLL.Features.Collections;
+﻿using CoinsApp.BLL.Features.Collections;
 using CoinsApp.BLL.Features.Collections.ViewModels;
+using CoinsApp.UI.Helpers;
 
 namespace CoinsApp.UI.Menus.FeatureMenus;
 
@@ -10,10 +10,7 @@ internal sealed class CollectionMenu
 
     public CollectionMenu(ICollectionService collectionService)
     {
-        _collectionService =
-            collectionService
-            ?? throw new ArgumentNullException(
-                nameof(collectionService));
+        _collectionService = collectionService ?? throw new ArgumentNullException(nameof(collectionService));
     }
 
     // ============================================================
@@ -38,8 +35,7 @@ internal sealed class CollectionMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             switch (input)
             {
@@ -69,9 +65,6 @@ internal sealed class CollectionMenu
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Console.WriteLine();
-                    Console.WriteLine(
-                        "Press Enter to continue...");
                     Console.ReadLine();
                     break;
             }
@@ -91,49 +84,34 @@ internal sealed class CollectionMenu
 
         try
         {
-            var collections =
-                await _collectionService.GetAllAsync();
+            var collections = await _collectionService.GetAllAsync();
 
             if (collections.Count == 0)
             {
-                Console.WriteLine(
-                    "No collections found.");
+                Console.WriteLine("No collections found.");
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
             }
-            else
+
+            PrintHeader();
+
+            foreach (var collection in collections)
             {
-                Console.WriteLine(
-                    $"{"ID",4}  " +
-                    $"{"Name",-30} " +
-                    $"{"User",-20} " +
-                    $"{"Active",-7} " +
-                    $"{"Coins",5}");
-
-                Console.WriteLine(
-                    new string('-', 75));
-
-                foreach (var collection in collections)
-                {
-                    Console.WriteLine(
-                        $"{collection.CollectionId,4}  " +
-                        $"{collection.Name,-30} " +
-                        $"{collection.UserName,-20} " +
-                        $"{(collection.IsActive ? "Yes" : "No"),-7} " +
-                        $"{collection.CoinCount,5}");
-                }
+                PrintCollection(collection);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error loading collections.");
+            Console.WriteLine("Error loading collections.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -144,50 +122,35 @@ internal sealed class CollectionMenu
         Console.WriteLine("=== Collection Details ===");
         Console.WriteLine();
 
-        var collectionId =
-            MenuInput.ReadIdOrExit("Collection ID");
+        var collectionId = MenuInput.ReadIdOrExit("Collection ID");
 
         if (collectionId is null)
-        {
             return;
-        }
 
         try
         {
-            var collection =
-                await _collectionService.GetByIdAsync(
-                    collectionId.Value);
+            var collection = await _collectionService.GetByIdAsync(collectionId.Value);
 
             if (collection is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Collection with ID " +
-                    $"{collectionId.Value} was not found.");
+                Console.WriteLine($"Collection with ID {collectionId.Value} was not found.");
+                Console.ReadLine();
+                return;
             }
-            else
-            {
-                Console.Clear();
 
-                Console.WriteLine(
-                    "=== Collection Details ===");
-                Console.WriteLine();
-
-                PrintDetails(collection);
-            }
+            PrintDetails(collection);
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error loading collection.");
+            Console.WriteLine("Error loading collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -200,48 +163,32 @@ internal sealed class CollectionMenu
 
         try
         {
-            var model =
-                new CreateCollectionViewModel
-                {
-                    UserId =
-                        MenuInput.ReadRequiredId(
-                            "User ID"),
-
-                    Name =
-                        ReadRequiredCollectionName(),
-
-                    Description =
-                        MenuInput.ReadNullableString(
-                            "Description"),
-
-                    IsActive = true
-                };
+            var model = new CreateCollectionViewModel
+            {
+                UserId = MenuInput.ReadRequiredId("User ID"),
+                Name = MenuInput.ReadRequiredString("Name"),
+                Description = MenuInput.ReadNullableString("Description"),
+                IsActive = true
+            };
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Creating collection...");
+            Console.WriteLine("Creating collection...");
 
-            var collectionId =
-                await _collectionService.CreateAsync(
-                    model);
+            var collectionId = await _collectionService.CreateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Collection created successfully. " +
-                $"Collection ID: {collectionId}");
+            Console.WriteLine($"Collection created successfully. Collection ID: {collectionId}");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error creating collection.");
+            Console.WriteLine("Error creating collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -252,101 +199,89 @@ internal sealed class CollectionMenu
         Console.WriteLine("=== Update Collection ===");
         Console.WriteLine();
 
-        var collectionId =
-            MenuInput.ReadIdOrExit("Collection ID");
+        var collectionId = MenuInput.ReadIdOrExit("Collection ID");
 
         if (collectionId is null)
-        {
             return;
-        }
 
         try
         {
-            var current =
-                await _collectionService.GetByIdAsync(
-                    collectionId.Value);
+            var current = await _collectionService.GetByIdAsync(collectionId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Collection with ID " +
-                    $"{collectionId.Value} was not found.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
+                Console.WriteLine($"Collection with ID {collectionId.Value} was not found.");
                 Console.ReadLine();
-
                 return;
             }
 
             Console.Clear();
 
-            Console.WriteLine(
-                "=== Update Collection ===");
-            Console.WriteLine(
-                $"Collection ID: {current.CollectionId}");
+            Console.WriteLine("=== Update Collection ===");
             Console.WriteLine();
 
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
-            Console.WriteLine();
-
-            var model =
-                new UpdateCollectionViewModel
-                {
-                    CollectionId =
-                        current.CollectionId,
-
-                    Name =
-                        ReadKeepCurrentCollectionName(
-                            current.Name),
-
-                    Description =
-                        MenuInput.ReadKeepCurrentString(
-                            "Description",
-                            current.Description),
-
-                    IsActive =
-                        ReadKeepCurrentBoolean(
-                            "Active",
-                            current.IsActive)
-                };
+            Console.WriteLine("--- Current Collection ---");
+            PrintDetails(current);
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Updating collection...");
+            Console.WriteLine("--- Enter New Values ---");
+            Console.WriteLine("Press Enter to keep the current value.");
+            Console.WriteLine();
 
-            var updated =
-                await _collectionService.UpdateAsync(
-                    model);
+            var model = new UpdateCollectionViewModel
+            {
+                CollectionId = current.CollectionId,
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name),
+                Description = MenuInput.ReadKeepCurrentString("Description", current.Description),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
+            };
+
+            Console.WriteLine();
+            Console.WriteLine("=== Update Preview ===");
+            Console.WriteLine();
+
+            PrintUpdateSummary(model);
+
+            Console.WriteLine();
+            Console.Write("Save changes? (y/n): ");
+
+            var confirmation = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (confirmation != "y" && confirmation != "yes")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Update cancelled.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Updating collection...");
+
+            var updated = await _collectionService.UpdateAsync(model);
+
+            Console.WriteLine();
 
             if (updated is null)
             {
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Collection could not be updated.");
+                Console.WriteLine($"Collection with ID {collectionId.Value} was not found.");
+                Console.ReadLine();
+                return;
             }
-            else
-            {
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Collection updated successfully.");
-            }
+
+            Console.WriteLine($"Collection {updated.CollectionId} updated successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error updating collection.");
+            Console.WriteLine("Error updating collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -357,88 +292,61 @@ internal sealed class CollectionMenu
         Console.WriteLine("=== Delete Collection ===");
         Console.WriteLine();
 
-        var collectionId =
-            MenuInput.ReadIdOrExit("Collection ID");
+        var collectionId = MenuInput.ReadIdOrExit("Collection ID");
 
         if (collectionId is null)
-        {
             return;
-        }
 
         try
         {
-            var current =
-                await _collectionService.GetByIdAsync(
-                    collectionId.Value);
+            var current = await _collectionService.GetByIdAsync(collectionId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Collection with ID " +
-                    $"{collectionId.Value} was not found.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
+                Console.WriteLine($"Collection with ID {collectionId.Value} was not found.");
                 Console.ReadLine();
-
                 return;
             }
 
-            Console.WriteLine();
             PrintDetails(current);
 
             Console.WriteLine();
-            Console.Write(
-                "Type DELETE to confirm: ");
+            Console.WriteLine("=== WARNING ===");
+            Console.WriteLine();
+            Console.WriteLine("Deleting this collection is permanent.");
+            Console.WriteLine();
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            Console.Write("Type DELETE to confirm: ");
 
-            if (!string.Equals(
-                    confirmation,
-                    "DELETE",
-                    StringComparison.Ordinal))
+            var confirmation = Console.ReadLine()?.Trim();
+
+            if (!string.Equals(confirmation, "DELETE", StringComparison.Ordinal))
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Delete cancelled.");
-
-                Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
+                Console.WriteLine("Delete cancelled.");
                 Console.ReadLine();
-
                 return;
             }
 
-            var model =
-                new DeleteCollectionViewModel
-                {
-                    CollectionId =
-                        collectionId.Value
-                };
-
-            await _collectionService.DeleteAsync(
-                model);
+            await _collectionService.DeleteAsync(new DeleteCollectionViewModel
+            {
+                CollectionId = collectionId.Value
+            });
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Collection deleted successfully.");
+            Console.WriteLine($"Collection {collectionId.Value} deleted successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error deleting collection.");
+            Console.WriteLine("Error deleting collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine(
-            "Press Enter to continue...");
+        Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -446,131 +354,54 @@ internal sealed class CollectionMenu
     // Display helpers
     // ============================================================
 
-    private static void PrintDetails(
-        CollectionDetailsViewModel collection)
+    private static void PrintHeader()
     {
-        Console.WriteLine(
-            $"Collection ID: {collection.CollectionId}");
-
-        Console.WriteLine(
-            $"User ID:       {collection.UserId}");
-
-        Console.WriteLine(
-            $"User:          {collection.UserName}");
-
-        Console.WriteLine(
-            $"Name:          {collection.Name}");
-
-        Console.WriteLine(
-            $"Description:   {collection.Description ?? "-"}");
-
-        Console.WriteLine(
-            $"Active:        " +
-            $"{(collection.IsActive ? "Yes" : "No")}");
-
-        Console.WriteLine(
-            $"Coin count:    {collection.CoinCount}");
-
-        Console.WriteLine(
-            $"Created:       " +
-            $"{collection.CreatedAt:yyyy-MM-dd HH:mm:ss}");
+        Console.WriteLine($"{"ID",4}  {"Name",-30} {"User",-20} {"Active",-7} {"Coins",5}");
+        Console.WriteLine(new string('-', 75));
     }
 
-    // ============================================================
-    // Input helpers
-    // ============================================================
-
-    private static string ReadRequiredCollectionName()
+    private static void PrintCollection(CollectionListItemViewModel collection)
     {
-        while (true)
-        {
-            Console.Write("Name: ");
-
-            var input =
-                Console.ReadLine();
-
-            if (!string.IsNullOrWhiteSpace(input))
-            {
-                var name =
-                    input.Trim();
-
-                if (name.Length <= 150)
-                {
-                    return name;
-                }
-            }
-
-            Console.WriteLine(
-                "Please enter a collection name " +
-                "with 1 to 150 characters.");
-        }
+        Console.WriteLine($"{collection.CollectionId,4}  {collection.Name,-30} {collection.UserName,-20} {(collection.IsActive ? "Yes" : "No"),-7} {collection.CoinCount,5}");
     }
 
-    private static string ReadKeepCurrentCollectionName(
-        string current)
+    private static void PrintDetails(CollectionDetailsViewModel collection)
     {
-        while (true)
-        {
-            Console.Write(
-                $"Name [{current}] " +
-                "(Enter = keep current): ");
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Collection ID: {collection.CollectionId}");
+        Console.WriteLine($"User ID:       {collection.UserId}");
+        Console.WriteLine($"User:          {collection.UserName}");
+        Console.WriteLine($"Name:          {collection.Name}");
 
-            var input =
-                Console.ReadLine();
+        Console.WriteLine();
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(collection.Description ?? "-");
 
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(collection.IsActive ? "Yes" : "No")}");
 
-            var name =
-                input.Trim();
+        Console.WriteLine();
+        Console.WriteLine("--- Statistics ---");
+        Console.WriteLine($"Coin count:    {collection.CoinCount}");
 
-            if (name.Length <= 150)
-            {
-                return name;
-            }
-
-            Console.WriteLine(
-                "Collection name cannot exceed 150 characters.");
-        }
+        Console.WriteLine();
+        Console.WriteLine("--- Dates ---");
+        Console.WriteLine($"Created:       {collection.CreatedAt:yyyy-MM-dd HH:mm:ss}");
     }
 
-    private static bool ReadKeepCurrentBoolean(
-        string label,
-        bool current)
+    private static void PrintUpdateSummary(UpdateCollectionViewModel model)
     {
-        while (true)
-        {
-            Console.Write(
-                $"{label} [{(current ? "Yes" : "No")}] " +
-                "(Enter = keep, y = yes, n = no): ");
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Collection ID: {model.CollectionId}");
+        Console.WriteLine($"Name:          {model.Name}");
 
-            var input =
-                Console.ReadLine()?.Trim();
+        Console.WriteLine();
+        Console.WriteLine("--- Description ---");
+        Console.WriteLine(model.Description ?? "null");
 
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return current;
-            }
-
-            if (input.Equals(
-                    "y",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            if (input.Equals(
-                    "n",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            Console.WriteLine(
-                "Please enter y, n, or press Enter " +
-                "to keep the current value.");
-        }
+        Console.WriteLine();
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(model.IsActive ? "Yes" : "No")}");
     }
 }
