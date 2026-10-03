@@ -12,8 +12,7 @@ internal sealed class CurrencyMenu
     {
         _currencyService =
             currencyService
-            ?? throw new ArgumentNullException(
-                nameof(currencyService));
+            ?? throw new ArgumentNullException(nameof(currencyService));
     }
 
     // ============================================================
@@ -26,10 +25,10 @@ internal sealed class CurrencyMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Currencies ===");
-            Console.WriteLine();
+            PrintHeader();
+
             Console.WriteLine("1. List currencies");
-            Console.WriteLine("2. Currency detailed information");
+            Console.WriteLine("2. Currency details");
             Console.WriteLine("3. Create currency");
             Console.WriteLine("4. Update currency");
             Console.WriteLine("5. Activate / Deactivate currency");
@@ -38,38 +37,46 @@ internal sealed class CurrencyMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 4:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await SetActiveAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Pause();
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
                     break;
             }
         }
@@ -83,39 +90,13 @@ internal sealed class CurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Currencies ===");
-        Console.WriteLine();
+        PrintHeader();
 
         try
         {
-            var currencies =
-                await _currencyService.GetAllAsync();
+            var currencies = await _currencyService.GetAllAsync();
 
-            if (currencies.Count == 0)
-            {
-                Console.WriteLine("No currencies found.");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"{"ID",4}  " +
-                    $"{"Name",-30} " +
-                    $"{"Code",-10} " +
-                    $"{"Symbol",-10} " +
-                    $"{"Active",-7}");
-
-                Console.WriteLine(new string('-', 67));
-
-                foreach (var currency in currencies)
-                {
-                    Console.WriteLine(
-                        $"{currency.CurrencyId,4}  " +
-                        $"{currency.Name,-30} " +
-                        $"{currency.Code,-10} " +
-                        $"{currency.Symbol ?? "-",-10} " +
-                        $"{(currency.IsActive ? "Yes" : "No"),-7}");
-                }
-            }
+            PrintCurrencies(currencies);
         }
         catch (Exception ex)
         {
@@ -132,30 +113,28 @@ internal sealed class CurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Currency Details ===");
+        PrintHeader();
+        Console.WriteLine("Currency Details");
         Console.WriteLine();
 
-        var currencyId =
-            MenuInput.ReadIdOrExit("Currency ID");
+        var currencyId = MenuInput.ReadIdOrExit("Currency ID");
 
         if (currencyId is null)
+        {
             return;
+        }
 
         try
         {
-            var currency =
-                await _currencyService.GetByIdAsync(
-                    currencyId.Value);
+            var currency = await _currencyService.GetByIdAsync(currencyId.Value);
 
             if (currency is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Currency with ID {currencyId.Value} was not found.");
+                Console.WriteLine($"Currency with ID {currencyId.Value} was not found.");
             }
             else
             {
-                Console.WriteLine();
                 PrintDetails(currency);
             }
         }
@@ -174,46 +153,35 @@ internal sealed class CurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Currency ===");
+        PrintHeader();
+        Console.WriteLine("Create Currency");
         Console.WriteLine();
 
         try
         {
             var model = new CreateCurrencyViewModel
             {
-                Name =
-                    MenuInput.ReadRequiredString("Name"),
-
-                Code =
-                    MenuInput.ReadRequiredString("Code"),
-
-                Symbol =
-                    MenuInput.ReadNullableString("Symbol"),
-
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                Name = MenuInput.ReadRequiredString("Name"),
+                Code = MenuInput.ReadRequiredString("Code"),
+                Symbol = MenuInput.ReadNullableString("Symbol"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
             Console.WriteLine();
             Console.WriteLine("Creating currency...");
 
-            var currency =
-                await _currencyService.CreateAsync(model);
+            var currency = await _currencyService.CreateAsync(model);
 
             if (currency is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Currency could not be created.");
+                Console.WriteLine("Currency could not be created.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Currency created successfully.");
-
-                Console.WriteLine(
-                    $"Currency ID: {currency.CurrencyId}");
+                Console.WriteLine("Currency created successfully.");
+                Console.WriteLine($"Currency ID: {currency.CurrencyId}");
             }
         }
         catch (Exception ex)
@@ -231,26 +199,25 @@ internal sealed class CurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Currency ===");
+        PrintHeader();
+        Console.WriteLine("Update Currency");
         Console.WriteLine();
 
-        var currencyId =
-            MenuInput.ReadIdOrExit("Currency ID");
+        var currencyId = MenuInput.ReadIdOrExit("Currency ID");
 
         if (currencyId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _currencyService.GetByIdAsync(
-                    currencyId.Value);
+            var current = await _currencyService.GetByIdAsync(currencyId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Currency with ID {currencyId.Value} was not found.");
+                Console.WriteLine($"Currency with ID {currencyId.Value} was not found.");
 
                 Pause();
                 return;
@@ -258,57 +225,45 @@ internal sealed class CurrencyMenu
 
             Console.Clear();
 
-            Console.WriteLine("=== Update Currency ===");
+            PrintHeader();
+            Console.WriteLine("Update Currency");
             Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
-            Console.WriteLine(
-                "Type null for Symbol to clear it.");
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
+            Console.WriteLine("Type null for Symbol to clear it.");
             Console.WriteLine();
 
             var model = new UpdateCurrencyViewModel
             {
-                CurrencyId =
-                    current.CurrencyId,
-
-                Name =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Name",
-                        current.Name),
-
-                Code =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Code",
-                        current.Code),
-
-                Symbol =
-                    MenuInput.ReadKeepCurrentString(
-                        "Symbol",
-                        current.Symbol),
-
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                CurrencyId = current.CurrencyId,
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name),
+                Code = MenuInput.ReadKeepCurrentRequiredString("Code", current.Code),
+                Symbol = MenuInput.ReadKeepCurrentString("Symbol", current.Symbol),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
+
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
             Console.WriteLine();
             Console.WriteLine("Updating currency...");
 
-            var currency =
-                await _currencyService.UpdateAsync(model);
+            var currency = await _currencyService.UpdateAsync(model);
 
             if (currency is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Currency could not be updated.");
+                Console.WriteLine("Currency could not be updated.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Currency updated successfully.");
+                Console.WriteLine("Currency updated successfully.");
             }
         }
         catch (Exception ex)
@@ -330,68 +285,49 @@ internal sealed class CurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine(
-            "=== Activate / Deactivate Currency ===");
+        PrintHeader();
+        Console.WriteLine("Activate / Deactivate Currency");
         Console.WriteLine();
 
-        var currencyId =
-            MenuInput.ReadIdOrExit("Currency ID");
+        var currencyId = MenuInput.ReadIdOrExit("Currency ID");
 
         if (currencyId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _currencyService.GetByIdAsync(
-                    currencyId.Value);
+            var current = await _currencyService.GetByIdAsync(currencyId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Currency with ID {currencyId.Value} was not found.");
+                Console.WriteLine($"Currency with ID {currencyId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
+            PrintStatusChange(current);
+
+            var newStatus = !current.IsActive;
+            var expectedConfirmation = newStatus ? "ACTIVATE" : "DEACTIVATE";
+
             Console.WriteLine();
-            Console.WriteLine(
-                $"Currency: {current.Name}");
-
-            Console.WriteLine(
-                $"Code: {current.Code}");
-
-            Console.WriteLine(
-                $"Current status: " +
-                $"{(current.IsActive ? "Active" : "Inactive")}");
+            Console.WriteLine($"New status: {(newStatus ? "Active" : "Inactive")}");
 
             Console.WriteLine();
 
-            var newStatus =
-                !current.IsActive;
-
-            Console.WriteLine(
-                $"New status: " +
-                $"{(newStatus ? "Active" : "Inactive")}");
-
-            Console.WriteLine();
-
-            var confirmation =
-                MenuInput.ReadRequiredString(
-                    $"Type {(newStatus ? "ACTIVATE" : "DEACTIVATE")} to confirm");
+            var confirmation = MenuInput.ReadRequiredString($"Type {expectedConfirmation} to confirm");
 
             if (!string.Equals(
                     confirmation,
-                    newStatus
-                        ? "ACTIVATE"
-                        : "DEACTIVATE",
+                    expectedConfirmation,
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Action cancelled.");
+                Console.WriteLine("Action cancelled.");
 
                 Pause();
                 return;
@@ -399,11 +335,8 @@ internal sealed class CurrencyMenu
 
             var model = new SetCurrencyActiveViewModel
             {
-                CurrencyId =
-                    current.CurrencyId,
-
-                IsActive =
-                    newStatus
+                CurrencyId = current.CurrencyId,
+                IsActive = newStatus
             };
 
             Console.WriteLine();
@@ -412,14 +345,12 @@ internal sealed class CurrencyMenu
                     ? "Activating currency..."
                     : "Deactivating currency...");
 
-            var currency =
-                await _currencyService.SetActiveAsync(model);
+            var currency = await _currencyService.SetActiveAsync(model);
 
             if (currency is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Currency status could not be changed.");
+                Console.WriteLine("Currency status could not be changed.");
             }
             else
             {
@@ -433,8 +364,7 @@ internal sealed class CurrencyMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error changing currency status.");
+            Console.WriteLine("Error changing currency status.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -446,23 +376,91 @@ internal sealed class CurrencyMenu
     // Display helpers
     // ============================================================
 
-    private static void PrintDetails(
-        CurrencyDetailsViewModel currency)
+    private static void PrintHeader()
     {
-        Console.WriteLine(
-            $"Currency ID: {currency.CurrencyId}");
+        Console.WriteLine("=== Currencies ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintCurrencies(IReadOnlyList<CurrencyListItemViewModel> currencies)
+    {
+        if (currencies.Count == 0)
+        {
+            Console.WriteLine("No currencies found.");
+            return;
+        }
 
         Console.WriteLine(
-            $"Name: {currency.Name}");
+            $"{"ID",4}  " +
+            $"{"Name",-30} " +
+            $"{"Code",-10} " +
+            $"{"Symbol",-10} " +
+            $"{"Active",-7}");
 
-        Console.WriteLine(
-            $"Code: {currency.Code}");
+        Console.WriteLine(new string('-', 67));
 
-        Console.WriteLine(
-            $"Symbol: {currency.Symbol ?? "-"}");
+        foreach (var currency in currencies)
+        {
+            Console.WriteLine(
+                $"{currency.CurrencyId,4}  " +
+                $"{currency.Name,-30} " +
+                $"{currency.Code,-10} " +
+                $"{currency.Symbol ?? "-",-10} " +
+                $"{(currency.IsActive ? "Yes" : "No"),-7}");
+        }
+    }
 
-        Console.WriteLine(
-            $"Active: {(currency.IsActive ? "Yes" : "No")}");
+    private static void PrintDetails(CurrencyDetailsViewModel currency)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Currency ID: {currency.CurrencyId}");
+        Console.WriteLine($"Name:        {currency.Name}");
+        Console.WriteLine($"Code:        {currency.Code}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Symbol ---");
+        Console.WriteLine($"Symbol:      {currency.Symbol ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:      {(currency.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintUpdateSummary(UpdateCurrencyViewModel currency)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Currency ID: {currency.CurrencyId}");
+        Console.WriteLine($"Name:        {currency.Name}");
+        Console.WriteLine($"Code:        {currency.Code}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Symbol ---");
+        Console.WriteLine($"Symbol:      {currency.Symbol ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:      {(currency.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintStatusChange(CurrencyDetailsViewModel currency)
+    {
+        Console.WriteLine("--- Currency ---");
+        Console.WriteLine($"Currency ID: {currency.CurrencyId}");
+        Console.WriteLine($"Name:        {currency.Name}");
+        Console.WriteLine($"Code:        {currency.Code}");
+        Console.WriteLine($"Symbol:      {currency.Symbol ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Status ---");
+        Console.WriteLine($"Active:      {(currency.IsActive ? "Yes" : "No")}");
     }
 
     // ============================================================

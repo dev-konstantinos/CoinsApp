@@ -12,8 +12,7 @@ internal sealed class CountryMenu
     {
         _countryService =
             countryService
-            ?? throw new ArgumentNullException(
-                nameof(countryService));
+            ?? throw new ArgumentNullException(nameof(countryService));
     }
 
     // ============================================================
@@ -26,10 +25,10 @@ internal sealed class CountryMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Countries ===");
-            Console.WriteLine();
+            PrintHeader();
+
             Console.WriteLine("1. List countries");
-            Console.WriteLine("2. Country detailed information");
+            Console.WriteLine("2. Country details");
             Console.WriteLine("3. Create country");
             Console.WriteLine("4. Update country");
             Console.WriteLine("5. Activate / Deactivate country");
@@ -38,38 +37,46 @@ internal sealed class CountryMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 4:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await SetActiveAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Pause();
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
                     break;
             }
         }
@@ -83,37 +90,13 @@ internal sealed class CountryMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Countries ===");
-        Console.WriteLine();
+        PrintHeader();
 
         try
         {
-            var countries =
-                await _countryService.GetAllAsync();
+            var countries = await _countryService.GetAllAsync();
 
-            if (countries.Count == 0)
-            {
-                Console.WriteLine("No countries found.");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"{"ID",4}  " +
-                    $"{"Name",-35} " +
-                    $"{"Code",-10} " +
-                    $"{"Active",-7}");
-
-                Console.WriteLine(new string('-', 62));
-
-                foreach (var country in countries)
-                {
-                    Console.WriteLine(
-                        $"{country.CountryId,4}  " +
-                        $"{country.Name,-35} " +
-                        $"{country.Code,-10} " +
-                        $"{(country.IsActive ? "Yes" : "No"),-7}");
-                }
-            }
+            PrintCountries(countries);
         }
         catch (Exception ex)
         {
@@ -130,30 +113,28 @@ internal sealed class CountryMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Country Details ===");
+        PrintHeader();
+        Console.WriteLine("Country Details");
         Console.WriteLine();
 
-        var countryId =
-            MenuInput.ReadIdOrExit("Country ID");
+        var countryId = MenuInput.ReadIdOrExit("Country ID");
 
         if (countryId is null)
+        {
             return;
+        }
 
         try
         {
-            var country =
-                await _countryService.GetByIdAsync(
-                    countryId.Value);
+            var country = await _countryService.GetByIdAsync(countryId.Value);
 
             if (country is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Country with ID {countryId.Value} was not found.");
+                Console.WriteLine($"Country with ID {countryId.Value} was not found.");
             }
             else
             {
-                Console.WriteLine();
                 PrintDetails(country);
             }
         }
@@ -172,43 +153,34 @@ internal sealed class CountryMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Country ===");
+        PrintHeader();
+        Console.WriteLine("Create Country");
         Console.WriteLine();
 
         try
         {
             var model = new CreateCountryViewModel
             {
-                Name =
-                    MenuInput.ReadRequiredString("Name"),
-
-                Code =
-                    MenuInput.ReadRequiredString("Code"),
-
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                Name = MenuInput.ReadRequiredString("Name"),
+                Code = MenuInput.ReadRequiredString("Code"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
             Console.WriteLine();
             Console.WriteLine("Creating country...");
 
-            var country =
-                await _countryService.CreateAsync(model);
+            var country = await _countryService.CreateAsync(model);
 
             if (country is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Country could not be created.");
+                Console.WriteLine("Country could not be created.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Country created successfully.");
-
-                Console.WriteLine(
-                    $"Country ID: {country.CountryId}");
+                Console.WriteLine("Country created successfully.");
+                Console.WriteLine($"Country ID: {country.CountryId}");
             }
         }
         catch (Exception ex)
@@ -226,20 +198,20 @@ internal sealed class CountryMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Country ===");
+        PrintHeader();
+        Console.WriteLine("Update Country");
         Console.WriteLine();
 
-        var countryId =
-            MenuInput.ReadIdOrExit("Country ID");
+        var countryId = MenuInput.ReadIdOrExit("Country ID");
 
         if (countryId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _countryService.GetByIdAsync(
-                    countryId.Value);
+            var current = await _countryService.GetByIdAsync(countryId.Value);
 
             if (current is null)
             {
@@ -253,50 +225,43 @@ internal sealed class CountryMenu
 
             Console.Clear();
 
-            Console.WriteLine("=== Update Country ===");
+            PrintHeader();
+            Console.WriteLine("Update Country");
             Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
             var model = new UpdateCountryViewModel
             {
-                CountryId =
-                    current.CountryId,
-
-                Name =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Name",
-                        current.Name),
-
-                Code =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Code",
-                        current.Code),
-
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                CountryId = current.CountryId,
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name),
+                Code = MenuInput.ReadKeepCurrentRequiredString("Code", current.Code),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
+
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
             Console.WriteLine();
             Console.WriteLine("Updating country...");
 
-            var country =
-                await _countryService.UpdateAsync(model);
+            var country = await _countryService.UpdateAsync(model);
 
             if (country is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Country could not be updated.");
+                Console.WriteLine("Country could not be updated.");
             }
             else
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Country updated successfully.");
+                Console.WriteLine("Country updated successfully.");
             }
         }
         catch (Exception ex)
@@ -318,68 +283,50 @@ internal sealed class CountryMenu
     {
         Console.Clear();
 
-        Console.WriteLine(
-            "=== Activate / Deactivate Country ===");
+        PrintHeader();
+        Console.WriteLine("Activate / Deactivate Country");
         Console.WriteLine();
 
-        var countryId =
-            MenuInput.ReadIdOrExit("Country ID");
+        var countryId = MenuInput.ReadIdOrExit("Country ID");
 
         if (countryId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _countryService.GetByIdAsync(
-                    countryId.Value);
+            var current = await _countryService.GetByIdAsync(countryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Country with ID {countryId.Value} was not found.");
+                Console.WriteLine($"Country with ID {countryId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
-            Console.WriteLine();
-            Console.WriteLine(
-                $"Country: {current.Name}");
+            PrintStatusChange(current);
 
-            Console.WriteLine(
-                $"Code: {current.Code}");
-
-            Console.WriteLine(
-                $"Current status: " +
-                $"{(current.IsActive ? "Active" : "Inactive")}");
+            var newStatus = !current.IsActive;
+            var expectedConfirmation = newStatus ? "ACTIVATE" : "DEACTIVATE";
 
             Console.WriteLine();
-
-            var newStatus =
-                !current.IsActive;
-
-            Console.WriteLine(
-                $"New status: " +
-                $"{(newStatus ? "Active" : "Inactive")}");
+            Console.WriteLine($"New status: {(newStatus ? "Active" : "Inactive")}");
 
             Console.WriteLine();
 
             var confirmation =
-                MenuInput.ReadRequiredString(
-                    $"Type {(newStatus ? "ACTIVATE" : "DEACTIVATE")} to confirm");
+                MenuInput.ReadRequiredString($"Type {expectedConfirmation} to confirm");
 
             if (!string.Equals(
                     confirmation,
-                    newStatus
-                        ? "ACTIVATE"
-                        : "DEACTIVATE",
+                    expectedConfirmation,
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Action cancelled.");
+                Console.WriteLine("Action cancelled.");
 
                 Pause();
                 return;
@@ -387,11 +334,8 @@ internal sealed class CountryMenu
 
             var model = new SetCountryActiveViewModel
             {
-                CountryId =
-                    current.CountryId,
-
-                IsActive =
-                    newStatus
+                CountryId = current.CountryId,
+                IsActive = newStatus
             };
 
             Console.WriteLine();
@@ -400,14 +344,12 @@ internal sealed class CountryMenu
                     ? "Activating country..."
                     : "Deactivating country...");
 
-            var country =
-                await _countryService.SetActiveAsync(model);
+            var country = await _countryService.SetActiveAsync(model);
 
             if (country is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Country status could not be changed.");
+                Console.WriteLine("Country status could not be changed.");
             }
             else
             {
@@ -421,8 +363,7 @@ internal sealed class CountryMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error changing country status.");
+            Console.WriteLine("Error changing country status.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -434,20 +375,77 @@ internal sealed class CountryMenu
     // Display helpers
     // ============================================================
 
-    private static void PrintDetails(
-        CountryDetailsViewModel country)
+    private static void PrintHeader()
     {
-        Console.WriteLine(
-            $"Country ID: {country.CountryId}");
+        Console.WriteLine("=== Countries ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintCountries(IReadOnlyList<CountryListItemViewModel> countries)
+    {
+        if (countries.Count == 0)
+        {
+            Console.WriteLine("No countries found.");
+            return;
+        }
 
         Console.WriteLine(
-            $"Name: {country.Name}");
+            $"{"ID",4}  " +
+            $"{"Name",-35} " +
+            $"{"Code",-10} " +
+            $"{"Active",-7}");
 
-        Console.WriteLine(
-            $"Code: {country.Code}");
+        Console.WriteLine(new string('-', 62));
 
-        Console.WriteLine(
-            $"Active: {(country.IsActive ? "Yes" : "No")}");
+        foreach (var country in countries)
+        {
+            Console.WriteLine(
+                $"{country.CountryId,4}  " +
+                $"{country.Name,-35} " +
+                $"{country.Code,-10} " +
+                $"{(country.IsActive ? "Yes" : "No"),-7}");
+        }
+    }
+
+    private static void PrintDetails(CountryDetailsViewModel country)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Country ID: {country.CountryId}");
+        Console.WriteLine($"Name:       {country.Name}");
+        Console.WriteLine($"Code:       {country.Code}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:     {(country.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintUpdateSummary(UpdateCountryViewModel country)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Country ID: {country.CountryId}");
+        Console.WriteLine($"Name:       {country.Name}");
+        Console.WriteLine($"Code:       {country.Code}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:     {(country.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintStatusChange(CountryDetailsViewModel country)
+    {
+        Console.WriteLine("--- Country ---");
+        Console.WriteLine($"Country ID: {country.CountryId}");
+        Console.WriteLine($"Name:       {country.Name}");
+        Console.WriteLine($"Code:       {country.Code}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Status ---");
+        Console.WriteLine($"Active:     {(country.IsActive ? "Yes" : "No")}");
     }
 
     // ============================================================
