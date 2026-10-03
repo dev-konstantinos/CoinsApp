@@ -15,6 +15,10 @@ internal sealed class ContactMenu
             ?? throw new ArgumentNullException(nameof(contactService));
     }
 
+    // ============================================================
+    // Navigation
+    // ============================================================
+
     public async Task RunAsync()
     {
         while (true)
@@ -86,6 +90,11 @@ internal sealed class ContactMenu
             }
         }
     }
+
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -386,6 +395,10 @@ internal sealed class ContactMenu
 
         Console.ReadLine();
     }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static string ReadKeepCurrentRequiredString(
         string label,

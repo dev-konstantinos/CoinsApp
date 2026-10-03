@@ -12,8 +12,13 @@ internal sealed class CurrencyMenu
     {
         _currencyService =
             currencyService
-            ?? throw new ArgumentNullException(nameof(currencyService));
+            ?? throw new ArgumentNullException(
+                nameof(currencyService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -69,6 +74,10 @@ internal sealed class CurrencyMenu
             }
         }
     }
+
+    // ============================================================
+    // CRUD
+    // ============================================================
 
     private async Task ListAsync()
     {
@@ -127,19 +136,22 @@ internal sealed class CurrencyMenu
         Console.WriteLine();
 
         var currencyId =
-            MenuInput.ReadRequiredId("Currency ID");
+            MenuInput.ReadIdOrExit("Currency ID");
+
+        if (currencyId is null)
+            return;
 
         try
         {
             var currency =
                 await _currencyService.GetByIdAsync(
-                    currencyId);
+                    currencyId.Value);
 
             if (currency is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Currency with ID {currencyId} was not found.");
+                    $"Currency with ID {currencyId.Value} was not found.");
             }
             else
             {
@@ -199,6 +211,7 @@ internal sealed class CurrencyMenu
                 Console.WriteLine();
                 Console.WriteLine(
                     "Currency created successfully.");
+
                 Console.WriteLine(
                     $"Currency ID: {currency.CurrencyId}");
             }
@@ -222,19 +235,22 @@ internal sealed class CurrencyMenu
         Console.WriteLine();
 
         var currencyId =
-            MenuInput.ReadRequiredId("Currency ID");
+            MenuInput.ReadIdOrExit("Currency ID");
+
+        if (currencyId is null)
+            return;
 
         try
         {
             var current =
                 await _currencyService.GetByIdAsync(
-                    currencyId);
+                    currencyId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Currency with ID {currencyId} was not found.");
+                    $"Currency with ID {currencyId.Value} was not found.");
 
                 Pause();
                 return;
@@ -306,6 +322,10 @@ internal sealed class CurrencyMenu
         Pause();
     }
 
+    // ============================================================
+    // Domain actions
+    // ============================================================
+
     private async Task SetActiveAsync()
     {
         Console.Clear();
@@ -315,19 +335,22 @@ internal sealed class CurrencyMenu
         Console.WriteLine();
 
         var currencyId =
-            MenuInput.ReadRequiredId("Currency ID");
+            MenuInput.ReadIdOrExit("Currency ID");
+
+        if (currencyId is null)
+            return;
 
         try
         {
             var current =
                 await _currencyService.GetByIdAsync(
-                    currencyId);
+                    currencyId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Currency with ID {currencyId} was not found.");
+                    $"Currency with ID {currencyId.Value} was not found.");
 
                 Pause();
                 return;
@@ -336,11 +359,14 @@ internal sealed class CurrencyMenu
             Console.WriteLine();
             Console.WriteLine(
                 $"Currency: {current.Name}");
+
             Console.WriteLine(
                 $"Code: {current.Code}");
+
             Console.WriteLine(
                 $"Current status: " +
                 $"{(current.IsActive ? "Active" : "Inactive")}");
+
             Console.WriteLine();
 
             var newStatus =
@@ -358,7 +384,9 @@ internal sealed class CurrencyMenu
 
             if (!string.Equals(
                     confirmation,
-                    newStatus ? "ACTIVATE" : "DEACTIVATE",
+                    newStatus
+                        ? "ACTIVATE"
+                        : "DEACTIVATE",
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
@@ -414,6 +442,10 @@ internal sealed class CurrencyMenu
         Pause();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintDetails(
         CurrencyDetailsViewModel currency)
     {
@@ -432,6 +464,10 @@ internal sealed class CurrencyMenu
         Console.WriteLine(
             $"Active: {(currency.IsActive ? "Yes" : "No")}");
     }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static void Pause()
     {

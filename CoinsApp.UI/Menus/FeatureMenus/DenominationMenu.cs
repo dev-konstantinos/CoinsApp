@@ -12,8 +12,13 @@ internal sealed class DenominationMenu
     {
         _denominationService =
             denominationService
-            ?? throw new ArgumentNullException(nameof(denominationService));
+            ?? throw new ArgumentNullException(
+                nameof(denominationService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -66,6 +71,10 @@ internal sealed class DenominationMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -75,7 +84,8 @@ internal sealed class DenominationMenu
 
         try
         {
-            var items = await _denominationService.GetAllAsync();
+            var items =
+                await _denominationService.GetAllAsync();
 
             if (items.Count == 0)
             {
@@ -122,18 +132,23 @@ internal sealed class DenominationMenu
         Console.WriteLine();
 
         var denominationId =
-            MenuInput.ReadRequiredId("Denomination ID");
+            MenuInput.ReadIdOrExit("Denomination ID");
+
+        if (denominationId is null)
+            return;
 
         try
         {
             var denomination =
-                await _denominationService.GetByIdAsync(denominationId);
+                await _denominationService.GetByIdAsync(
+                    denominationId.Value);
 
             if (denomination is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Denomination with ID {denominationId} was not found.");
+                    $"Denomination with ID " +
+                    $"{denominationId.Value} was not found.");
             }
             else
             {
@@ -190,7 +205,8 @@ internal sealed class DenominationMenu
             {
                 Console.WriteLine(
                     $"Denomination created successfully. " +
-                    $"Denomination ID: {denomination.DenominationId}");
+                    $"Denomination ID: " +
+                    $"{denomination.DenominationId}");
             }
         }
         catch (Exception ex)
@@ -212,18 +228,23 @@ internal sealed class DenominationMenu
         Console.WriteLine();
 
         var denominationId =
-            MenuInput.ReadRequiredId("Denomination ID");
+            MenuInput.ReadIdOrExit("Denomination ID");
+
+        if (denominationId is null)
+            return;
 
         try
         {
             var current =
-                await _denominationService.GetByIdAsync(denominationId);
+                await _denominationService.GetByIdAsync(
+                    denominationId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Denomination with ID {denominationId} was not found.");
+                    $"Denomination with ID " +
+                    $"{denominationId.Value} was not found.");
 
                 Pause();
                 return;
@@ -281,6 +302,10 @@ internal sealed class DenominationMenu
         Pause();
     }
 
+    // ============================================================
+    // Domain actions
+    // ============================================================
+
     private async Task SetActiveAsync()
     {
         Console.Clear();
@@ -290,18 +315,23 @@ internal sealed class DenominationMenu
         Console.WriteLine();
 
         var denominationId =
-            MenuInput.ReadRequiredId("Denomination ID");
+            MenuInput.ReadIdOrExit("Denomination ID");
+
+        if (denominationId is null)
+            return;
 
         try
         {
             var current =
-                await _denominationService.GetByIdAsync(denominationId);
+                await _denominationService.GetByIdAsync(
+                    denominationId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Denomination with ID {denominationId} was not found.");
+                    $"Denomination with ID " +
+                    $"{denominationId.Value} was not found.");
 
                 Pause();
                 return;
@@ -313,15 +343,19 @@ internal sealed class DenominationMenu
             Console.WriteLine();
             Console.WriteLine(
                 $"Denomination: {current.DisplayName}");
+
             Console.WriteLine(
                 $"Currency: {current.CurrencyName} " +
                 $"({current.CurrencyCode})");
+
             Console.WriteLine(
                 $"Current status: " +
                 $"{(current.IsActive ? "Active" : "Inactive")}");
+
             Console.WriteLine(
                 $"New status: " +
                 $"{(newStatus ? "Active" : "Inactive")}");
+
             Console.WriteLine();
 
             var confirmation =
@@ -330,7 +364,9 @@ internal sealed class DenominationMenu
 
             if (!string.Equals(
                     confirmation,
-                    newStatus ? "ACTIVATE" : "DEACTIVATE",
+                    newStatus
+                        ? "ACTIVATE"
+                        : "DEACTIVATE",
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
@@ -344,8 +380,11 @@ internal sealed class DenominationMenu
                 await _denominationService.SetActiveAsync(
                     new SetDenominationActiveViewModel
                     {
-                        DenominationId = current.DenominationId,
-                        IsActive = newStatus
+                        DenominationId =
+                            current.DenominationId,
+
+                        IsActive =
+                            newStatus
                     });
 
             Console.WriteLine();
@@ -375,6 +414,10 @@ internal sealed class DenominationMenu
         Pause();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintDetails(
         DenominationDetailsViewModel denomination)
     {
@@ -395,6 +438,10 @@ internal sealed class DenominationMenu
         Console.WriteLine(
             $"Active: {(denomination.IsActive ? "Yes" : "No")}");
     }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static void Pause()
     {

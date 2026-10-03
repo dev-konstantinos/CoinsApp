@@ -17,6 +17,10 @@ internal sealed class CountryCurrencyMenu
                 nameof(countryCurrencyService));
     }
 
+    // ============================================================
+    // Navigation
+    // ============================================================
+
     public async Task RunAsync()
     {
         while (true)
@@ -77,6 +81,10 @@ internal sealed class CountryCurrencyMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -107,24 +115,28 @@ internal sealed class CountryCurrencyMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Country-Currency Relationship Details ===");
+        Console.WriteLine(
+            "=== Country-Currency Relationship Details ===");
         Console.WriteLine();
 
         var relationshipId =
-            MenuInput.ReadRequiredId("CountryCurrency ID");
+            MenuInput.ReadIdOrExit("CountryCurrency ID");
+
+        if (relationshipId is null)
+            return;
 
         try
         {
             var relationship =
                 await _countryCurrencyService.GetByIdAsync(
-                    relationshipId);
+                    relationshipId.Value);
 
             if (relationship is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Country-currency relationship with ID " +
-                    $"{relationshipId} was not found.");
+                    $"{relationshipId.Value} was not found.");
             }
             else
             {
@@ -144,71 +156,12 @@ internal sealed class CountryCurrencyMenu
         Pause();
     }
 
-    private async Task ListByCountryAsync()
-    {
-        Console.Clear();
-
-        Console.WriteLine("=== Country-Currency Relationships by Country ===");
-        Console.WriteLine();
-
-        var countryId =
-            MenuInput.ReadRequiredId("Country ID");
-
-        try
-        {
-            var relationships =
-                await _countryCurrencyService.GetByCountryAsync(
-                    countryId);
-
-            PrintList(relationships);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "Error loading relationships for country.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-
-        Pause();
-    }
-
-    private async Task ListByCurrencyAsync()
-    {
-        Console.Clear();
-
-        Console.WriteLine("=== Country-Currency Relationships by Currency ===");
-        Console.WriteLine();
-
-        var currencyId =
-            MenuInput.ReadRequiredId("Currency ID");
-
-        try
-        {
-            var relationships =
-                await _countryCurrencyService.GetByCurrencyAsync(
-                    currencyId);
-
-            PrintList(relationships);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "Error loading relationships for currency.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-
-        Pause();
-    }
-
     private async Task CreateAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Country-Currency Relationship ===");
+        Console.WriteLine(
+            "=== Create Country-Currency Relationship ===");
         Console.WriteLine();
 
         try
@@ -261,6 +214,82 @@ internal sealed class CountryCurrencyMenu
         Pause();
     }
 
+    // ============================================================
+    // Filtered lists
+    // ============================================================
+
+    private async Task ListByCountryAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine(
+            "=== Country-Currency Relationships by Country ===");
+        Console.WriteLine();
+
+        var countryId =
+            MenuInput.ReadIdOrExit("Country ID");
+
+        if (countryId is null)
+            return;
+
+        try
+        {
+            var relationships =
+                await _countryCurrencyService.GetByCountryAsync(
+                    countryId.Value);
+
+            PrintList(relationships);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "Error loading relationships for country.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
+    private async Task ListByCurrencyAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine(
+            "=== Country-Currency Relationships by Currency ===");
+        Console.WriteLine();
+
+        var currencyId =
+            MenuInput.ReadIdOrExit("Currency ID");
+
+        if (currencyId is null)
+            return;
+
+        try
+        {
+            var relationships =
+                await _countryCurrencyService.GetByCurrencyAsync(
+                    currencyId.Value);
+
+            PrintList(relationships);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "Error loading relationships for currency.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
+    // ============================================================
+    // Domain actions
+    // ============================================================
+
     private async Task SetActiveAsync()
     {
         Console.Clear();
@@ -270,20 +299,23 @@ internal sealed class CountryCurrencyMenu
         Console.WriteLine();
 
         var relationshipId =
-            MenuInput.ReadRequiredId("CountryCurrency ID");
+            MenuInput.ReadIdOrExit("CountryCurrency ID");
+
+        if (relationshipId is null)
+            return;
 
         try
         {
             var current =
                 await _countryCurrencyService.GetByIdAsync(
-                    relationshipId);
+                    relationshipId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Country-currency relationship with ID " +
-                    $"{relationshipId} was not found.");
+                    $"{relationshipId.Value} was not found.");
 
                 Pause();
                 return;
@@ -377,6 +409,10 @@ internal sealed class CountryCurrencyMenu
         Pause();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintList(
         IReadOnlyList<CountryCurrencyListItemViewModel>
             relationships)
@@ -446,6 +482,10 @@ internal sealed class CountryCurrencyMenu
             $"Active: " +
             $"{(relationship.IsActive ? "Yes" : "No")}");
     }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static void Pause()
     {

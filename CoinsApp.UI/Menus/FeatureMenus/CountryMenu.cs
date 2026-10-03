@@ -12,8 +12,13 @@ internal sealed class CountryMenu
     {
         _countryService =
             countryService
-            ?? throw new ArgumentNullException(nameof(countryService));
+            ?? throw new ArgumentNullException(
+                nameof(countryService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -70,6 +75,10 @@ internal sealed class CountryMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -125,19 +134,22 @@ internal sealed class CountryMenu
         Console.WriteLine();
 
         var countryId =
-            MenuInput.ReadRequiredId("Country ID");
+            MenuInput.ReadIdOrExit("Country ID");
+
+        if (countryId is null)
+            return;
 
         try
         {
             var country =
                 await _countryService.GetByIdAsync(
-                    countryId);
+                    countryId.Value);
 
             if (country is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Country with ID {countryId} was not found.");
+                    $"Country with ID {countryId.Value} was not found.");
             }
             else
             {
@@ -194,6 +206,7 @@ internal sealed class CountryMenu
                 Console.WriteLine();
                 Console.WriteLine(
                     "Country created successfully.");
+
                 Console.WriteLine(
                     $"Country ID: {country.CountryId}");
             }
@@ -217,19 +230,22 @@ internal sealed class CountryMenu
         Console.WriteLine();
 
         var countryId =
-            MenuInput.ReadRequiredId("Country ID");
+            MenuInput.ReadIdOrExit("Country ID");
+
+        if (countryId is null)
+            return;
 
         try
         {
             var current =
                 await _countryService.GetByIdAsync(
-                    countryId);
+                    countryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Country with ID {countryId} was not found.");
+                    $"Country with ID {countryId.Value} was not found.");
 
                 Pause();
                 return;
@@ -294,27 +310,35 @@ internal sealed class CountryMenu
         Pause();
     }
 
+    // ============================================================
+    // Domain actions
+    // ============================================================
+
     private async Task SetActiveAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Activate / Deactivate Country ===");
+        Console.WriteLine(
+            "=== Activate / Deactivate Country ===");
         Console.WriteLine();
 
         var countryId =
-            MenuInput.ReadRequiredId("Country ID");
+            MenuInput.ReadIdOrExit("Country ID");
+
+        if (countryId is null)
+            return;
 
         try
         {
             var current =
                 await _countryService.GetByIdAsync(
-                    countryId);
+                    countryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Country with ID {countryId} was not found.");
+                    $"Country with ID {countryId.Value} was not found.");
 
                 Pause();
                 return;
@@ -323,11 +347,14 @@ internal sealed class CountryMenu
             Console.WriteLine();
             Console.WriteLine(
                 $"Country: {current.Name}");
+
             Console.WriteLine(
                 $"Code: {current.Code}");
+
             Console.WriteLine(
                 $"Current status: " +
                 $"{(current.IsActive ? "Active" : "Inactive")}");
+
             Console.WriteLine();
 
             var newStatus =
@@ -345,7 +372,9 @@ internal sealed class CountryMenu
 
             if (!string.Equals(
                     confirmation,
-                    newStatus ? "ACTIVATE" : "DEACTIVATE",
+                    newStatus
+                        ? "ACTIVATE"
+                        : "DEACTIVATE",
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
@@ -401,6 +430,10 @@ internal sealed class CountryMenu
         Pause();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintDetails(
         CountryDetailsViewModel country)
     {
@@ -416,6 +449,10 @@ internal sealed class CountryMenu
         Console.WriteLine(
             $"Active: {(country.IsActive ? "Yes" : "No")}");
     }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static void Pause()
     {
