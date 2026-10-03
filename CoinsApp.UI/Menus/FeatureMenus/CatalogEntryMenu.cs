@@ -17,6 +17,10 @@ internal sealed class CatalogEntryMenu
                 nameof(catalogEntryService));
     }
 
+    // ============================================================
+    // Navigation
+    // ============================================================
+
     public async Task RunAsync()
     {
         while (true)
@@ -82,6 +86,10 @@ internal sealed class CatalogEntryMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -115,20 +123,25 @@ internal sealed class CatalogEntryMenu
         Console.WriteLine();
 
         var catalogEntryId =
-            MenuInput.ReadRequiredId("Catalog Entry ID");
+            MenuInput.ReadIdOrExit("Catalog Entry ID");
+
+        if (catalogEntryId is null)
+        {
+            return;
+        }
 
         try
         {
             var entry =
                 await _catalogEntryService.GetByIdAsync(
-                    catalogEntryId);
+                    catalogEntryId.Value);
 
             if (entry is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Catalog entry with ID " +
-                    $"{catalogEntryId} was not found.");
+                    $"{catalogEntryId.Value} was not found.");
             }
             else
             {
@@ -141,66 +154,6 @@ internal sealed class CatalogEntryMenu
             Console.WriteLine();
             Console.WriteLine(
                 "Error loading catalog entry.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-
-        Pause();
-    }
-
-    private async Task ListByCoinAsync()
-    {
-        Console.Clear();
-
-        Console.WriteLine("=== Catalog Entries by Coin ===");
-        Console.WriteLine();
-
-        var coinId =
-            MenuInput.ReadRequiredId("Coin ID");
-
-        try
-        {
-            var entries =
-                await _catalogEntryService.GetByCoinAsync(
-                    coinId);
-
-            PrintEntries(entries);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "Error loading catalog entries.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-
-        Pause();
-    }
-
-    private async Task ListByCatalogAsync()
-    {
-        Console.Clear();
-
-        Console.WriteLine("=== Catalog Entries by Catalog ===");
-        Console.WriteLine();
-
-        var catalogId =
-            MenuInput.ReadRequiredId("Catalog ID");
-
-        try
-        {
-            var entries =
-                await _catalogEntryService.GetByCatalogAsync(
-                    catalogId);
-
-            PrintEntries(entries);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "Error loading catalog entries.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -234,7 +187,8 @@ internal sealed class CatalogEntryMenu
             };
 
             Console.WriteLine();
-            Console.WriteLine("Creating catalog entry...");
+            Console.WriteLine(
+                "Creating catalog entry...");
 
             var entry =
                 await _catalogEntryService.CreateAsync(model);
@@ -250,8 +204,10 @@ internal sealed class CatalogEntryMenu
                 Console.WriteLine();
                 Console.WriteLine(
                     "Catalog entry created successfully.");
+
                 Console.WriteLine(
-                    $"Catalog Entry ID: {entry.CatalogEntryId}");
+                    $"Catalog Entry ID: " +
+                    $"{entry.CatalogEntryId}");
             }
         }
         catch (Exception ex)
@@ -274,20 +230,25 @@ internal sealed class CatalogEntryMenu
         Console.WriteLine();
 
         var catalogEntryId =
-            MenuInput.ReadRequiredId("Catalog Entry ID");
+            MenuInput.ReadIdOrExit("Catalog Entry ID");
+
+        if (catalogEntryId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
                 await _catalogEntryService.GetByIdAsync(
-                    catalogEntryId);
+                    catalogEntryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Catalog entry with ID " +
-                    $"{catalogEntryId} was not found.");
+                    $"{catalogEntryId.Value} was not found.");
 
                 Pause();
                 return;
@@ -328,7 +289,8 @@ internal sealed class CatalogEntryMenu
             };
 
             Console.WriteLine();
-            Console.WriteLine("Updating catalog entry...");
+            Console.WriteLine(
+                "Updating catalog entry...");
 
             var updated =
                 await _catalogEntryService.UpdateAsync(model);
@@ -366,20 +328,25 @@ internal sealed class CatalogEntryMenu
         Console.WriteLine();
 
         var catalogEntryId =
-            MenuInput.ReadRequiredId("Catalog Entry ID");
+            MenuInput.ReadIdOrExit("Catalog Entry ID");
+
+        if (catalogEntryId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
                 await _catalogEntryService.GetByIdAsync(
-                    catalogEntryId);
+                    catalogEntryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Catalog entry with ID " +
-                    $"{catalogEntryId} was not found.");
+                    $"{catalogEntryId.Value} was not found.");
 
                 Pause();
                 return;
@@ -401,7 +368,8 @@ internal sealed class CatalogEntryMenu
                     StringComparison.Ordinal))
             {
                 Console.WriteLine();
-                Console.WriteLine("Delete cancelled.");
+                Console.WriteLine(
+                    "Delete cancelled.");
 
                 Pause();
                 return;
@@ -410,7 +378,8 @@ internal sealed class CatalogEntryMenu
             await _catalogEntryService.DeleteAsync(
                 new DeleteCatalogEntryViewModel
                 {
-                    CatalogEntryId = catalogEntryId
+                    CatalogEntryId =
+                        catalogEntryId.Value
                 });
 
             Console.WriteLine();
@@ -429,6 +398,86 @@ internal sealed class CatalogEntryMenu
         Pause();
     }
 
+    // ============================================================
+    // Filtered lists
+    // ============================================================
+
+    private async Task ListByCoinAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine(
+            "=== Catalog Entries by Coin ===");
+        Console.WriteLine();
+
+        var coinId =
+            MenuInput.ReadIdOrExit("Coin ID");
+
+        if (coinId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var entries =
+                await _catalogEntryService.GetByCoinAsync(
+                    coinId.Value);
+
+            PrintEntries(entries);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "Error loading catalog entries.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
+    private async Task ListByCatalogAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine(
+            "=== Catalog Entries by Catalog ===");
+        Console.WriteLine();
+
+        var catalogId =
+            MenuInput.ReadIdOrExit("Catalog ID");
+
+        if (catalogId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var entries =
+                await _catalogEntryService.GetByCatalogAsync(
+                    catalogId.Value);
+
+            PrintEntries(entries);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "Error loading catalog entries.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintEntries(
         IReadOnlyList<CatalogEntryListItemViewModel> entries)
     {
@@ -436,7 +485,9 @@ internal sealed class CatalogEntryMenu
 
         if (entries.Count == 0)
         {
-            Console.WriteLine("No catalog entries found.");
+            Console.WriteLine(
+                "No catalog entries found.");
+
             return;
         }
 
@@ -447,7 +498,8 @@ internal sealed class CatalogEntryMenu
             $"{"Catalog Number",-20} " +
             $"{"Notes",-30}");
 
-        Console.WriteLine(new string('-', 80));
+        Console.WriteLine(
+            new string('-', 80));
 
         foreach (var entry in entries)
         {
@@ -482,7 +534,9 @@ internal sealed class CatalogEntryMenu
     private static void Pause()
     {
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
+
         Console.ReadLine();
     }
 }

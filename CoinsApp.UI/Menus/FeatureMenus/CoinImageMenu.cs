@@ -17,6 +17,10 @@ internal sealed class CoinImageMenu
                 nameof(coinImageService));
     }
 
+    // ============================================================
+    // Navigation
+    // ============================================================
+
     public async Task RunAsync()
     {
         while (true)
@@ -77,6 +81,10 @@ internal sealed class CoinImageMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -94,7 +102,8 @@ internal sealed class CoinImageMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error loading coin images.");
+            Console.WriteLine(
+                "Error loading coin images.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -110,20 +119,25 @@ internal sealed class CoinImageMenu
         Console.WriteLine();
 
         var coinImageId =
-            MenuInput.ReadRequiredId("Coin Image ID");
+            MenuInput.ReadIdOrExit("Coin Image ID");
+
+        if (coinImageId is null)
+        {
+            return;
+        }
 
         try
         {
             var image =
                 await _coinImageService.GetByIdAsync(
-                    coinImageId);
+                    coinImageId.Value);
 
             if (image is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Coin image with ID " +
-                    $"{coinImageId} was not found.");
+                    $"{coinImageId.Value} was not found.");
             }
             else
             {
@@ -136,45 +150,6 @@ internal sealed class CoinImageMenu
             Console.WriteLine();
             Console.WriteLine(
                 "Error loading coin image.");
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-
-        Pause();
-    }
-
-    private async Task ListByCoinAsync()
-    {
-        Console.Clear();
-
-        Console.WriteLine("=== Coin Images by Coin ===");
-        Console.WriteLine();
-
-        var coinId =
-            MenuInput.ReadRequiredId("Coin ID");
-
-        try
-        {
-            var images =
-                await _coinImageService.GetByCoinAsync(
-                    coinId);
-
-            if (images.Count == 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine(
-                    $"No images found for Coin ID {coinId}.");
-            }
-            else
-            {
-                PrintImages(images);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "Error loading coin images.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -217,7 +192,8 @@ internal sealed class CoinImageMenu
             };
 
             Console.WriteLine();
-            Console.WriteLine("Creating coin image...");
+            Console.WriteLine(
+                "Creating coin image...");
 
             var image =
                 await _coinImageService.CreateAsync(model);
@@ -233,6 +209,7 @@ internal sealed class CoinImageMenu
                 Console.WriteLine();
                 Console.WriteLine(
                     "Coin image created successfully.");
+
                 Console.WriteLine(
                     $"Coin Image ID: {image.CoinImageId}");
             }
@@ -257,20 +234,25 @@ internal sealed class CoinImageMenu
         Console.WriteLine();
 
         var coinImageId =
-            MenuInput.ReadRequiredId("Coin Image ID");
+            MenuInput.ReadIdOrExit("Coin Image ID");
+
+        if (coinImageId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
                 await _coinImageService.GetByIdAsync(
-                    coinImageId);
+                    coinImageId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Coin image with ID " +
-                    $"{coinImageId} was not found.");
+                    $"{coinImageId.Value} was not found.");
 
                 Pause();
                 return;
@@ -280,6 +262,7 @@ internal sealed class CoinImageMenu
 
             Console.WriteLine("=== Update Coin Image ===");
             Console.WriteLine();
+
             Console.WriteLine(
                 "Press Enter to keep the current value.");
             Console.WriteLine();
@@ -320,7 +303,8 @@ internal sealed class CoinImageMenu
             };
 
             Console.WriteLine();
-            Console.WriteLine("Updating coin image...");
+            Console.WriteLine(
+                "Updating coin image...");
 
             var updated =
                 await _coinImageService.UpdateAsync(model);
@@ -358,20 +342,25 @@ internal sealed class CoinImageMenu
         Console.WriteLine();
 
         var coinImageId =
-            MenuInput.ReadRequiredId("Coin Image ID");
+            MenuInput.ReadIdOrExit("Coin Image ID");
+
+        if (coinImageId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
                 await _coinImageService.GetByIdAsync(
-                    coinImageId);
+                    coinImageId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
                     $"Coin image with ID " +
-                    $"{coinImageId} was not found.");
+                    $"{coinImageId.Value} was not found.");
 
                 Pause();
                 return;
@@ -404,7 +393,8 @@ internal sealed class CoinImageMenu
                 await _coinImageService.DeleteAsync(
                     new DeleteCoinImageViewModel
                     {
-                        CoinImageId = coinImageId
+                        CoinImageId =
+                            coinImageId.Value
                     });
 
             Console.WriteLine();
@@ -424,6 +414,60 @@ internal sealed class CoinImageMenu
         Pause();
     }
 
+    // ============================================================
+    // Filtered lists
+    // ============================================================
+
+    private async Task ListByCoinAsync()
+    {
+        Console.Clear();
+
+        Console.WriteLine(
+            "=== Coin Images by Coin ===");
+        Console.WriteLine();
+
+        var coinId =
+            MenuInput.ReadIdOrExit("Coin ID");
+
+        if (coinId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var images =
+                await _coinImageService.GetByCoinAsync(
+                    coinId.Value);
+
+            if (images.Count == 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"No images found for Coin ID " +
+                    $"{coinId.Value}.");
+            }
+            else
+            {
+                PrintImages(images);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "Error loading coin images.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
+    // ============================================================
+    // Input helpers
+    // ============================================================
+
     private static int ReadCreateSortOrder()
     {
         while (true)
@@ -439,7 +483,9 @@ internal sealed class CoinImageMenu
                 return 0;
             }
 
-            if (int.TryParse(input, out var value) &&
+            if (int.TryParse(
+                    input,
+                    out var value) &&
                 value >= 0)
             {
                 return value;
@@ -467,7 +513,9 @@ internal sealed class CoinImageMenu
                 return current;
             }
 
-            if (int.TryParse(input, out var value) &&
+            if (int.TryParse(
+                    input,
+                    out var value) &&
                 value >= 0)
             {
                 return value;
@@ -479,12 +527,18 @@ internal sealed class CoinImageMenu
         }
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
     private static void PrintImages(
         IReadOnlyList<CoinImageListItemViewModel> images)
     {
         if (images.Count == 0)
         {
-            Console.WriteLine("No coin images found.");
+            Console.WriteLine(
+                "No coin images found.");
+
             return;
         }
 

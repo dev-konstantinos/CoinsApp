@@ -12,8 +12,13 @@ internal sealed class CatalogMenu
     {
         _catalogService =
             catalogService
-            ?? throw new ArgumentNullException(nameof(catalogService));
+            ?? throw new ArgumentNullException(
+                nameof(catalogService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -70,6 +75,10 @@ internal sealed class CatalogMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
@@ -95,7 +104,8 @@ internal sealed class CatalogMenu
                     $"{"Publisher",-25} " +
                     $"{"Active",-7}");
 
-                Console.WriteLine(new string('-', 90));
+                Console.WriteLine(
+                    new string('-', 90));
 
                 foreach (var catalog in catalogs)
                 {
@@ -129,18 +139,24 @@ internal sealed class CatalogMenu
         Console.WriteLine();
 
         var catalogId =
-            MenuInput.ReadRequiredId("Catalog ID");
+            MenuInput.ReadIdOrExit("Catalog ID");
+
+        if (catalogId is null)
+        {
+            return;
+        }
 
         try
         {
             var catalog =
-                await _catalogService.GetByIdAsync(catalogId);
+                await _catalogService.GetByIdAsync(
+                    catalogId.Value);
 
             if (catalog is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Catalog with ID {catalogId} was not found.");
+                    $"Catalog with ID {catalogId.Value} was not found.");
             }
             else
             {
@@ -201,7 +217,8 @@ internal sealed class CatalogMenu
             if (catalog is null)
             {
                 Console.WriteLine();
-                Console.WriteLine("Catalog could not be created.");
+                Console.WriteLine(
+                    "Catalog could not be created.");
             }
             else
             {
@@ -232,21 +249,29 @@ internal sealed class CatalogMenu
         Console.WriteLine();
 
         var catalogId =
-            MenuInput.ReadRequiredId("Catalog ID");
+            MenuInput.ReadIdOrExit("Catalog ID");
+
+        if (catalogId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
-                await _catalogService.GetByIdAsync(catalogId);
+                await _catalogService.GetByIdAsync(
+                    catalogId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Catalog with ID {catalogId} was not found.");
+                    $"Catalog with ID {catalogId.Value} was not found.");
 
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -257,6 +282,7 @@ internal sealed class CatalogMenu
             Console.WriteLine(
                 $"Catalog ID: {current.CatalogId}");
             Console.WriteLine();
+
             Console.WriteLine(
                 "Press Enter to keep the current value.");
             Console.WriteLine();
@@ -301,7 +327,8 @@ internal sealed class CatalogMenu
             if (updated is null)
             {
                 Console.WriteLine();
-                Console.WriteLine("Catalog could not be updated.");
+                Console.WriteLine(
+                    "Catalog could not be updated.");
             }
             else
             {
@@ -331,21 +358,29 @@ internal sealed class CatalogMenu
         Console.WriteLine();
 
         var catalogId =
-            MenuInput.ReadRequiredId("Catalog ID");
+            MenuInput.ReadIdOrExit("Catalog ID");
+
+        if (catalogId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
-                await _catalogService.GetByIdAsync(catalogId);
+                await _catalogService.GetByIdAsync(
+                    catalogId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Catalog with ID {catalogId} was not found.");
+                    $"Catalog with ID {catalogId.Value} was not found.");
 
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -368,7 +403,9 @@ internal sealed class CatalogMenu
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -376,7 +413,8 @@ internal sealed class CatalogMenu
             await _catalogService.DeleteAsync(
                 new DeleteCatalogViewModel
                 {
-                    CatalogId = catalogId
+                    CatalogId =
+                        catalogId.Value
                 });
 
             Console.WriteLine();
@@ -395,6 +433,10 @@ internal sealed class CatalogMenu
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
     }
+
+    // ============================================================
+    // Display helpers
+    // ============================================================
 
     private static void PrintDetails(
         CatalogDetailsViewModel catalog)
@@ -415,6 +457,7 @@ internal sealed class CatalogMenu
             $"Description: {catalog.Description ?? "-"}");
 
         Console.WriteLine(
-            $"Status:      {(catalog.IsActive ? "Active" : "Inactive")}");
+            $"Status:      " +
+            $"{(catalog.IsActive ? "Active" : "Inactive")}");
     }
 }

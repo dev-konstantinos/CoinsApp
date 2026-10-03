@@ -12,8 +12,13 @@ internal sealed class CollectionMenu
     {
         _collectionService =
             collectionService
-            ?? throw new ArgumentNullException(nameof(collectionService));
+            ?? throw new ArgumentNullException(
+                nameof(collectionService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -30,9 +35,11 @@ internal sealed class CollectionMenu
             Console.WriteLine("5. Delete collection");
             Console.WriteLine("0. Back");
             Console.WriteLine();
+
             Console.Write("Select: ");
 
-            var input = Console.ReadLine()?.Trim();
+            var input =
+                Console.ReadLine()?.Trim();
 
             switch (input)
             {
@@ -63,12 +70,17 @@ internal sealed class CollectionMenu
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
                     Console.WriteLine();
-                    Console.WriteLine("Press Enter to continue...");
+                    Console.WriteLine(
+                        "Press Enter to continue...");
                     Console.ReadLine();
                     break;
             }
         }
     }
+
+    // ============================================================
+    // CRUD
+    // ============================================================
 
     private async Task ListAsync()
     {
@@ -84,7 +96,8 @@ internal sealed class CollectionMenu
 
             if (collections.Count == 0)
             {
-                Console.WriteLine("No collections found.");
+                Console.WriteLine(
+                    "No collections found.");
             }
             else
             {
@@ -95,7 +108,8 @@ internal sealed class CollectionMenu
                     $"{"Active",-7} " +
                     $"{"Coins",5}");
 
-                Console.WriteLine(new string('-', 75));
+                Console.WriteLine(
+                    new string('-', 75));
 
                 foreach (var collection in collections)
                 {
@@ -111,13 +125,15 @@ internal sealed class CollectionMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error loading collections.");
+            Console.WriteLine(
+                "Error loading collections.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -129,24 +145,32 @@ internal sealed class CollectionMenu
         Console.WriteLine();
 
         var collectionId =
-            MenuInput.ReadRequiredId("Collection ID");
+            MenuInput.ReadIdOrExit("Collection ID");
+
+        if (collectionId is null)
+        {
+            return;
+        }
 
         try
         {
             var collection =
-                await _collectionService.GetByIdAsync(collectionId);
+                await _collectionService.GetByIdAsync(
+                    collectionId.Value);
 
             if (collection is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Collection with ID {collectionId} was not found.");
+                    $"Collection with ID " +
+                    $"{collectionId.Value} was not found.");
             }
             else
             {
                 Console.Clear();
 
-                Console.WriteLine("=== Collection Details ===");
+                Console.WriteLine(
+                    "=== Collection Details ===");
                 Console.WriteLine();
 
                 PrintDetails(collection);
@@ -155,13 +179,15 @@ internal sealed class CollectionMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error loading collection.");
+            Console.WriteLine(
+                "Error loading collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -174,25 +200,30 @@ internal sealed class CollectionMenu
 
         try
         {
-            var model = new CreateCollectionViewModel
-            {
-                UserId =
-                    MenuInput.ReadRequiredId("User ID"),
+            var model =
+                new CreateCollectionViewModel
+                {
+                    UserId =
+                        MenuInput.ReadRequiredId(
+                            "User ID"),
 
-                Name =
-                    ReadRequiredCollectionName(),
+                    Name =
+                        ReadRequiredCollectionName(),
 
-                Description =
-                    MenuInput.ReadNullableString("Description"),
+                    Description =
+                        MenuInput.ReadNullableString(
+                            "Description"),
 
-                IsActive = true
-            };
+                    IsActive = true
+                };
 
             Console.WriteLine();
-            Console.WriteLine("Creating collection...");
+            Console.WriteLine(
+                "Creating collection...");
 
             var collectionId =
-                await _collectionService.CreateAsync(model);
+                await _collectionService.CreateAsync(
+                    model);
 
             Console.WriteLine();
             Console.WriteLine(
@@ -202,13 +233,15 @@ internal sealed class CollectionMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error creating collection.");
+            Console.WriteLine(
+                "Error creating collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -220,60 +253,80 @@ internal sealed class CollectionMenu
         Console.WriteLine();
 
         var collectionId =
-            MenuInput.ReadRequiredId("Collection ID");
+            MenuInput.ReadIdOrExit("Collection ID");
+
+        if (collectionId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
-                await _collectionService.GetByIdAsync(collectionId);
+                await _collectionService.GetByIdAsync(
+                    collectionId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Collection with ID {collectionId} was not found.");
+                    $"Collection with ID " +
+                    $"{collectionId.Value} was not found.");
 
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
                 Console.ReadLine();
+
                 return;
             }
 
             Console.Clear();
 
-            Console.WriteLine("=== Update Collection ===");
+            Console.WriteLine(
+                "=== Update Collection ===");
             Console.WriteLine(
                 $"Collection ID: {current.CollectionId}");
             Console.WriteLine();
 
-            var model = new UpdateCollectionViewModel
-            {
-                CollectionId = current.CollectionId,
+            Console.WriteLine(
+                "Press Enter to keep the current value.");
+            Console.WriteLine();
 
-                Name =
-                    ReadKeepCurrentCollectionName(current.Name),
+            var model =
+                new UpdateCollectionViewModel
+                {
+                    CollectionId =
+                        current.CollectionId,
 
-                Description =
-                    MenuInput.ReadKeepCurrentString(
-                        "Description",
-                        current.Description),
+                    Name =
+                        ReadKeepCurrentCollectionName(
+                            current.Name),
 
-                IsActive =
-                    ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
-            };
+                    Description =
+                        MenuInput.ReadKeepCurrentString(
+                            "Description",
+                            current.Description),
+
+                    IsActive =
+                        ReadKeepCurrentBoolean(
+                            "Active",
+                            current.IsActive)
+                };
 
             Console.WriteLine();
-            Console.WriteLine("Updating collection...");
+            Console.WriteLine(
+                "Updating collection...");
 
             var updated =
-                await _collectionService.UpdateAsync(model);
+                await _collectionService.UpdateAsync(
+                    model);
 
             if (updated is null)
             {
                 Console.WriteLine();
-                Console.WriteLine("Collection could not be updated.");
+                Console.WriteLine(
+                    "Collection could not be updated.");
             }
             else
             {
@@ -285,13 +338,15 @@ internal sealed class CollectionMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error updating collection.");
+            Console.WriteLine(
+                "Error updating collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
         Console.ReadLine();
     }
 
@@ -303,22 +358,31 @@ internal sealed class CollectionMenu
         Console.WriteLine();
 
         var collectionId =
-            MenuInput.ReadRequiredId("Collection ID");
+            MenuInput.ReadIdOrExit("Collection ID");
+
+        if (collectionId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
-                await _collectionService.GetByIdAsync(collectionId);
+                await _collectionService.GetByIdAsync(
+                    collectionId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Collection with ID {collectionId} was not found.");
+                    $"Collection with ID " +
+                    $"{collectionId.Value} was not found.");
 
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
                 Console.ReadLine();
+
                 return;
             }
 
@@ -338,19 +402,26 @@ internal sealed class CollectionMenu
                     StringComparison.Ordinal))
             {
                 Console.WriteLine();
-                Console.WriteLine("Delete cancelled.");
+                Console.WriteLine(
+                    "Delete cancelled.");
+
                 Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
+                Console.WriteLine(
+                    "Press Enter to continue...");
                 Console.ReadLine();
+
                 return;
             }
 
-            var model = new DeleteCollectionViewModel
-            {
-                CollectionId = collectionId
-            };
+            var model =
+                new DeleteCollectionViewModel
+                {
+                    CollectionId =
+                        collectionId.Value
+                };
 
-            await _collectionService.DeleteAsync(model);
+            await _collectionService.DeleteAsync(
+                model);
 
             Console.WriteLine();
             Console.WriteLine(
@@ -359,15 +430,21 @@ internal sealed class CollectionMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine("Error deleting collection.");
+            Console.WriteLine(
+                "Error deleting collection.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
+        Console.WriteLine(
+            "Press Enter to continue...");
         Console.ReadLine();
     }
+
+    // ============================================================
+    // Display helpers
+    // ============================================================
 
     private static void PrintDetails(
         CollectionDetailsViewModel collection)
@@ -388,7 +465,8 @@ internal sealed class CollectionMenu
             $"Description:   {collection.Description ?? "-"}");
 
         Console.WriteLine(
-            $"Active:        {(collection.IsActive ? "Yes" : "No")}");
+            $"Active:        " +
+            $"{(collection.IsActive ? "Yes" : "No")}");
 
         Console.WriteLine(
             $"Coin count:    {collection.CoinCount}");
@@ -398,17 +476,23 @@ internal sealed class CollectionMenu
             $"{collection.CreatedAt:yyyy-MM-dd HH:mm:ss}");
     }
 
+    // ============================================================
+    // Input helpers
+    // ============================================================
+
     private static string ReadRequiredCollectionName()
     {
         while (true)
         {
             Console.Write("Name: ");
 
-            var input = Console.ReadLine();
+            var input =
+                Console.ReadLine();
 
             if (!string.IsNullOrWhiteSpace(input))
             {
-                var name = input.Trim();
+                var name =
+                    input.Trim();
 
                 if (name.Length <= 150)
                 {
@@ -431,14 +515,16 @@ internal sealed class CollectionMenu
                 $"Name [{current}] " +
                 "(Enter = keep current): ");
 
-            var input = Console.ReadLine();
+            var input =
+                Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input))
             {
                 return current;
             }
 
-            var name = input.Trim();
+            var name =
+                input.Trim();
 
             if (name.Length <= 150)
             {
@@ -483,7 +569,8 @@ internal sealed class CollectionMenu
             }
 
             Console.WriteLine(
-                "Please enter y, n, or press Enter to keep the current value.");
+                "Please enter y, n, or press Enter " +
+                "to keep the current value.");
         }
     }
 }

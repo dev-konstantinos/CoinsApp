@@ -472,4 +472,31 @@ internal static class MenuInput
             Console.Write('*');
         }
     }
+
+    public static int? ReadIdOrExit(string label)
+    {
+        while (true)
+        {
+            Console.Write($"{label} (EXIT to cancel): ");
+
+            var input = Console.ReadLine()?.Trim();
+
+            if (string.Equals(
+                    input,
+                    "EXIT",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            if (int.TryParse(input, out var value) &&
+                value > 0)
+            {
+                return value;
+            }
+
+            Console.WriteLine(
+                "Please enter a valid positive ID or EXIT.");
+        }
+    }
 }
