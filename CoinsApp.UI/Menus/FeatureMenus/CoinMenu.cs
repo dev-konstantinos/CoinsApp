@@ -19,25 +19,15 @@ internal sealed class CoinMenu
         SaleMenu saleMenu,
         CoinImageMenu coinImageMenu)
     {
-        _coinService =
-            coinService
-            ?? throw new ArgumentNullException(nameof(coinService));
+        _coinService = coinService ?? throw new ArgumentNullException(nameof(coinService));
 
-        _priceHistoryMenu =
-            priceHistoryMenu
-            ?? throw new ArgumentNullException(nameof(priceHistoryMenu));
+        _priceHistoryMenu = priceHistoryMenu ?? throw new ArgumentNullException(nameof(priceHistoryMenu));
 
-        _purchaseMenu =
-            purchaseMenu
-            ?? throw new ArgumentNullException(nameof(purchaseMenu));
+        _purchaseMenu = purchaseMenu ?? throw new ArgumentNullException(nameof(purchaseMenu));
 
-        _saleMenu =
-            saleMenu
-            ?? throw new ArgumentNullException(nameof(saleMenu));
+        _saleMenu = saleMenu ?? throw new ArgumentNullException(nameof(saleMenu));
 
-        _coinImageMenu =
-            coinImageMenu
-            ?? throw new ArgumentNullException(nameof(coinImageMenu));
+        _coinImageMenu = coinImageMenu ?? throw new ArgumentNullException(nameof(coinImageMenu));
     }
 
     // ============================================================
@@ -63,57 +53,78 @@ internal sealed class CoinMenu
             Console.WriteLine("9. Images");
             Console.WriteLine("0. Back");
             Console.WriteLine();
+
             Console.Write("Select: ");
 
             var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
-                    await ListCoinsAsync();
-                    break;
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
 
-                case "2":
-                    await ShowDetailsAsync();
-                    break;
+            try
+            {
+                switch (choice)
+                {
+                    case 1:
+                        await ListCoinsAsync();
+                        break;
 
-                case "3":
-                    await CreateCoinAsync();
-                    break;
+                    case 2:
+                        await ShowDetailsAsync();
+                        break;
 
-                case "4":
-                    await UpdateCoinAsync();
-                    break;
+                    case 3:
+                        await CreateCoinAsync();
+                        break;
 
-                case "5":
-                    await DeleteCoinAsync();
-                    break;
+                    case 4:
+                        await UpdateCoinAsync();
+                        break;
 
-                case "6":
-                    await PriceHistoryAsync();
-                    break;
+                    case 5:
+                        await DeleteCoinAsync();
+                        break;
 
-                case "7":
-                    await PurchasesAsync();
-                    break;
+                    case 6:
+                        await PriceHistoryAsync();
+                        break;
 
-                case "8":
-                    await SalesAsync();
-                    break;
+                    case 7:
+                        await PurchasesAsync();
+                        break;
 
-                case "9":
-                    await ImagesAsync();
-                    break;
+                    case 8:
+                        await SalesAsync();
+                        break;
 
-                case "0":
-                    return;
+                    case 9:
+                        await ImagesAsync();
+                        break;
 
-                default:
-                    Console.WriteLine();
-                    Console.WriteLine("Invalid selection.");
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
-                    break;
+                    case 0:
+                        return;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("Invalid selection.");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("An error occurred while processing your request.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
             }
         }
     }
@@ -178,17 +189,15 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
-
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -221,80 +230,56 @@ internal sealed class CoinMenu
         {
             var model = new CreateCoinViewModel
             {
-                CollectionId =
-                    MenuInput.ReadRequiredId("Collection ID"),
+                CollectionId = MenuInput.ReadRequiredId("Collection ID"),
 
-                CountryId =
-                    MenuInput.ReadRequiredId("Country ID"),
+                CountryId = MenuInput.ReadRequiredId("Country ID"),
 
-                CurrencyId =
-                    MenuInput.ReadRequiredId("Currency ID"),
+                CurrencyId = MenuInput.ReadRequiredId("Currency ID"),
 
-                DenominationId =
-                    MenuInput.ReadRequiredId("Denomination ID"),
+                DenominationId = MenuInput.ReadRequiredId("Denomination ID"),
 
-                MintId =
-                    MenuInput.ReadNullableId("Mint ID"),
+                MintId = MenuInput.ReadNullableId("Mint ID"),
 
-                MaterialId =
-                    MenuInput.ReadNullableId("Material ID"),
+                MaterialId = MenuInput.ReadNullableId("Material ID"),
 
-                Year =
-                    MenuInput.ReadNullable<short>("Year"),
+                Year = MenuInput.ReadNullable<short>("Year"),
 
-                MintMark =
-                    MenuInput.ReadNullableString("Mint Mark"),
+                MintMark = MenuInput.ReadNullableString("Mint Mark"),
 
-                Fineness =
-                    MenuInput.ReadNullable<decimal>("Fineness"),
+                Fineness = MenuInput.ReadNullable<decimal>("Fineness"),
 
-                Weight =
-                    MenuInput.ReadNullable<decimal>("Weight"),
+                Weight = MenuInput.ReadNullable<decimal>("Weight"),
 
-                Diameter =
-                    MenuInput.ReadNullable<decimal>("Diameter"),
+                Diameter = MenuInput.ReadNullable<decimal>("Diameter"),
 
-                Thickness =
-                    MenuInput.ReadNullable<decimal>("Thickness"),
+                Thickness = MenuInput.ReadNullable<decimal>("Thickness"),
 
-                Shape =
-                    MenuInput.ReadNullableString("Shape"),
+                Shape = MenuInput.ReadNullableString("Shape"),
 
-                Description =
-                    MenuInput.ReadNullableString("Description"),
+                Description = MenuInput.ReadNullableString("Description"),
 
-                Designer =
-                    MenuInput.ReadNullableString("Designer"),
+                Designer = MenuInput.ReadNullableString("Designer"),
 
-                Mintage =
-                    MenuInput.ReadNullable<long>("Mintage"),
+                Mintage = MenuInput.ReadNullable<long>("Mintage"),
 
-                Condition =
-                    MenuInput.ReadNullableString("Condition"),
+                Condition = MenuInput.ReadNullableString("Condition"),
 
-                Grade =
-                    MenuInput.ReadNullableString("Grade"),
+                Grade = MenuInput.ReadNullableString("Grade"),
 
-                GradingCompany =
-                    MenuInput.ReadNullableString("Grading Company"),
+                GradingCompany = MenuInput.ReadNullableString("Grading Company"),
 
-                GradingCertificateNumber =
-                    MenuInput.ReadNullableString(
-                        "Grading Certificate Number"),
+                GradingCertificateNumber = MenuInput.ReadNullableString("Grading Certificate Number"),
 
-                Notes =
-                    MenuInput.ReadNullableString("Notes")
+                Notes = MenuInput.ReadNullableString("Notes")
             };
 
             Console.WriteLine();
             Console.WriteLine("Creating coin...");
 
-            var coinId =
-                await _coinService.CreateAsync(model);
+            var coinId = await _coinService.CreateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Coin created successfully. Coin ID: {coinId}");
+            Console.WriteLine($"Coin created successfully. Coin ID: {coinId}");
         }
         catch (Exception ex)
         {
@@ -325,14 +310,12 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
 
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue...");
@@ -350,118 +333,54 @@ internal sealed class CoinMenu
 
             Console.WriteLine();
             Console.WriteLine("--- Enter New Values ---");
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
+            Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
             var model = new UpdateCoinViewModel
             {
                 CoinId = coin.CoinId,
 
-                CollectionId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Collection ID",
-                        coin.CollectionId),
+                CollectionId = MenuInput.ReadKeepCurrentId("Collection ID", coin.CollectionId),
 
-                CountryId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Country ID",
-                        coin.CountryId),
+                CountryId = MenuInput.ReadKeepCurrentId("Country ID", coin.CountryId),
 
-                CurrencyId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Currency ID",
-                        coin.CurrencyId),
+                CurrencyId = MenuInput.ReadKeepCurrentId("Currency ID", coin.CurrencyId),
 
-                DenominationId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Denomination ID",
-                        coin.DenominationId),
+                DenominationId = MenuInput.ReadKeepCurrentId("Denomination ID", coin.DenominationId),
 
-                MintId =
-                    MenuInput.ReadKeepCurrentNullableId(
-                        "Mint ID",
-                        coin.MintId),
+                MintId = MenuInput.ReadKeepCurrentNullableId("Mint ID", coin.MintId),
 
-                MaterialId =
-                    MenuInput.ReadKeepCurrentNullableId(
-                        "Material ID",
-                        coin.MaterialId),
+                MaterialId = MenuInput.ReadKeepCurrentNullableId("Material ID", coin.MaterialId),
 
-                Year =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Year",
-                        coin.Year),
+                Year = MenuInput.ReadKeepCurrentNullable("Year", coin.Year),
 
-                MintMark =
-                    MenuInput.ReadKeepCurrentString(
-                        "Mint Mark",
-                        coin.MintMark),
+                MintMark = MenuInput.ReadKeepCurrentString("Mint Mark", coin.MintMark),
 
-                Fineness =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Fineness",
-                        coin.Fineness),
+                Fineness = MenuInput.ReadKeepCurrentNullable("Fineness", coin.Fineness),
 
-                Weight =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Weight",
-                        coin.Weight),
+                Weight = MenuInput.ReadKeepCurrentNullable("Weight", coin.Weight),
 
-                Diameter =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Diameter",
-                        coin.Diameter),
+                Diameter = MenuInput.ReadKeepCurrentNullable("Diameter", coin.Diameter),
 
-                Thickness =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Thickness",
-                        coin.Thickness),
+                Thickness = MenuInput.ReadKeepCurrentNullable("Thickness", coin.Thickness),
 
-                Shape =
-                    MenuInput.ReadKeepCurrentString(
-                        "Shape",
-                        coin.Shape),
+                Shape = MenuInput.ReadKeepCurrentString("Shape", coin.Shape),
 
-                Description =
-                    MenuInput.ReadKeepCurrentString(
-                        "Description",
-                        coin.Description),
+                Description = MenuInput.ReadKeepCurrentString("Description", coin.Description),
 
-                Designer =
-                    MenuInput.ReadKeepCurrentString(
-                        "Designer",
-                        coin.Designer),
+                Designer = MenuInput.ReadKeepCurrentString("Designer", coin.Designer),
 
-                Mintage =
-                    MenuInput.ReadKeepCurrentNullable(
-                        "Mintage",
-                        coin.Mintage),
+                Mintage = MenuInput.ReadKeepCurrentNullable("Mintage", coin.Mintage),
 
-                Condition =
-                    MenuInput.ReadKeepCurrentString(
-                        "Condition",
-                        coin.Condition),
+                Condition = MenuInput.ReadKeepCurrentString("Condition", coin.Condition),
 
-                Grade =
-                    MenuInput.ReadKeepCurrentString(
-                        "Grade",
-                        coin.Grade),
+                Grade = MenuInput.ReadKeepCurrentString("Grade", coin.Grade),
 
-                GradingCompany =
-                    MenuInput.ReadKeepCurrentString(
-                        "Grading Company",
-                        coin.GradingCompany),
+                GradingCompany = MenuInput.ReadKeepCurrentString("Grading Company", coin.GradingCompany),
 
-                GradingCertificateNumber =
-                    MenuInput.ReadKeepCurrentString(
-                        "Grading Certificate Number",
-                        coin.GradingCertificateNumber),
+                GradingCertificateNumber = MenuInput.ReadKeepCurrentString("Grading Certificate Number", coin.GradingCertificateNumber),
 
-                Notes =
-                    MenuInput.ReadKeepCurrentString(
-                        "Notes",
-                        coin.Notes)
+                Notes = MenuInput.ReadKeepCurrentString("Notes", coin.Notes)
             };
 
             Console.WriteLine();
@@ -473,8 +392,7 @@ internal sealed class CoinMenu
             Console.WriteLine();
             Console.Write("Save changes? (y/n): ");
 
-            var confirmation =
-                Console.ReadLine()?.Trim().ToLowerInvariant();
+            var confirmation = Console.ReadLine()?.Trim().ToLowerInvariant();
 
             if (confirmation != "y" &&
                 confirmation != "yes")
@@ -490,12 +408,10 @@ internal sealed class CoinMenu
             Console.WriteLine();
             Console.WriteLine("Updating coin...");
 
-            var updatedCoinId =
-                await _coinService.UpdateAsync(model);
+            var updatedCoinId = await _coinService.UpdateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Coin updated successfully. Coin ID: {updatedCoinId}");
+            Console.WriteLine($"Coin updated successfully. Coin ID: {updatedCoinId}");
         }
         catch (Exception ex)
         {
@@ -526,14 +442,12 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
 
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue...");
@@ -552,8 +466,7 @@ internal sealed class CoinMenu
             Console.WriteLine("=== WARNING ===");
             Console.WriteLine();
 
-            Console.WriteLine(
-                "Deleting this coin will also delete:");
+            Console.WriteLine("Deleting this coin will also delete:");
 
             Console.WriteLine("- catalog entries");
             Console.WriteLine("- images");
@@ -563,16 +476,11 @@ internal sealed class CoinMenu
 
             Console.WriteLine();
 
-            Console.Write(
-                "Type DELETE to confirm: ");
+            Console.Write("Type DELETE to confirm: ");
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            var confirmation = Console.ReadLine()?.Trim();
 
-            if (!string.Equals(
-                    confirmation,
-                    "DELETE",
-                    StringComparison.Ordinal))
+            if (!string.Equals(confirmation, "DELETE", StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
@@ -590,13 +498,10 @@ internal sealed class CoinMenu
             Console.WriteLine();
             Console.WriteLine("Deleting coin...");
 
-            var deletedCoinId =
-                await _coinService.DeleteAsync(model);
+            var deletedCoinId = await _coinService.DeleteAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Coin deleted successfully. " +
-                $"Coin ID: {deletedCoinId}");
+            Console.WriteLine($"Coin deleted successfully. " + $"Coin ID: {deletedCoinId}");
         }
         catch (Exception ex)
         {
@@ -631,17 +536,15 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
-
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -676,17 +579,15 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
-
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue...");
+
                 Console.ReadLine();
                 return;
             }
@@ -721,18 +622,15 @@ internal sealed class CoinMenu
 
         try
         {
-            var coin =
-                await _coinService.GetByIdAsync(coinId.Value);
+            var coin = await _coinService.GetByIdAsync(coinId.Value);
 
             if (coin is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Coin with ID {coinId.Value} was not found.");
+                Console.WriteLine($"Coin with ID {coinId.Value} was not found.");
 
                 Console.WriteLine();
-                Console.WriteLine(
-                    "Press Enter to continue...");
+                Console.WriteLine("Press Enter to continue...");
 
                 Console.ReadLine();
                 return;
@@ -747,8 +645,7 @@ internal sealed class CoinMenu
             Console.WriteLine();
             Console.WriteLine(ex.Message);
             Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to continue...");
+            Console.WriteLine("Press Enter to continue...");
 
             Console.ReadLine();
         }
@@ -757,7 +654,6 @@ internal sealed class CoinMenu
     private async Task ImagesAsync()
     {
         Console.Clear();
-
         Console.WriteLine("=== Coin Images ===");
         Console.WriteLine();
 
@@ -773,88 +669,65 @@ internal sealed class CoinMenu
     {
         Console.WriteLine("--- Identity ---");
 
-        Console.WriteLine(
-            $"Coin ID:        {model.CoinId}");
+        Console.WriteLine($"Coin ID:        {model.CoinId}");
 
-        Console.WriteLine(
-            $"Collection ID:  {model.CollectionId}");
+        Console.WriteLine($"Collection ID:  {model.CollectionId}");
 
-        Console.WriteLine(
-            $"Country ID:     {model.CountryId}");
+        Console.WriteLine($"Country ID:     {model.CountryId}");
 
-        Console.WriteLine(
-            $"Currency ID:    {model.CurrencyId}");
+        Console.WriteLine($"Currency ID:    {model.CurrencyId}");
 
-        Console.WriteLine(
-            $"Denomination ID:{model.DenominationId}");
+        Console.WriteLine($"Denomination ID:{model.DenominationId}");
 
-        Console.WriteLine(
-            $"Mint ID:        {model.MintId?.ToString() ?? "null"}");
+        Console.WriteLine($"Mint ID:        {model.MintId?.ToString() ?? "null"}");
 
-        Console.WriteLine(
-            $"Material ID:    {model.MaterialId?.ToString() ?? "null"}");
+        Console.WriteLine($"Material ID:    {model.MaterialId?.ToString() ?? "null"}");
 
-        Console.WriteLine(
-            $"Year:           {model.Year?.ToString() ?? "null"}");
+        Console.WriteLine($"Year:           {model.Year?.ToString() ?? "null"}");
 
-        Console.WriteLine(
-            $"Mint Mark:      {model.MintMark ?? "null"}");
+        Console.WriteLine($"Mint Mark:      {model.MintMark ?? "null"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Physical ---");
 
-        Console.WriteLine(
-            $"Fineness:       {FormatDecimal(model.Fineness)}");
+        Console.WriteLine($"Fineness:       {FormatDecimal(model.Fineness)}");
 
-        Console.WriteLine(
-            $"Weight:         {FormatDecimal(model.Weight)}");
+        Console.WriteLine($"Weight:         {FormatDecimal(model.Weight)}");
 
-        Console.WriteLine(
-            $"Diameter:       {FormatDecimal(model.Diameter)}");
+        Console.WriteLine($"Diameter:       {FormatDecimal(model.Diameter)}");
 
-        Console.WriteLine(
-            $"Thickness:      {FormatDecimal(model.Thickness)}");
+        Console.WriteLine($"Thickness:      {FormatDecimal(model.Thickness)}");
 
-        Console.WriteLine(
-            $"Shape:          {model.Shape ?? "null"}");
+        Console.WriteLine($"Shape:          {model.Shape ?? "null"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Description ---");
 
-        Console.WriteLine(
-            $"Designer:       {model.Designer ?? "null"}");
+        Console.WriteLine($"Designer:       {model.Designer ?? "null"}");
 
-        Console.WriteLine(
-            $"Mintage:        {model.Mintage?.ToString() ?? "null"}");
+        Console.WriteLine($"Mintage:        {model.Mintage?.ToString() ?? "null"}");
 
-        Console.WriteLine(
-            $"Description:    {model.Description ?? "null"}");
+        Console.WriteLine($"Description:    {model.Description ?? "null"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Condition ---");
 
-        Console.WriteLine(
-            $"Condition:      {model.Condition ?? "null"}");
+        Console.WriteLine($"Condition:      {model.Condition ?? "null"}");
 
-        Console.WriteLine(
-            $"Grade:           {model.Grade ?? "null"}");
+        Console.WriteLine($"Grade:           {model.Grade ?? "null"}");
 
-        Console.WriteLine(
-            $"Grading Company:{model.GradingCompany ?? "null"}");
+        Console.WriteLine($"Grading Company:{model.GradingCompany ?? "null"}");
 
-        Console.WriteLine(
-            $"Certificate:    " +
-            $"{model.GradingCertificateNumber ?? "null"}");
+        Console.WriteLine($"Certificate:    " + $"{model.GradingCertificateNumber ?? "null"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Notes ---");
 
-        Console.WriteLine(
-            model.Notes ?? "null");
+        Console.WriteLine(model.Notes ?? "null");
     }
 
     private static void PrintHeader()
@@ -869,8 +742,7 @@ internal sealed class CoinMenu
             $"{"Owner",-24} " +
             $"{"Current Price",16}");
 
-        Console.WriteLine(
-            new string('-', 138));
+        Console.WriteLine(new string('-', 138));
     }
 
     private static void PrintCoin(
@@ -902,83 +774,61 @@ internal sealed class CoinMenu
 
         Console.WriteLine("--- Identity ---");
 
-        Console.WriteLine(
-            $"Coin ID:        {coin.CoinId}");
+        Console.WriteLine($"Coin ID:        {coin.CoinId}");
 
-        Console.WriteLine(
-            $"Collection ID:  {coin.CollectionId}");
+        Console.WriteLine($"Collection ID:  {coin.CollectionId}");
 
-        Console.WriteLine(
-            $"Country:        {coin.CountryName}");
+        Console.WriteLine($"Country:        {coin.CountryName}");
 
-        Console.WriteLine(
-            $"Currency:       {coin.CurrencyCode} - {coin.CurrencyName}");
+        Console.WriteLine($"Currency:       {coin.CurrencyCode} - {coin.CurrencyName}");
 
-        Console.WriteLine(
-            $"Denomination:   {coin.DenominationDisplayName}");
+        Console.WriteLine($"Denomination:   {coin.DenominationDisplayName}");
 
-        Console.WriteLine(
-            $"Year:           {coin.Year?.ToString() ?? "-"}");
+        Console.WriteLine($"Year:           {coin.Year?.ToString() ?? "-"}");
 
-        Console.WriteLine(
-            $"Mint:           {coin.MintName ?? "-"}");
+        Console.WriteLine($"Mint:           {coin.MintName ?? "-"}");
 
-        Console.WriteLine(
-            $"Mint Mark:      {coin.MintMark ?? "-"}");
+        Console.WriteLine($"Mint Mark:      {coin.MintMark ?? "-"}");
 
-        Console.WriteLine(
-            $"Owner:          {coin.OwnerName ?? "-"}");
+        Console.WriteLine($"Owner:          {coin.OwnerName ?? "-"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Physical ---");
 
-        Console.WriteLine(
-            $"Material:       {coin.MaterialName ?? "-"}");
+        Console.WriteLine($"Material:       {coin.MaterialName ?? "-"}");
 
-        Console.WriteLine(
-            $"Fineness:       {FormatDecimal(coin.Fineness)}");
+        Console.WriteLine($"Fineness:       {FormatDecimal(coin.Fineness)}");
 
-        Console.WriteLine(
-            $"Weight:         {FormatDecimal(coin.Weight)}");
+        Console.WriteLine($"Weight:         {FormatDecimal(coin.Weight)}");
 
-        Console.WriteLine(
-            $"Diameter:       {FormatDecimal(coin.Diameter)}");
+        Console.WriteLine($"Diameter:       {FormatDecimal(coin.Diameter)}");
 
-        Console.WriteLine(
-            $"Thickness:      {FormatDecimal(coin.Thickness)}");
+        Console.WriteLine($"Thickness:      {FormatDecimal(coin.Thickness)}");
 
-        Console.WriteLine(
-            $"Shape:          {coin.Shape ?? "-"}");
+        Console.WriteLine($"Shape:          {coin.Shape ?? "-"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Description ---");
 
-        Console.WriteLine(
-            $"Designer:       {coin.Designer ?? "-"}");
+        Console.WriteLine($"Designer:       {coin.Designer ?? "-"}");
 
-        Console.WriteLine(
-            $"Mintage:        {coin.Mintage?.ToString() ?? "-"}");
+        Console.WriteLine($"Mintage:        {coin.Mintage?.ToString() ?? "-"}");
 
-        Console.WriteLine(
-            $"Description:    {coin.Description ?? "-"}");
+        Console.WriteLine($"Description:    {coin.Description ?? "-"}");
 
         Console.WriteLine();
 
         Console.WriteLine("--- Condition ---");
 
-        Console.WriteLine(
-            $"Condition:      {coin.Condition ?? "-"}");
+        Console.WriteLine($"Condition:      {coin.Condition ?? "-"}");
 
-        Console.WriteLine(
-            $"Grade:           {coin.Grade ?? "-"}");
+        Console.WriteLine($"Grade:           {coin.Grade ?? "-"}");
 
-        Console.WriteLine(
-            $"Grading Company:{coin.GradingCompany ?? "-"}");
+        Console.WriteLine($"Grading Company:{coin.GradingCompany ?? "-"}");
 
-        Console.WriteLine(
-            $"Certificate:    {coin.GradingCertificateNumber ?? "-"}");
+        Console.WriteLine($"Certificate:    {coin.GradingCertificateNumber ?? "-"}");
 
         Console.WriteLine();
 
@@ -1000,12 +850,10 @@ internal sealed class CoinMenu
 
         Console.WriteLine("--- Notes ---");
 
-        Console.WriteLine(
-            coin.Notes ?? "-");
+        Console.WriteLine(coin.Notes ?? "-");
     }
 
-    private static string FormatDecimal(
-        decimal? value)
+    private static string FormatDecimal(decimal? value)
     {
         return value?.ToString("0.####") ?? "-";
     }

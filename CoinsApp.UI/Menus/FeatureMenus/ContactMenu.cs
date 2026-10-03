@@ -10,9 +10,7 @@ internal sealed class ContactMenu
 
     public ContactMenu(IContactService contactService)
     {
-        _contactService =
-            contactService
-            ?? throw new ArgumentNullException(nameof(contactService));
+        _contactService = contactService ?? throw new ArgumentNullException(nameof(contactService));
     }
 
     // ============================================================
@@ -37,8 +35,7 @@ internal sealed class ContactMenu
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             if (!int.TryParse(input, out var choice))
             {
@@ -78,6 +75,7 @@ internal sealed class ContactMenu
                     default:
                         Console.WriteLine();
                         Console.WriteLine("Invalid selection.");
+                        Console.WriteLine("Press Enter to continue...");
                         Console.ReadLine();
                         break;
                 }
@@ -85,7 +83,10 @@ internal sealed class ContactMenu
             catch (Exception ex)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine("An error occurred while processing your request.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
             }
         }
@@ -116,29 +117,24 @@ internal sealed class ContactMenu
 
             foreach (var contact in contacts)
             {
-                Console.WriteLine(
-                    $"{contact.ContactId}: {contact.Name}");
+                Console.WriteLine($"{contact.ContactId}: {contact.Name}");
 
                 if (!string.IsNullOrWhiteSpace(contact.CompanyName))
                 {
-                    Console.WriteLine(
-                        $"   Company: {contact.CompanyName}");
+                    Console.WriteLine($"   Company: {contact.CompanyName}");
                 }
 
                 if (!string.IsNullOrWhiteSpace(contact.Email))
                 {
-                    Console.WriteLine(
-                        $"   Email: {contact.Email}");
+                    Console.WriteLine($"   Email: {contact.Email}");
                 }
 
                 if (!string.IsNullOrWhiteSpace(contact.Phone))
                 {
-                    Console.WriteLine(
-                        $"   Phone: {contact.Phone}");
+                    Console.WriteLine($"   Phone: {contact.Phone}");
                 }
 
-                Console.WriteLine(
-                    $"   Status: {(contact.IsActive ? "Active" : "Inactive")}");
+                Console.WriteLine($"   Status: {(contact.IsActive ? "Active" : "Inactive")}");
 
                 Console.WriteLine();
             }
@@ -146,8 +142,7 @@ internal sealed class ContactMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                $"Error loading contacts: {ex.Message}");
+            Console.WriteLine($"Error loading contacts: {ex.Message}");
         }
 
         Console.ReadLine();
@@ -167,51 +162,39 @@ internal sealed class ContactMenu
 
         try
         {
-            var contact =
-                await _contactService.GetByIdAsync(contactId.Value);
+            var contact = await _contactService.GetByIdAsync(contactId.Value);
 
             if (contact is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Contact with ID {contactId.Value} was not found.");
-
+                Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
+                
                 Console.ReadLine();
                 return;
             }
 
-            Console.WriteLine(
-                $"ID:          {contact.ContactId}");
+            Console.WriteLine($"ID:          {contact.ContactId}");
 
-            Console.WriteLine(
-                $"Name:        {contact.Name}");
+            Console.WriteLine($"Name:        {contact.Name}");
 
-            Console.WriteLine(
-                $"Company:     {contact.CompanyName ?? "-"}");
+            Console.WriteLine($"Company:     {contact.CompanyName ?? "-"}");
 
-            Console.WriteLine(
-                $"Email:       {contact.Email ?? "-"}");
+            Console.WriteLine($"Email:       {contact.Email ?? "-"}");
 
-            Console.WriteLine(
-                $"Phone:       {contact.Phone ?? "-"}");
+            Console.WriteLine($"Phone:       {contact.Phone ?? "-"}");
 
-            Console.WriteLine(
-                $"Address:     {contact.Address ?? "-"}");
+            Console.WriteLine($"Address:     {contact.Address ?? "-"}");
 
-            Console.WriteLine(
-                $"Website:     {contact.Website ?? "-"}");
+            Console.WriteLine($"Website:     {contact.Website ?? "-"}");
 
-            Console.WriteLine(
-                $"Notes:       {contact.Notes ?? "-"}");
+            Console.WriteLine($"Notes:       {contact.Notes ?? "-"}");
 
-            Console.WriteLine(
-                $"Status:      {(contact.IsActive ? "Active" : "Inactive")}");
+            Console.WriteLine($"Status:      {(contact.IsActive ? "Active" : "Inactive")}");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                $"Error loading contact: {ex.Message}");
+            Console.WriteLine($"Error loading contact: {ex.Message}");
         }
 
         Console.ReadLine();
@@ -227,43 +210,32 @@ internal sealed class ContactMenu
         {
             var model = new CreateContactViewModel
             {
-                Name =
-                    MenuInput.ReadRequiredString("Name"),
+                Name = MenuInput.ReadRequiredString("Name"),
 
-                CompanyName =
-                    MenuInput.ReadNullableString("Company"),
+                CompanyName = MenuInput.ReadNullableString("Company"),
 
-                Email =
-                    MenuInput.ReadNullableString("Email"),
+                Email = MenuInput.ReadNullableString("Email"),
 
-                Phone =
-                    MenuInput.ReadNullableString("Phone"),
+                Phone = MenuInput.ReadNullableString("Phone"),
 
-                Address =
-                    MenuInput.ReadNullableString("Address"),
+                Address = MenuInput.ReadNullableString("Address"),
 
-                Website =
-                    MenuInput.ReadNullableString("Website"),
+                Website = MenuInput.ReadNullableString("Website"),
 
-                Notes =
-                    MenuInput.ReadNullableString("Notes"),
+                Notes = MenuInput.ReadNullableString("Notes"),
 
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
-            var contactId =
-                await _contactService.CreateAsync(model);
+            var contactId = await _contactService.CreateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Contact created successfully. ID: {contactId}");
+            Console.WriteLine($"Contact created successfully. ID: {contactId}");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                $"Error creating contact: {ex.Message}");
+            Console.WriteLine($"Error creating contact: {ex.Message}");
         }
 
         Console.ReadLine();
@@ -275,22 +247,19 @@ internal sealed class ContactMenu
         Console.WriteLine("=== Update Contact ===");
         Console.WriteLine();
 
-        var contactId =
-            MenuInput.ReadIdOrExit("Contact ID");
+        var contactId = MenuInput.ReadIdOrExit("Contact ID");
 
         if (contactId is null)
             return;
 
         try
         {
-            var current =
-                await _contactService.GetByIdAsync(contactId.Value);
+            var current = await _contactService.GetByIdAsync(contactId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Contact with ID {contactId.Value} was not found.");
+                Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
 
                 Console.ReadLine();
                 return;
@@ -298,14 +267,10 @@ internal sealed class ContactMenu
 
             Console.WriteLine();
             Console.WriteLine("Enter the new values.");
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
+            Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
-            var name =
-                MenuInput.ReadKeepCurrentRequiredString(
-                    "Name",
-                    current.Name);
+            var name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name);
 
             var model = new UpdateContactViewModel
             {
@@ -313,63 +278,37 @@ internal sealed class ContactMenu
 
                 Name = name,
 
-                CompanyName =
-                    MenuInput.ReadKeepCurrentString(
-                        "Company",
-                        current.CompanyName),
+                CompanyName =MenuInput.ReadKeepCurrentString("Company", current.CompanyName),
 
-                Email =
-                    MenuInput.ReadKeepCurrentString(
-                        "Email",
-                        current.Email),
+                Email = MenuInput.ReadKeepCurrentString("Email", current.Email),
 
-                Phone =
-                    MenuInput.ReadKeepCurrentString(
-                        "Phone",
-                        current.Phone),
+                Phone = MenuInput.ReadKeepCurrentString("Phone", current.Phone),
 
-                Address =
-                    MenuInput.ReadKeepCurrentString(
-                        "Address",
-                        current.Address),
+                Address = MenuInput.ReadKeepCurrentString("Address", current.Address),
 
-                Website =
-                    MenuInput.ReadKeepCurrentString(
-                        "Website",
-                        current.Website),
+                Website = MenuInput.ReadKeepCurrentString("Website", current.Website),
 
-                Notes =
-                    MenuInput.ReadKeepCurrentString(
-                        "Notes",
-                        current.Notes),
+                Notes = MenuInput.ReadKeepCurrentString("Notes", current.Notes),
 
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
 
-            var updated =
-                await _contactService.UpdateAsync(model);
+            var updated = await _contactService.UpdateAsync(model);
 
             Console.WriteLine();
 
             if (updated is null)
             {
-                Console.WriteLine(
-                    $"Contact with ID {contactId.Value} was not found.");
-
+                Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
                 return;
             }
 
-            Console.WriteLine(
-                $"Contact {updated.ContactId} updated successfully.");
+            Console.WriteLine($"Contact {updated.ContactId} updated successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                $"Error updating contact: {ex.Message}");
+            Console.WriteLine($"Error updating contact: {ex.Message}");
         }
 
         Console.ReadLine();
@@ -381,22 +320,19 @@ internal sealed class ContactMenu
         Console.WriteLine("=== Delete Contact ===");
         Console.WriteLine();
 
-        var contactId =
-            MenuInput.ReadIdOrExit("Contact ID");
+        var contactId = MenuInput.ReadIdOrExit("Contact ID");
 
         if (contactId is null)
             return;
 
         try
         {
-            var current =
-                await _contactService.GetByIdAsync(contactId.Value);
+            var current = await _contactService.GetByIdAsync(contactId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Contact with ID {contactId.Value} was not found.");
+                Console.WriteLine($"Contact with ID {contactId.Value} was not found.");
 
                 Console.ReadLine();
                 return;
@@ -407,8 +343,7 @@ internal sealed class ContactMenu
 
             if (!string.IsNullOrWhiteSpace(current.CompanyName))
             {
-                Console.WriteLine(
-                    $"Company: {current.CompanyName}");
+                Console.WriteLine($"Company: {current.CompanyName}");
             }
 
             Console.WriteLine();
@@ -416,13 +351,9 @@ internal sealed class ContactMenu
             Console.WriteLine("Type DELETE to confirm:");
             Console.Write("Confirm: ");
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            var confirmation = Console.ReadLine()?.Trim();
 
-            if (!string.Equals(
-                    confirmation,
-                    "DELETE",
-                    StringComparison.Ordinal))
+            if (!string.Equals(confirmation, "DELETE", StringComparison.Ordinal))
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
@@ -437,14 +368,12 @@ internal sealed class ContactMenu
                 });
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Contact {contactId.Value} deleted successfully.");
+            Console.WriteLine($"Contact {contactId.Value} deleted successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                $"Error deleting contact: {ex.Message}");
+            Console.WriteLine($"Error deleting contact: {ex.Message}");
         }
 
         Console.ReadLine();
