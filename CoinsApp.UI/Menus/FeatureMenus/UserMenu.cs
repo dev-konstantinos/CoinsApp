@@ -453,24 +453,25 @@ internal sealed class UserMenu
             return;
         }
 
+        Console.WriteLine(
+            $"{"ID",4}  " +
+            $"{"Username",-20} " +
+            $"{"Email",-30} " +
+            $"{"Active",-8} " +
+            $"{"Collections",12} " +
+            $"{"Created",-20}");
+
+        Console.WriteLine(new string('-', 101));
+
         foreach (var user in users)
         {
             Console.WriteLine(
-                $"{user.UserId}: {user.Username}");
-
-            Console.WriteLine(
-                $"   Email:       {user.Email ?? "-"}");
-
-            Console.WriteLine(
-                $"   Status:      {(user.IsActive ? "Active" : "Inactive")}");
-
-            Console.WriteLine(
-                $"   Collections: {user.CollectionCount}");
-
-            Console.WriteLine(
-                $"   Created:     {user.CreatedAt:yyyy-MM-dd HH:mm:ss}");
-
-            Console.WriteLine();
+                $"{user.UserId,4}  " +
+                $"{user.Username,-20} " +
+                $"{user.Email ?? "-",-30} " +
+                $"{(user.IsActive ? "Yes" : "No"),-8} " +
+                $"{user.CollectionCount,12} " +
+                $"{user.CreatedAt,-20:yyyy-MM-dd HH:mm:ss}");
         }
     }
 
