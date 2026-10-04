@@ -8,13 +8,14 @@ internal sealed class PriceHistoryMenu
 {
     private readonly IPriceHistoryService _priceHistoryService;
 
-    public PriceHistoryMenu(
-        IPriceHistoryService priceHistoryService)
+    public PriceHistoryMenu(IPriceHistoryService priceHistoryService)
     {
-        _priceHistoryService =
-            priceHistoryService
-            ?? throw new ArgumentNullException(nameof(priceHistoryService));
+        _priceHistoryService = priceHistoryService ?? throw new ArgumentNullException(nameof(priceHistoryService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync(int coinId)
     {
@@ -27,38 +28,46 @@ internal sealed class PriceHistoryMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Price History ===");
-            Console.WriteLine($"Coin ID: {coinId}");
-            Console.WriteLine();
-            Console.WriteLine("1. List");
-            Console.WriteLine("2. Create");
-            Console.WriteLine("3. Update");
-            Console.WriteLine("4. Delete");
+            PrintHeader(coinId);
+
+            Console.WriteLine("1. List price history");
+            Console.WriteLine("2. Create price history");
+            Console.WriteLine("3. Update price history");
+            Console.WriteLine("4. Delete price history");
             Console.WriteLine("0. Back");
             Console.WriteLine();
+
             Console.Write("Select: ");
 
             var input = Console.ReadLine()?.Trim();
 
-            switch (input)
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Pause();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync(coinId);
                     break;
 
-                case "2":
+                case 2:
                     await CreateAsync(coinId);
                     break;
 
-                case "3":
+                case 3:
                     await UpdateAsync(coinId);
                     break;
 
-                case "4":
+                case 4:
                     await DeleteAsync(coinId);
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
@@ -71,55 +80,21 @@ internal sealed class PriceHistoryMenu
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync(int coinId)
     {
         Console.Clear();
 
-        Console.WriteLine("=== Price History ===");
-        Console.WriteLine($"Coin ID: {coinId}");
-        Console.WriteLine();
+        PrintHeader(coinId);
 
         try
         {
-            var entries =
-                await _priceHistoryService.GetByCoinAsync(coinId);
+            var entries = await _priceHistoryService.GetByCoinAsync(coinId);
 
-            if (entries.Count == 0)
-            {
-                Console.WriteLine("No price history found.");
-            }
-            else
-            {
-                foreach (var entry in entries)
-                {
-                    Console.WriteLine(
-                        $"ID: {entry.PriceHistoryId}");
-
-                    Console.WriteLine(
-                        $"Price: {entry.Price:0.0000} {entry.CurrencyCode}");
-
-                    Console.WriteLine(
-                        $"Date: {entry.PriceDate:yyyy-MM-dd HH:mm:ss}");
-
-                    Console.WriteLine(
-                        $"Currency: {entry.CurrencyName}");
-
-                    if (!string.IsNullOrWhiteSpace(entry.Source))
-                    {
-                        Console.WriteLine(
-                            $"Source: {entry.Source}");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(entry.Notes))
-                    {
-                        Console.WriteLine(
-                            $"Notes: {entry.Notes}");
-                    }
-
-                    Console.WriteLine(
-                        "--------------------------------------------------");
-                }
-            }
+            PrintPriceHistory(entries);
         }
         catch (Exception ex)
         {
@@ -129,17 +104,15 @@ internal sealed class PriceHistoryMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task CreateAsync(int coinId)
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Price History ===");
-        Console.WriteLine($"Coin ID: {coinId}");
+        PrintHeader(coinId);
+        Console.WriteLine("Create Price History");
         Console.WriteLine();
 
         try
@@ -157,12 +130,11 @@ internal sealed class PriceHistoryMenu
             Console.WriteLine();
             Console.WriteLine("Creating price history...");
 
-            var priceHistoryId =
-                await _priceHistoryService.CreateAsync(model);
+            var priceHistoryId = await _priceHistoryService.CreateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Price history created successfully. ID: {priceHistoryId}");
+            Console.WriteLine("Price history created successfully.");
+            Console.WriteLine($"Price History ID: {priceHistoryId}");
         }
         catch (Exception ex)
         {
@@ -172,75 +144,69 @@ internal sealed class PriceHistoryMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task UpdateAsync(int coinId)
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Price History ===");
-        Console.WriteLine($"Coin ID: {coinId}");
+        PrintHeader(coinId);
+        Console.WriteLine("Update Price History");
         Console.WriteLine();
 
-        var priceHistoryId =
-            MenuInput.ReadRequiredId("Price History ID");
+        var priceHistoryId = MenuInput.ReadIdOrExit("Price History ID");
+
+        if (priceHistoryId is null)
+        {
+            return;
+        }
 
         try
         {
             var entries =
                 await _priceHistoryService.GetByCoinAsync(coinId);
 
-            var current =
-                entries.FirstOrDefault(
-                    x => x.PriceHistoryId == priceHistoryId);
+            var current = entries.FirstOrDefault(x => x.PriceHistoryId == priceHistoryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Price history entry with ID {priceHistoryId} " +
+                    $"Price history entry with ID {priceHistoryId.Value} " +
                     $"was not found for this coin.");
 
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
             Console.Clear();
 
-            Console.WriteLine("=== Update Price History ===");
-            Console.WriteLine($"Coin ID: {coinId}");
-            Console.WriteLine($"Price History ID: {priceHistoryId}");
+            PrintHeader(coinId);
+            Console.WriteLine("Update Price History");
+            Console.WriteLine();
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
+            Console.WriteLine("Type null to clear optional values.");
             Console.WriteLine();
 
             var model = new UpdatePriceHistoryViewModel
             {
-                PriceHistoryId = priceHistoryId,
-
-                Price = MenuInput.ReadKeepCurrentPrice(
-                    "Price",
-                    current.Price),
-
-                CurrencyId = MenuInput.ReadKeepCurrentId(
-                    "Currency ID",
-                    current.CurrencyId),
-
-                PriceDate = MenuInput.ReadKeepCurrentDateTime(
-                    "Price Date",
-                    current.PriceDate),
-
-                Source = MenuInput.ReadKeepCurrentString(
-                    "Source",
-                    current.Source),
-
-                Notes = MenuInput.ReadKeepCurrentString(
-                    "Notes",
-                    current.Notes)
+                PriceHistoryId = current.PriceHistoryId,
+                Price = MenuInput.ReadKeepCurrentPrice("Price", current.Price),
+                CurrencyId = MenuInput.ReadKeepCurrentId("Currency ID", current.CurrencyId),
+                PriceDate = MenuInput.ReadKeepCurrentDateTime("Price Date", current.PriceDate),
+                Source = MenuInput.ReadKeepCurrentString("Source", current.Source),
+                Notes = MenuInput.ReadKeepCurrentString("Notes", current.Notes)
             };
+
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
             Console.WriteLine();
             Console.WriteLine("Updating price history...");
@@ -248,8 +214,7 @@ internal sealed class PriceHistoryMenu
             await _priceHistoryService.UpdateAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Price history updated successfully.");
+            Console.WriteLine("Price history updated successfully.");
         }
         catch (Exception ex)
         {
@@ -259,79 +224,49 @@ internal sealed class PriceHistoryMenu
             Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Press Enter to continue...");
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task DeleteAsync(int coinId)
     {
         Console.Clear();
 
-        Console.WriteLine("=== Delete Price History ===");
-        Console.WriteLine($"Coin ID: {coinId}");
+        PrintHeader(coinId);
+        Console.WriteLine("Delete Price History");
         Console.WriteLine();
 
-        var priceHistoryId =
-            MenuInput.ReadRequiredId("Price History ID");
+        var priceHistoryId = MenuInput.ReadIdOrExit("Price History ID");
+
+        if (priceHistoryId is null)
+        {
+            return;
+        }
 
         try
         {
-            var entries =
-                await _priceHistoryService.GetByCoinAsync(coinId);
+            var entries = await _priceHistoryService.GetByCoinAsync(coinId);
 
-            var current =
-                entries.FirstOrDefault(
-                    x => x.PriceHistoryId == priceHistoryId);
+            var current = entries.FirstOrDefault(x => x.PriceHistoryId == priceHistoryId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"Price history entry with ID {priceHistoryId} " +
+                    $"Price history entry with ID {priceHistoryId.Value} " +
                     $"was not found for this coin.");
 
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
-            Console.Clear();
-
-            Console.WriteLine("=== Delete Price History ===");
-            Console.WriteLine();
-
-            Console.WriteLine(
-                $"Price History ID: {current.PriceHistoryId}");
-
-            Console.WriteLine(
-                $"Price: {current.Price:0.0000} {current.CurrencyCode}");
-
-            Console.WriteLine(
-                $"Date: {current.PriceDate:yyyy-MM-dd HH:mm:ss}");
-
-            Console.WriteLine(
-                $"Currency: {current.CurrencyName}");
-
-            if (!string.IsNullOrWhiteSpace(current.Source))
-            {
-                Console.WriteLine(
-                    $"Source: {current.Source}");
-            }
-
-            if (!string.IsNullOrWhiteSpace(current.Notes))
-            {
-                Console.WriteLine(
-                    $"Notes: {current.Notes}");
-            }
+            PrintDetails(current);
 
             Console.WriteLine();
-            Console.WriteLine("Type DELETE to confirm:");
+            Console.WriteLine("WARNING: This price history entry will be deleted.");
+            Console.WriteLine("Type DELETE to confirm.");
             Console.Write("Confirm: ");
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            var confirmation = Console.ReadLine()?.Trim();
 
             if (!string.Equals(
                     confirmation,
@@ -340,22 +275,22 @@ internal sealed class PriceHistoryMenu
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
             var model = new DeletePriceHistoryViewModel
             {
-                PriceHistoryId = priceHistoryId
+                PriceHistoryId = current.PriceHistoryId
             };
+
+            Console.WriteLine();
+            Console.WriteLine("Deleting price history...");
 
             await _priceHistoryService.DeleteAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Price history deleted successfully.");
+            Console.WriteLine("Price history deleted successfully.");
         }
         catch (Exception ex)
         {
@@ -365,6 +300,100 @@ internal sealed class PriceHistoryMenu
             Console.WriteLine(ex.Message);
         }
 
+        Pause();
+    }
+
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
+    private static void PrintHeader(int coinId)
+    {
+        Console.WriteLine("=== Price History ===");
+        Console.WriteLine($"Coin ID: {coinId}");
+        Console.WriteLine();
+    }
+
+    private static void PrintPriceHistory(IReadOnlyList<PriceHistoryListItemViewModel> entries)
+    {
+        if (entries.Count == 0)
+        {
+            Console.WriteLine("No price history found.");
+            return;
+        }
+
+        Console.WriteLine(
+            $"{"ID",4}  " +
+            $"{"Price",14} " +
+            $"{"Date",-20} " +
+            $"{"Currency",-12} " +
+            $"{"Source",-20}");
+
+        Console.WriteLine(new string('-', 78));
+
+        foreach (var entry in entries)
+        {
+            Console.WriteLine(
+                $"{entry.PriceHistoryId,4}  " +
+                $"{entry.Price,14:0.0000} " +
+                $"{entry.PriceDate,-20:yyyy-MM-dd HH:mm:ss} " +
+                $"{entry.CurrencyCode,-12} " +
+                $"{entry.Source ?? "-",-20}");
+        }
+    }
+
+    private static void PrintDetails(
+        PriceHistoryListItemViewModel entry)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Price History ID: {entry.PriceHistoryId}");
+        Console.WriteLine($"Coin ID:          {entry.CoinId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Price ---");
+        Console.WriteLine($"Price:            {entry.Price:0.0000}");
+        Console.WriteLine($"Currency ID:      {entry.CurrencyId}");
+        Console.WriteLine($"Currency:         {entry.CurrencyName}");
+        Console.WriteLine($"Currency Code:    {entry.CurrencyCode}");
+        Console.WriteLine($"Price Date:       {entry.PriceDate:yyyy-MM-dd HH:mm:ss}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Additional Information ---");
+        Console.WriteLine($"Source:           {entry.Source ?? "-"}");
+        Console.WriteLine($"Notes:            {entry.Notes ?? "-"}");
+    }
+
+    private static void PrintUpdateSummary(
+        UpdatePriceHistoryViewModel entry)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Price History ID: {entry.PriceHistoryId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Price ---");
+        Console.WriteLine($"Price:            {entry.Price:0.0000}");
+        Console.WriteLine($"Currency ID:      {entry.CurrencyId}");
+        Console.WriteLine($"Price Date:       {entry.PriceDate:yyyy-MM-dd HH:mm:ss}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Additional Information ---");
+        Console.WriteLine($"Source:           {entry.Source ?? "-"}");
+        Console.WriteLine($"Notes:            {entry.Notes ?? "-"}");
+    }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
+
+    private static void Pause()
+    {
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();

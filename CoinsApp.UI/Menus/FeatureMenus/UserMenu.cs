@@ -15,365 +15,389 @@ internal sealed class UserMenu
             ?? throw new ArgumentNullException(nameof(userService));
     }
 
+    // ============================================================
+    // Navigation
+    // ============================================================
+
     public async Task RunAsync()
     {
         while (true)
         {
             Console.Clear();
 
-            Console.WriteLine("=== Users ===");
-            Console.WriteLine();
-            Console.WriteLine("1. List Users");
-            Console.WriteLine("2. User Details");
-            Console.WriteLine("3. Create User");
-            Console.WriteLine("4. Update User");
-            Console.WriteLine("5. Set Password");
-            Console.WriteLine("6. Delete User");
+            PrintHeader();
+
+            Console.WriteLine("1. List users");
+            Console.WriteLine("2. User details");
+            Console.WriteLine("3. Create user");
+            Console.WriteLine("4. Update user");
+            Console.WriteLine("5. Set password");
+            Console.WriteLine("6. Delete user");
             Console.WriteLine("0. Back");
             Console.WriteLine();
 
             Console.Write("Select: ");
 
-            var input =
-                Console.ReadLine()?.Trim();
+            var input = Console.ReadLine()?.Trim();
 
             if (!int.TryParse(input, out var choice))
             {
                 Console.WriteLine();
                 Console.WriteLine("Invalid selection.");
-                Console.ReadLine();
+                Pause();
                 continue;
             }
 
-            try
+            switch (choice)
             {
-                switch (choice)
-                {
-                    case 1:
-                        await ListAsync();
-                        break;
+                case 1:
+                    await ListAsync();
+                    break;
 
-                    case 2:
-                        await DetailsAsync();
-                        break;
+                case 2:
+                    await DetailsAsync();
+                    break;
 
-                    case 3:
-                        await CreateAsync();
-                        break;
+                case 3:
+                    await CreateAsync();
+                    break;
 
-                    case 4:
-                        await UpdateAsync();
-                        break;
+                case 4:
+                    await UpdateAsync();
+                    break;
 
-                    case 5:
-                        await SetPasswordAsync();
-                        break;
+                case 5:
+                    await SetPasswordAsync();
+                    break;
 
-                    case 6:
-                        await DeleteAsync();
-                        break;
+                case 6:
+                    await DeleteAsync();
+                    break;
 
-                    case 0:
-                        return;
+                case 0:
+                    return;
 
-                    default:
-                        Console.WriteLine();
-                        Console.WriteLine("Invalid selection.");
-                        Console.ReadLine();
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.ReadLine();
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("Invalid selection.");
+                    Pause();
+                    break;
             }
         }
     }
+
+    // ============================================================
+    // CRUD
+    // ============================================================
 
     private async Task ListAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Users ===");
-        Console.WriteLine();
+        PrintHeader();
 
-        var users =
-            await _userService.GetAllAsync();
-
-        if (users.Count == 0)
+        try
         {
-            Console.WriteLine("No users found.");
-            Console.ReadLine();
-            return;
+            var users = await _userService.GetAllAsync();
+
+            PrintUsers(users);
         }
-
-        foreach (var user in users)
+        catch (Exception ex)
         {
-            Console.WriteLine(
-                $"{user.UserId}: {user.Username}");
-
-            Console.WriteLine(
-                $"   Email: {user.Email ?? "-"}");
-
-            Console.WriteLine(
-                $"   Status: {(user.IsActive ? "Active" : "Inactive")}");
-
-            Console.WriteLine(
-                $"   Collections: {user.CollectionCount}");
-
-            Console.WriteLine(
-                $"   Created: {user.CreatedAt:yyyy-MM-dd HH:mm:ss}");
-
             Console.WriteLine();
+            Console.WriteLine("Error loading users.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task DetailsAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== User Details ===");
+        PrintHeader();
+        Console.WriteLine("User Details");
         Console.WriteLine();
 
-        var userId =
-            MenuInput.ReadRequiredId("User ID");
+        var userId = MenuInput.ReadIdOrExit("User ID");
 
-        var user =
-            await _userService.GetByIdAsync(userId);
-
-        if (user is null)
+        if (userId is null)
         {
-            Console.WriteLine();
-            Console.WriteLine(
-                $"User with ID {userId} was not found.");
-
-            Console.ReadLine();
             return;
         }
 
-        Console.WriteLine(
-            $"ID:           {user.UserId}");
+        try
+        {
+            var user =
+                await _userService.GetByIdAsync(userId.Value);
 
-        Console.WriteLine(
-            $"Username:     {user.Username}");
+            if (user is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"User with ID {userId.Value} was not found.");
+            }
+            else
+            {
+                PrintDetails(user);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading user.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
 
-        Console.WriteLine(
-            $"Email:        {user.Email ?? "-"}");
-
-        Console.WriteLine(
-            $"Status:       {(user.IsActive ? "Active" : "Inactive")}");
-
-        Console.WriteLine(
-            $"Collections:  {user.CollectionCount}");
-
-        Console.WriteLine(
-            $"Created:      {user.CreatedAt:yyyy-MM-dd HH:mm:ss}");
-
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task CreateAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create User ===");
+        PrintHeader();
+        Console.WriteLine("Create User");
         Console.WriteLine();
 
-        var password =
-            MenuInput.ReadRequiredPassword("Password");
-
-        var confirmPassword =
-            MenuInput.ReadRequiredPassword(
-                "Confirm Password");
-
-        var model = new CreateUserViewModel
+        try
         {
-            Username =
-                MenuInput.ReadRequiredString("Username"),
+            var password =
+                MenuInput.ReadRequiredPassword("Password");
 
-            Password = password,
+            var confirmPassword =
+                MenuInput.ReadRequiredPassword("Confirm Password");
 
-            ConfirmPassword = confirmPassword,
+            var model = new CreateUserViewModel
+            {
+                Username = MenuInput.ReadRequiredString("Username"),
+                Password = password,
+                ConfirmPassword = confirmPassword,
+                Email = MenuInput.ReadNullableString("Email"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
+            };
 
-            Email =
-                MenuInput.ReadNullableString("Email"),
+            Console.WriteLine();
+            Console.WriteLine("Creating user...");
 
-            IsActive =
-                MenuInput.ReadRequiredBoolean("Active")
-        };
+            var userId =
+                await _userService.CreateAsync(model);
 
-        var userId =
-            await _userService.CreateAsync(model);
+            Console.WriteLine();
+            Console.WriteLine("User created successfully.");
+            Console.WriteLine($"User ID: {userId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error creating user.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
 
-        Console.WriteLine();
-        Console.WriteLine(
-            $"User created successfully. ID: {userId}");
-
-        Console.ReadLine();
+        Pause();
     }
 
     private async Task UpdateAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update User ===");
+        PrintHeader();
+        Console.WriteLine("Update User");
         Console.WriteLine();
 
-        var userId =
-            MenuInput.ReadRequiredId("User ID");
+        var userId = MenuInput.ReadIdOrExit("User ID");
 
-        var current =
-            await _userService.GetByIdAsync(userId);
-
-        if (current is null)
+        if (userId is null)
         {
-            Console.WriteLine();
-            Console.WriteLine(
-                $"User with ID {userId} was not found.");
-
-            Console.ReadLine();
             return;
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Enter the new values.");
-        Console.WriteLine(
-            "Press Enter to keep the current value.");
-        Console.WriteLine();
-
-        var username =
-            MenuInput.ReadKeepCurrentRequiredString(
-                "Username",
-                current.Username);
-
-        var model = new UpdateUserViewModel
+        try
         {
-            UserId = userId,
+            var current =
+                await _userService.GetByIdAsync(userId.Value);
 
-            Username = username,
+            if (current is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"User with ID {userId.Value} was not found.");
 
-            Email =
-                MenuInput.ReadKeepCurrentString(
+                Pause();
+                return;
+            }
+
+            Console.Clear();
+
+            PrintHeader();
+            Console.WriteLine("Update User");
+            Console.WriteLine();
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
+            Console.WriteLine();
+
+            var model = new UpdateUserViewModel
+            {
+                UserId = current.UserId,
+                Username = MenuInput.ReadKeepCurrentRequiredString(
+                    "Username",
+                    current.Username),
+                Email = MenuInput.ReadKeepCurrentString(
                     "Email",
                     current.Email),
-
-            IsActive =
-                MenuInput.ReadKeepCurrentBoolean(
+                IsActive = MenuInput.ReadKeepCurrentBoolean(
                     "Active",
                     current.IsActive)
-        };
+            };
 
-        var updated =
-            await _userService.UpdateAsync(model);
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
-        Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Updating user...");
 
-        if (updated is null)
+            var updated =
+                await _userService.UpdateAsync(model);
+
+            if (updated is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("User could not be updated.");
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("User updated successfully.");
+            }
+        }
+        catch (Exception ex)
         {
-            Console.WriteLine(
-                $"User with ID {userId} was not found.");
-
-            Console.ReadLine();
-            return;
+            Console.WriteLine();
+            Console.WriteLine("Error updating user.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine(
-            $"User {updated.UserId} updated successfully.");
-
-        Console.ReadLine();
+        Pause();
     }
+
+    // ============================================================
+    // Domain actions
+    // ============================================================
 
     private async Task SetPasswordAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Set User Password ===");
+        PrintHeader();
+        Console.WriteLine("Set User Password");
         Console.WriteLine();
 
-        var userId =
-            MenuInput.ReadRequiredId("User ID");
+        var userId = MenuInput.ReadIdOrExit("User ID");
 
-        var current =
-            await _userService.GetByIdAsync(userId);
-
-        if (current is null)
+        if (userId is null)
         {
-            Console.WriteLine();
-            Console.WriteLine(
-                $"User with ID {userId} was not found.");
-
-            Console.ReadLine();
             return;
         }
 
-        Console.WriteLine(
-            $"User: {current.Username}");
+        try
+        {
+            var current =
+                await _userService.GetByIdAsync(userId.Value);
 
-        Console.WriteLine();
-
-        var newPassword =
-            MenuInput.ReadRequiredPassword(
-                "New Password");
-
-        var confirmPassword =
-            MenuInput.ReadRequiredPassword(
-                "Confirm Password");
-
-        await _userService.SetPasswordAsync(
-            new SetUserPasswordViewModel
+            if (current is null)
             {
-                UserId = userId,
+                Console.WriteLine();
+                Console.WriteLine(
+                    $"User with ID {userId.Value} was not found.");
+
+                Pause();
+                return;
+            }
+
+            Console.WriteLine($"User: {current.Username}");
+            Console.WriteLine();
+
+            var newPassword =
+                MenuInput.ReadRequiredPassword("New Password");
+
+            var confirmPassword =
+                MenuInput.ReadRequiredPassword("Confirm Password");
+
+            var model = new SetUserPasswordViewModel
+            {
+                UserId = current.UserId,
                 NewPassword = newPassword,
                 ConfirmPassword = confirmPassword
-            });
+            };
 
-        Console.WriteLine();
-        Console.WriteLine(
-            $"Password for user {userId} changed successfully.");
+            Console.WriteLine();
+            Console.WriteLine("Changing password...");
 
-        Console.ReadLine();
+            await _userService.SetPasswordAsync(model);
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"Password for user {current.UserId} changed successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error changing user password.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
     }
 
     private async Task DeleteAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Delete User ===");
+        PrintHeader();
+        Console.WriteLine("Delete User");
         Console.WriteLine();
 
-        var userId =
-            MenuInput.ReadRequiredId("User ID");
+        var userId = MenuInput.ReadIdOrExit("User ID");
+
+        if (userId is null)
+        {
+            return;
+        }
 
         try
         {
             var current =
-                await _userService.GetByIdAsync(userId);
+                await _userService.GetByIdAsync(userId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    $"User with ID {userId} was not found.");
+                    $"User with ID {userId.Value} was not found.");
 
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
-            Console.WriteLine();
             PrintDetails(current);
 
             Console.WriteLine();
-            Console.Write(
-                "Type DELETE to confirm: ");
+            Console.WriteLine("WARNING: This user will be deleted.");
+            Console.WriteLine("Type DELETE to confirm.");
+            Console.Write("Confirm: ");
 
-            var confirmation =
-                Console.ReadLine()?.Trim();
+            var confirmation = Console.ReadLine()?.Trim();
 
             if (!string.Equals(
                     confirmation,
@@ -382,22 +406,22 @@ internal sealed class UserMenu
             {
                 Console.WriteLine();
                 Console.WriteLine("Delete cancelled.");
-                Console.WriteLine();
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
+                Pause();
                 return;
             }
 
             var model = new DeleteUserViewModel
             {
-                UserId = userId
+                UserId = current.UserId
             };
+
+            Console.WriteLine();
+            Console.WriteLine("Deleting user...");
 
             await _userService.DeleteAsync(model);
 
             Console.WriteLine();
-            Console.WriteLine(
-                "User deleted successfully.");
+            Console.WriteLine("User deleted successfully.");
         }
         catch (Exception ex)
         {
@@ -407,18 +431,101 @@ internal sealed class UserMenu
             Console.WriteLine(ex.Message);
         }
 
+        Pause();
+    }
+
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
+    private static void PrintHeader()
+    {
+        Console.WriteLine("=== Users ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintUsers(
+        IReadOnlyList<UserListItemViewModel> users)
+    {
+        if (users.Count == 0)
+        {
+            Console.WriteLine("No users found.");
+            return;
+        }
+
+        foreach (var user in users)
+        {
+            Console.WriteLine(
+                $"{user.UserId}: {user.Username}");
+
+            Console.WriteLine(
+                $"   Email:       {user.Email ?? "-"}");
+
+            Console.WriteLine(
+                $"   Status:      {(user.IsActive ? "Active" : "Inactive")}");
+
+            Console.WriteLine(
+                $"   Collections: {user.CollectionCount}");
+
+            Console.WriteLine(
+                $"   Created:     {user.CreatedAt:yyyy-MM-dd HH:mm:ss}");
+
+            Console.WriteLine();
+        }
+    }
+
+    private static void PrintDetails(
+        UserDetailsViewModel user)
+    {
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"User ID:    {user.UserId}");
+        Console.WriteLine($"Username:   {user.Username}");
+        Console.WriteLine($"Email:      {user.Email ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine(
+            $"Active:     {(user.IsActive ? "Yes" : "No")}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Statistics ---");
+        Console.WriteLine($"Collections: {user.CollectionCount}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Metadata ---");
+        Console.WriteLine(
+            $"Created:    {user.CreatedAt:yyyy-MM-dd HH:mm:ss}");
+    }
+
+    private static void PrintUpdateSummary(
+        UpdateUserViewModel user)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"User ID:    {user.UserId}");
+        Console.WriteLine($"Username:   {user.Username}");
+        Console.WriteLine($"Email:      {user.Email ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine(
+            $"Active:     {(user.IsActive ? "Yes" : "No")}");
+    }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
+
+    private static void Pause()
+    {
         Console.WriteLine();
         Console.WriteLine("Press Enter to continue...");
         Console.ReadLine();
-    }
-
-    private static void PrintDetails(UserDetailsViewModel user)
-    {
-        Console.WriteLine($"User ID:          {user.UserId}");
-        Console.WriteLine($"Username:         {user.Username}");
-        Console.WriteLine($"Email:            {user.Email ?? "(none)"}");
-        Console.WriteLine($"Active:           {user.IsActive}");
-        Console.WriteLine($"Created At:       {user.CreatedAt}");
-        Console.WriteLine($"Collection Count: {user.CollectionCount}");
     }
 }

@@ -10,9 +10,7 @@ internal sealed class CurrencyMenu
 
     public CurrencyMenu(ICurrencyService currencyService)
     {
-        _currencyService =
-            currencyService
-            ?? throw new ArgumentNullException(nameof(currencyService));
+        _currencyService = currencyService ?? throw new ArgumentNullException(nameof(currencyService));
     }
 
     // ============================================================

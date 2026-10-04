@@ -10,10 +10,12 @@ internal sealed class MintMenu
 
     public MintMenu(IMintService mintService)
     {
-        _mintService =
-            mintService
-            ?? throw new ArgumentNullException(nameof(mintService));
+        _mintService = mintService ?? throw new ArgumentNullException(nameof(mintService));
     }
+
+    // ============================================================
+    // Navigation
+    // ============================================================
 
     public async Task RunAsync()
     {
@@ -21,88 +23,78 @@ internal sealed class MintMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Mints ===");
-            Console.WriteLine();
-            Console.WriteLine("1. List Mints");
-            Console.WriteLine("2. Mint Details");
-            Console.WriteLine("3. Create Mint");
-            Console.WriteLine("4. Update Mint");
-            Console.WriteLine("5. Activate / Deactivate Mint");
+            PrintHeader();
+
+            Console.WriteLine("1. List mints");
+            Console.WriteLine("2. Mint details");
+            Console.WriteLine("3. Create mint");
+            Console.WriteLine("4. Update mint");
+            Console.WriteLine("5. Activate / Deactivate mint");
             Console.WriteLine("0. Back");
             Console.WriteLine();
+
             Console.Write("Select: ");
 
-            switch (Console.ReadLine()?.Trim())
+            var input = Console.ReadLine()?.Trim();
+
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Pause();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 4:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 5:
                     await SetActiveAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Pause();
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
                     break;
             }
         }
     }
 
+    // ============================================================
+    // CRUD
+    // ============================================================
+
     private async Task ListAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Mints ===");
-        Console.WriteLine();
+        PrintHeader();
 
         try
         {
-            var items = await _mintService.GetAllAsync();
+            var mints = await _mintService.GetAllAsync();
 
-            if (items.Count == 0)
-            {
-                Console.WriteLine("No mints found.");
-                Pause();
-                return;
-            }
-
-            Console.WriteLine(
-                $"{"ID",4}  {"Country",-24} {"Name",-30} " +
-                $"{"Code",-8} {"City",-18} {"Active",-7}");
-
-            Console.WriteLine(new string('-', 91));
-
-            foreach (var item in items)
-            {
-                var country =
-                    $"{item.CountryName} ({item.CountryCode})";
-
-                Console.WriteLine(
-                    $"{item.MintId,4}  " +
-                    $"{country,-24} " +
-                    $"{item.Name,-30} " +
-                    $"{item.Code ?? "-",-8} " +
-                    $"{item.City ?? "-",-18} " +
-                    $"{(item.IsActive ? "Yes" : "No"),-7}");
-            }
+            PrintMints(mints);
         }
         catch (Exception ex)
         {
@@ -119,26 +111,28 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Mint Details ===");
+        PrintHeader();
+        Console.WriteLine("Mint Details");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var mintId = MenuInput.ReadIdOrExit("Mint ID");
+
+        if (mintId is null)
+        {
+            return;
+        }
 
         try
         {
-            var mint =
-                await _mintService.GetByIdAsync(mintId);
+            var mint = await _mintService.GetByIdAsync(mintId.Value);
 
             if (mint is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                Console.WriteLine($"Mint with ID {mintId.Value} was not found.");
             }
             else
             {
-                Console.WriteLine();
                 PrintDetails(mint);
             }
         }
@@ -157,44 +151,36 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Mint ===");
+        PrintHeader();
+        Console.WriteLine("Create Mint");
         Console.WriteLine();
 
         try
         {
             var model = new CreateMintViewModel
             {
-                CountryId =
-                    MenuInput.ReadRequiredId("Country ID"),
-
-                Name =
-                    MenuInput.ReadRequiredString("Name"),
-
-                Code =
-                    MenuInput.ReadNullableString("Code"),
-
-                City =
-                    MenuInput.ReadNullableString("City"),
-
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                CountryId = MenuInput.ReadRequiredId("Country ID"),
+                Name = MenuInput.ReadRequiredString("Name"),
+                Code = MenuInput.ReadNullableString("Code"),
+                City = MenuInput.ReadNullableString("City"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
-            var mint =
-                await _mintService.CreateAsync(model);
-
             Console.WriteLine();
+            Console.WriteLine("Creating mint...");
+
+            var mint = await _mintService.CreateAsync(model);
 
             if (mint is null)
             {
-                Console.WriteLine(
-                    "Mint could not be created.");
+                Console.WriteLine();
+                Console.WriteLine("Mint could not be created.");
             }
             else
             {
-                Console.WriteLine(
-                    $"Mint created successfully. " +
-                    $"Mint ID: {mint.MintId}");
+                Console.WriteLine();
+                Console.WriteLine("Mint created successfully.");
+                Console.WriteLine($"Mint ID: {mint.MintId}");
             }
         }
         catch (Exception ex)
@@ -212,74 +198,73 @@ internal sealed class MintMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Mint ===");
+        PrintHeader();
+        Console.WriteLine("Update Mint");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var mintId = MenuInput.ReadIdOrExit("Mint ID");
+
+        if (mintId is null)
+        {
+            return;
+        }
 
         try
         {
-            var current =
-                await _mintService.GetByIdAsync(mintId);
+            var current = await _mintService.GetByIdAsync(mintId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                Console.WriteLine($"Mint with ID {mintId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
+            Console.Clear();
+
+            PrintHeader();
+            Console.WriteLine("Update Mint");
             Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
-            Console.WriteLine(
-                "Type null to clear optional values.");
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
+            Console.WriteLine("Type null to clear optional values.");
             Console.WriteLine();
 
             var model = new UpdateMintViewModel
             {
-                MintId =
-                    current.MintId,
-
-                CountryId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Country ID",
-                        current.CountryId),
-
-                Name =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Name",
-                        current.Name),
-
-                Code =
-                    MenuInput.ReadKeepCurrentString(
-                        "Code",
-                        current.Code),
-
-                City =
-                    MenuInput.ReadKeepCurrentString(
-                        "City",
-                        current.City),
-
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                MintId = current.MintId,
+                CountryId = MenuInput.ReadKeepCurrentId("Country ID", current.CountryId),
+                Name = MenuInput.ReadKeepCurrentRequiredString("Name", current.Name),
+                Code = MenuInput.ReadKeepCurrentString("Code", current.Code),
+                City = MenuInput.ReadKeepCurrentString("City", current.City),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
 
-            var mint =
-                await _mintService.UpdateAsync(model);
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
             Console.WriteLine();
+            Console.WriteLine("Updating mint...");
 
-            Console.WriteLine(
-                mint is null
-                    ? "Mint could not be updated."
-                    : "Mint updated successfully.");
+            var mint = await _mintService.UpdateAsync(model);
+
+            if (mint is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Mint could not be updated.");
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Mint updated successfully.");
+            }
         }
         catch (Exception ex)
         {
@@ -292,51 +277,54 @@ internal sealed class MintMenu
         Pause();
     }
 
+    // ============================================================
+    // Domain actions
+    // ============================================================
+
     private async Task SetActiveAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Activate / Deactivate Mint ===");
+        PrintHeader();
+        Console.WriteLine("Activate / Deactivate Mint");
         Console.WriteLine();
 
-        var mintId =
-            MenuInput.ReadRequiredId("Mint ID");
+        var mintId = MenuInput.ReadIdOrExit("Mint ID");
+
+        if (mintId is null)
+        {
+            return;
+        }
 
         try
         {
-            var current =
-                await _mintService.GetByIdAsync(mintId);
+            var current = await _mintService.GetByIdAsync(mintId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Mint with ID {mintId} was not found.");
+                Console.WriteLine($"Mint with ID {mintId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
-            var newStatus =
-                !current.IsActive;
+            PrintStatusChange(current);
+
+            var newStatus = !current.IsActive;
+            var expectedConfirmation = newStatus ? "ACTIVATE" : "DEACTIVATE";
 
             Console.WriteLine();
-            Console.WriteLine($"Mint: {current.Name}");
-            Console.WriteLine(
-                $"Current status: " +
-                $"{(current.IsActive ? "Active" : "Inactive")}");
-            Console.WriteLine(
-                $"New status: " +
-                $"{(newStatus ? "Active" : "Inactive")}");
+            Console.WriteLine($"New status: {(newStatus ? "Active" : "Inactive")}");
+
             Console.WriteLine();
 
             var confirmation =
-                MenuInput.ReadRequiredString(
-                    $"Type {(newStatus ? "ACTIVATE" : "DEACTIVATE")} to confirm");
+                MenuInput.ReadRequiredString($"Type {expectedConfirmation} to confirm");
 
             if (!string.Equals(
                     confirmation,
-                    newStatus ? "ACTIVATE" : "DEACTIVATE",
+                    expectedConfirmation,
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
@@ -346,23 +334,28 @@ internal sealed class MintMenu
                 return;
             }
 
-            var mint =
-                await _mintService.SetActiveAsync(
-                    new SetMintActiveViewModel
-                    {
-                        MintId = mintId,
-                        IsActive = newStatus
-                    });
+            var model = new SetMintActiveViewModel
+            {
+                MintId = current.MintId,
+                IsActive = newStatus
+            };
 
             Console.WriteLine();
+            Console.WriteLine(
+                newStatus
+                    ? "Activating mint..."
+                    : "Deactivating mint...");
+
+            var mint = await _mintService.SetActiveAsync(model);
 
             if (mint is null)
             {
-                Console.WriteLine(
-                    "Mint status could not be changed.");
+                Console.WriteLine();
+                Console.WriteLine("Mint status could not be changed.");
             }
             else
             {
+                Console.WriteLine();
                 Console.WriteLine(
                     newStatus
                         ? "Mint activated successfully."
@@ -372,8 +365,7 @@ internal sealed class MintMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error changing mint status.");
+            Console.WriteLine("Error changing mint status.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -381,21 +373,119 @@ internal sealed class MintMenu
         Pause();
     }
 
+    // ============================================================
+    // Display helpers
+    // ============================================================
+
+    private static void PrintHeader()
+    {
+        Console.WriteLine("=== Mints ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintMints(IReadOnlyList<MintListItemViewModel> mints)
+    {
+        if (mints.Count == 0)
+        {
+            Console.WriteLine("No mints found.");
+            return;
+        }
+
+        Console.WriteLine(
+            $"{"ID",4}  " +
+            $"{"Country",-24} " +
+            $"{"Name",-30} " +
+            $"{"Code",-8} " +
+            $"{"City",-18} " +
+            $"{"Active",-7}");
+
+        Console.WriteLine(new string('-', 91));
+
+        foreach (var mint in mints)
+        {
+            var country = $"{mint.CountryName} ({mint.CountryCode})";
+
+            Console.WriteLine(
+                $"{mint.MintId,4}  " +
+                $"{country,-24} " +
+                $"{mint.Name,-30} " +
+                $"{mint.Code ?? "-",-8} " +
+                $"{mint.City ?? "-",-18} " +
+                $"{(mint.IsActive ? "Yes" : "No"),-7}");
+        }
+    }
+
     private static void PrintDetails(
         MintDetailsViewModel mint)
     {
-        Console.WriteLine($"ID:       {mint.MintId}");
-        Console.WriteLine(
-            $"Country:  {mint.CountryName} " +
-            $"({mint.CountryCode}) " +
-            $"[ID {mint.CountryId}]");
-        Console.WriteLine($"Name:     {mint.Name}");
-        Console.WriteLine($"Code:     {mint.Code ?? "-"}");
-        Console.WriteLine($"City:     {mint.City ?? "-"}");
-        Console.WriteLine(
-            $"Status:   " +
-            $"{(mint.IsActive ? "Active" : "Inactive")}");
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Mint ID: {mint.MintId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Country ---");
+        Console.WriteLine($"Country ID: {mint.CountryId}");
+        Console.WriteLine($"Country:    {mint.CountryName} ({mint.CountryCode})");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Mint ---");
+        Console.WriteLine($"Name:       {mint.Name}");
+        Console.WriteLine($"Code:       {mint.Code ?? "-"}");
+        Console.WriteLine($"City:       {mint.City ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:     {(mint.IsActive ? "Yes" : "No")}");
     }
+
+    private static void PrintUpdateSummary(
+        UpdateMintViewModel mint)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Mint ID: {mint.MintId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Country ---");
+        Console.WriteLine($"Country ID: {mint.CountryId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Mint ---");
+        Console.WriteLine($"Name:       {mint.Name}");
+        Console.WriteLine($"Code:       {mint.Code ?? "-"}");
+        Console.WriteLine($"City:       {mint.City ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:     {(mint.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintStatusChange(
+        MintDetailsViewModel mint)
+    {
+        Console.WriteLine("--- Mint ---");
+        Console.WriteLine($"Mint ID:    {mint.MintId}");
+        Console.WriteLine($"Country:    {mint.CountryName} ({mint.CountryCode})");
+        Console.WriteLine($"Name:       {mint.Name}");
+        Console.WriteLine($"Code:       {mint.Code ?? "-"}");
+        Console.WriteLine($"City:       {mint.City ?? "-"}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Status ---");
+        Console.WriteLine($"Active:     {(mint.IsActive ? "Yes" : "No")}");
+    }
+
+    // ============================================================
+    // General helpers
+    // ============================================================
 
     private static void Pause()
     {

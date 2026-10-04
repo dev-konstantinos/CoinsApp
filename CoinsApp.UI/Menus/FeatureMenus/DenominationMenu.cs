@@ -10,10 +10,7 @@ internal sealed class DenominationMenu
 
     public DenominationMenu(IDenominationService denominationService)
     {
-        _denominationService =
-            denominationService
-            ?? throw new ArgumentNullException(
-                nameof(denominationService));
+        _denominationService = denominationService ?? throw new ArgumentNullException(nameof(denominationService));
     }
 
     // ============================================================
@@ -26,46 +23,63 @@ internal sealed class DenominationMenu
         {
             Console.Clear();
 
-            Console.WriteLine("=== Denominations ===");
-            Console.WriteLine();
+            PrintHeader();
+
             Console.WriteLine("1. List denominations");
             Console.WriteLine("2. Denomination details");
-            Console.WriteLine("3. Create denomination");
-            Console.WriteLine("4. Update denomination");
-            Console.WriteLine("5. Activate / Deactivate denomination");
+            Console.WriteLine("3. List denominations by currency");
+            Console.WriteLine("4. Create denomination");
+            Console.WriteLine("5. Update denomination");
+            Console.WriteLine("6. Activate / Deactivate denomination");
             Console.WriteLine("0. Back");
             Console.WriteLine();
+
             Console.Write("Select: ");
 
-            switch (Console.ReadLine()?.Trim())
+            var input = Console.ReadLine()?.Trim();
+
+            if (!int.TryParse(input, out var choice))
             {
-                case "1":
+                Console.WriteLine();
+                Console.WriteLine("Invalid selection.");
+                Console.ReadLine();
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
                     await ListAsync();
                     break;
 
-                case "2":
+                case 2:
                     await DetailsAsync();
                     break;
 
-                case "3":
+                case 3:
+                    await ListByCurrencyAsync();
+                    break;
+
+                case 4:
                     await CreateAsync();
                     break;
 
-                case "4":
+                case 5:
                     await UpdateAsync();
                     break;
 
-                case "5":
+                case 6:
                     await SetActiveAsync();
                     break;
 
-                case "0":
+                case 0:
                     return;
 
                 default:
                     Console.WriteLine();
                     Console.WriteLine("Invalid selection.");
-                    Pause();
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
                     break;
             }
         }
@@ -79,39 +93,13 @@ internal sealed class DenominationMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Denominations ===");
-        Console.WriteLine();
+        PrintHeader();
 
         try
         {
-            var items =
-                await _denominationService.GetAllAsync();
+            var denominations = await _denominationService.GetAllAsync();
 
-            if (items.Count == 0)
-            {
-                Console.WriteLine("No denominations found.");
-                Pause();
-                return;
-            }
-
-            Console.WriteLine(
-                $"{"ID",4}  {"Currency",-24} {"Value",-12} " +
-                $"{"Display Name",-24} {"Active",-7}");
-
-            Console.WriteLine(new string('-', 83));
-
-            foreach (var item in items)
-            {
-                var currency =
-                    $"{item.CurrencyName} ({item.CurrencyCode})";
-
-                Console.WriteLine(
-                    $"{item.DenominationId,4}  " +
-                    $"{currency,-24} " +
-                    $"{item.Value,12:0.####} " +
-                    $"{item.DisplayName,-24} " +
-                    $"{(item.IsActive ? "Yes" : "No"),-7}");
-            }
+            PrintDenominations(denominations);
         }
         catch (Exception ex)
         {
@@ -128,31 +116,28 @@ internal sealed class DenominationMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Denomination Details ===");
+        PrintHeader();
+        Console.WriteLine("Denomination Details");
         Console.WriteLine();
 
-        var denominationId =
-            MenuInput.ReadIdOrExit("Denomination ID");
+        var denominationId = MenuInput.ReadIdOrExit("Denomination ID");
 
         if (denominationId is null)
+        {
             return;
+        }
 
         try
         {
-            var denomination =
-                await _denominationService.GetByIdAsync(
-                    denominationId.Value);
+            var denomination = await _denominationService.GetByIdAsync(denominationId.Value);
 
             if (denomination is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Denomination with ID " +
-                    $"{denominationId.Value} was not found.");
+                Console.WriteLine($"Denomination with ID {denominationId.Value} was not found.");
             }
             else
             {
-                Console.WriteLine();
                 PrintDetails(denomination);
             }
         }
@@ -167,46 +152,71 @@ internal sealed class DenominationMenu
         Pause();
     }
 
+    private async Task ListByCurrencyAsync()
+    {
+        Console.Clear();
+
+        PrintHeader();
+        Console.WriteLine("Denominations by Currency");
+        Console.WriteLine();
+
+        var currencyId = MenuInput.ReadIdOrExit("Currency ID");
+
+        if (currencyId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var denominations = await _denominationService.GetByCurrencyAsync(currencyId.Value);
+
+            PrintDenominations(denominations);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Error loading denominations for currency.");
+            Console.WriteLine();
+            Console.WriteLine(ex.Message);
+        }
+
+        Pause();
+    }
+
     private async Task CreateAsync()
     {
         Console.Clear();
 
-        Console.WriteLine("=== Create Denomination ===");
+        PrintHeader();
+        Console.WriteLine("Create Denomination");
         Console.WriteLine();
 
         try
         {
             var model = new CreateDenominationViewModel
             {
-                CurrencyId =
-                    MenuInput.ReadRequiredId("Currency ID"),
-
-                Value =
-                    MenuInput.ReadRequiredPrice("Value"),
-
-                DisplayName =
-                    MenuInput.ReadRequiredString("Display Name"),
-
-                IsActive =
-                    MenuInput.ReadRequiredBoolean("Active")
+                CurrencyId = MenuInput.ReadRequiredId("Currency ID"),
+                Value = MenuInput.ReadRequiredPrice("Value"),
+                DisplayName = MenuInput.ReadRequiredString("Display name"),
+                IsActive = MenuInput.ReadRequiredBoolean("Active")
             };
 
-            var denomination =
-                await _denominationService.CreateAsync(model);
-
             Console.WriteLine();
+            Console.WriteLine("Creating denomination...");
+
+            var denomination = await _denominationService.CreateAsync(model);
 
             if (denomination is null)
             {
-                Console.WriteLine(
-                    "Denomination could not be created.");
+                Console.WriteLine();
+                Console.WriteLine("Denomination could not be created.");
             }
             else
             {
-                Console.WriteLine(
-                    $"Denomination created successfully. " +
-                    $"Denomination ID: " +
-                    $"{denomination.DenominationId}");
+                Console.WriteLine();
+                Console.WriteLine("Denomination created successfully.");
+                Console.WriteLine($"Denomination ID: {denomination.DenominationId}");
             }
         }
         catch (Exception ex)
@@ -224,72 +234,71 @@ internal sealed class DenominationMenu
     {
         Console.Clear();
 
-        Console.WriteLine("=== Update Denomination ===");
+        PrintHeader();
+        Console.WriteLine("Update Denomination");
         Console.WriteLine();
 
-        var denominationId =
-            MenuInput.ReadIdOrExit("Denomination ID");
+        var denominationId = MenuInput.ReadIdOrExit("Denomination ID");
 
         if (denominationId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _denominationService.GetByIdAsync(
-                    denominationId.Value);
+            var current = await _denominationService.GetByIdAsync(denominationId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Denomination with ID " +
-                    $"{denominationId.Value} was not found.");
+                Console.WriteLine($"Denomination with ID {denominationId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
+            Console.Clear();
+
+            PrintHeader();
+            Console.WriteLine("Update Denomination");
             Console.WriteLine();
-            Console.WriteLine(
-                "Press Enter to keep the current value.");
+
+            Console.WriteLine("--- Current ---");
+            Console.WriteLine();
+            PrintDetails(current);
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to keep the current value.");
             Console.WriteLine();
 
             var model = new UpdateDenominationViewModel
             {
-                DenominationId =
-                    current.DenominationId,
-
-                CurrencyId =
-                    MenuInput.ReadKeepCurrentId(
-                        "Currency ID",
-                        current.CurrencyId),
-
-                Value =
-                    MenuInput.ReadKeepCurrentPrice(
-                        "Value",
-                        current.Value),
-
-                DisplayName =
-                    MenuInput.ReadKeepCurrentRequiredString(
-                        "Display Name",
-                        current.DisplayName),
-
-                IsActive =
-                    MenuInput.ReadKeepCurrentBoolean(
-                        "Active",
-                        current.IsActive)
+                DenominationId = current.DenominationId,
+                CurrencyId = MenuInput.ReadKeepCurrentId("Currency ID", current.CurrencyId),
+                Value = MenuInput.ReadKeepCurrentPrice("Value", current.Value),
+                DisplayName = MenuInput.ReadKeepCurrentRequiredString("Display name", current.DisplayName),
+                IsActive = MenuInput.ReadKeepCurrentBoolean("Active", current.IsActive)
             };
 
-            var denomination =
-                await _denominationService.UpdateAsync(model);
+            Console.WriteLine();
+            PrintUpdateSummary(model);
 
             Console.WriteLine();
+            Console.WriteLine("Updating denomination...");
 
-            Console.WriteLine(
-                denomination is null
-                    ? "Denomination could not be updated."
-                    : "Denomination updated successfully.");
+            var denomination = await _denominationService.UpdateAsync(model);
+
+            if (denomination is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Denomination could not be updated.");
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Denomination updated successfully.");
+            }
         }
         catch (Exception ex)
         {
@@ -310,92 +319,76 @@ internal sealed class DenominationMenu
     {
         Console.Clear();
 
-        Console.WriteLine(
-            "=== Activate / Deactivate Denomination ===");
+        PrintHeader();
+        Console.WriteLine("Activate / Deactivate Denomination");
         Console.WriteLine();
 
-        var denominationId =
-            MenuInput.ReadIdOrExit("Denomination ID");
+        var denominationId = MenuInput.ReadIdOrExit("Denomination ID");
 
         if (denominationId is null)
+        {
             return;
+        }
 
         try
         {
-            var current =
-                await _denominationService.GetByIdAsync(
-                    denominationId.Value);
+            var current = await _denominationService.GetByIdAsync(denominationId.Value);
 
             if (current is null)
             {
                 Console.WriteLine();
-                Console.WriteLine(
-                    $"Denomination with ID " +
-                    $"{denominationId.Value} was not found.");
+                Console.WriteLine($"Denomination with ID {denominationId.Value} was not found.");
 
                 Pause();
                 return;
             }
 
-            var newStatus =
-                !current.IsActive;
+            PrintStatusChange(current);
+
+            var newStatus = !current.IsActive;
+            var expectedConfirmation = newStatus ? "ACTIVATE" : "DEACTIVATE";
 
             Console.WriteLine();
-            Console.WriteLine(
-                $"Denomination: {current.DisplayName}");
-
-            Console.WriteLine(
-                $"Currency: {current.CurrencyName} " +
-                $"({current.CurrencyCode})");
-
-            Console.WriteLine(
-                $"Current status: " +
-                $"{(current.IsActive ? "Active" : "Inactive")}");
-
-            Console.WriteLine(
-                $"New status: " +
-                $"{(newStatus ? "Active" : "Inactive")}");
+            Console.WriteLine($"New status: {(newStatus ? "Active" : "Inactive")}");
 
             Console.WriteLine();
 
-            var confirmation =
-                MenuInput.ReadRequiredString(
-                    $"Type {(newStatus ? "ACTIVATE" : "DEACTIVATE")} to confirm");
+            var confirmation = MenuInput.ReadRequiredString($"Type {expectedConfirmation} to confirm");
 
             if (!string.Equals(
                     confirmation,
-                    newStatus
-                        ? "ACTIVATE"
-                        : "DEACTIVATE",
+                    expectedConfirmation,
                     StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine();
-                Console.WriteLine("Action was cancelled.");
+                Console.WriteLine("Action cancelled.");
 
                 Pause();
                 return;
             }
 
-            var denomination =
-                await _denominationService.SetActiveAsync(
-                    new SetDenominationActiveViewModel
-                    {
-                        DenominationId =
-                            current.DenominationId,
-
-                        IsActive =
-                            newStatus
-                    });
+            var model = new SetDenominationActiveViewModel
+            {
+                DenominationId = current.DenominationId,
+                IsActive = newStatus
+            };
 
             Console.WriteLine();
+            Console.WriteLine(
+                newStatus
+                    ? "Activating denomination..."
+                    : "Deactivating denomination...");
+
+            var denomination = await _denominationService.SetActiveAsync(model);
 
             if (denomination is null)
             {
-                Console.WriteLine(
-                    "Denomination status could not be changed.");
+                Console.WriteLine();
+                Console.WriteLine("Denomination status could not be changed.");
             }
             else
             {
+                Console.WriteLine();
                 Console.WriteLine(
                     newStatus
                         ? "Denomination activated successfully."
@@ -405,8 +398,7 @@ internal sealed class DenominationMenu
         catch (Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine(
-                "Error changing denomination status.");
+            Console.WriteLine("Error changing denomination status.");
             Console.WriteLine();
             Console.WriteLine(ex.Message);
         }
@@ -418,25 +410,109 @@ internal sealed class DenominationMenu
     // Display helpers
     // ============================================================
 
+    private static void PrintHeader()
+    {
+        Console.WriteLine("=== Denominations ===");
+        Console.WriteLine();
+    }
+
+    private static void PrintDenominations(IReadOnlyList<DenominationListItemViewModel> denominations)
+    {
+        if (denominations.Count == 0)
+        {
+            Console.WriteLine("No denominations found.");
+            return;
+        }
+
+        Console.WriteLine(
+            $"{"ID",4}  " +
+            $"{"Currency",-12} " +
+            $"{"Value",12} " +
+            $"{"Display Name",-20} " +
+            $"{"Active",-7}");
+
+        Console.WriteLine(new string('-', 63));
+
+        foreach (var denomination in denominations)
+        {
+            Console.WriteLine(
+                $"{denomination.DenominationId,4}  " +
+                $"{denomination.CurrencyCode,-12} " +
+                $"{denomination.Value,12:0.####} " +
+                $"{denomination.DisplayName,-20} " +
+                $"{(denomination.IsActive ? "Yes" : "No"),-7}");
+        }
+    }
+
     private static void PrintDetails(
         DenominationDetailsViewModel denomination)
     {
-        Console.WriteLine(
-            $"Denomination ID: {denomination.DenominationId}");
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Denomination ID: {denomination.DenominationId}");
 
-        Console.WriteLine(
-            $"Currency: {denomination.CurrencyName} " +
-            $"({denomination.CurrencyCode}) " +
-            $"[ID {denomination.CurrencyId}]");
+        Console.WriteLine();
 
-        Console.WriteLine(
-            $"Value: {denomination.Value:0.####}");
+        Console.WriteLine("--- Currency ---");
+        Console.WriteLine($"Currency ID:   {denomination.CurrencyId}");
 
-        Console.WriteLine(
-            $"Display Name: {denomination.DisplayName}");
+        Console.WriteLine($"Currency:      {denomination.CurrencyCode}");
 
-        Console.WriteLine(
-            $"Active: {(denomination.IsActive ? "Yes" : "No")}");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Denomination ---");
+        Console.WriteLine($"Value:         {denomination.Value:0.####}");
+
+        Console.WriteLine($"Display Name:  {denomination.DisplayName}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(denomination.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintUpdateSummary(
+        UpdateDenominationViewModel denomination)
+    {
+        Console.WriteLine("--- Update Preview ---");
+        Console.WriteLine();
+
+        Console.WriteLine("--- Identity ---");
+        Console.WriteLine($"Denomination ID: {denomination.DenominationId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Currency ---");
+        Console.WriteLine($"Currency ID:   {denomination.CurrencyId}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Denomination ---");
+        Console.WriteLine($"Value:         {denomination.Value:0.####}");
+
+        Console.WriteLine($"Display Name:  {denomination.DisplayName}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Status ---");
+        Console.WriteLine($"Active:        {(denomination.IsActive ? "Yes" : "No")}");
+    }
+
+    private static void PrintStatusChange(
+        DenominationDetailsViewModel denomination)
+    {
+        Console.WriteLine("--- Denomination ---");
+        Console.WriteLine($"Denomination ID: {denomination.DenominationId}");
+
+        Console.WriteLine($"Currency:        {denomination.CurrencyCode}");
+
+        Console.WriteLine($"Value:           {denomination.Value:0.####}");
+
+        Console.WriteLine($"Display Name:    {denomination.DisplayName}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("--- Current Status ---");
+        Console.WriteLine($"Active:          {(denomination.IsActive ? "Yes" : "No")}");
     }
 
     // ============================================================
