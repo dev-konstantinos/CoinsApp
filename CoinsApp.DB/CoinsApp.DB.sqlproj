@@ -135,6 +135,7 @@
     <Build Include="Indexes\IX_Coins_OwnerId.sql" />
     <Build Include="Indexes\IX_CatalogEntries_CoinId.sql" />
     <Build Include="Indexes\IX_CountryCurrencies_CurrencyId.sql" />
+    <Build Include="Indexes\IX_PriceHistory_CoinId_PriceDate_PriceHistoryId.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetAll.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetById.sql" />
     <Build Include="StoredProcedures\Coins\Coins_Create.sql" />
