@@ -125,9 +125,7 @@
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_MintId.sql" />
     <Build Include="Indexes\IX_Coins_MaterialId.sql" />
-    <Build Include="Indexes\IX_Purchases_CoinId_PurchaseDate.sql" />
     <Build Include="Indexes\IX_Sales_CoinId.sql" />
-    <Build Include="Indexes\IX_PriceHistory_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CollectionId.sql" />
     <Build Include="Indexes\IX_CoinImages_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId_CurrencyId.sql" />

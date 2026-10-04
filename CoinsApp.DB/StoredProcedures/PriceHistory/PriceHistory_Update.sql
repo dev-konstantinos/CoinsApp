@@ -13,34 +13,76 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        ------------------------------------------------------------
-        -- 1. Determine and lock the Coin
-        ------------------------------------------------------------
-
         DECLARE @CoinId INT;
+
+        ------------------------------------------------------------
+        -- 1. Determine the Coin
+        ------------------------------------------------------------
 
         SELECT
             @CoinId = [CoinId]
-        FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
+        FROM [dbo].[PriceHistory]
         WHERE [PriceHistoryId] = @PriceHistoryId;
 
         IF @CoinId IS NULL
         BEGIN
-            ROLLBACK TRANSACTION;
             RAISERROR ('Price history entry not found.', 16, 1);
-            RETURN;
-        END;
-
-        IF @PriceDate > SYSUTCDATETIME()
-        BEGIN
             ROLLBACK TRANSACTION;
-            RAISERROR ('PriceDate cannot be in the future.', 16, 1);
             RETURN;
         END;
 
 
         ------------------------------------------------------------
-        -- 2. Update PriceHistory
+        -- 2. Lock the Coin
+        --
+        -- Coin is the synchronization point for all
+        -- PriceHistory modifications of the same coin.
+        ------------------------------------------------------------
+
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [CoinId] = @CoinId
+        )
+        BEGIN
+            RAISERROR ('Coin not found.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 3. Lock the PriceHistory entry
+        ------------------------------------------------------------
+
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [PriceHistoryId] = @PriceHistoryId
+        )
+        BEGIN
+            RAISERROR ('Price history entry not found.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 4. Validate PriceDate
+        ------------------------------------------------------------
+
+        IF @PriceDate > SYSUTCDATETIME()
+        BEGIN
+            RAISERROR ('PriceDate cannot be in the future.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 5. Update PriceHistory
         ------------------------------------------------------------
 
         UPDATE [dbo].[PriceHistory]
@@ -54,12 +96,11 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 3. Find the newest price history entry
+        -- 6. Determine the latest PriceHistory entry
         --
-        -- Rule:
-        --   1. highest PriceDate
-        --   2. if PriceDate is equal:
-        --      highest PriceHistoryId
+        -- Business rule:
+        --   1. Latest PriceDate wins.
+        --   2. On equal PriceDate, highest PriceHistoryId wins.
         ------------------------------------------------------------
 
         DECLARE
@@ -79,7 +120,7 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 4. Synchronize Coins.CurrentPrice
+        -- 7. Synchronize Coins.CurrentPrice
         ------------------------------------------------------------
 
         UPDATE [dbo].[Coins]
@@ -91,14 +132,14 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 5. Commit
+        -- 8. Commit
         ------------------------------------------------------------
 
         COMMIT TRANSACTION;
 
 
         ------------------------------------------------------------
-        -- 6. Return updated ID
+        -- 9. Return updated ID
         ------------------------------------------------------------
 
         SELECT

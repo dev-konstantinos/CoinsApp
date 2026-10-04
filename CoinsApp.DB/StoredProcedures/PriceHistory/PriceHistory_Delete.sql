@@ -9,30 +9,63 @@ BEGIN
         BEGIN TRANSACTION;
 
         ------------------------------------------------------------
-        -- 1. CoinId des History-Eintrags ermitteln
+        -- 1. Determine the CoinId
         ------------------------------------------------------------
 
         DECLARE @CoinId INT;
 
         SELECT
             @CoinId = [CoinId]
-        FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
+        FROM [dbo].[PriceHistory]
         WHERE [PriceHistoryId] = @PriceHistoryId;
 
         IF @CoinId IS NULL
         BEGIN
-            IF XACT_STATE() <> 0
-            BEGIN
-                ROLLBACK TRANSACTION;
-            END;
-
+            ROLLBACK TRANSACTION;
             RAISERROR ('Price history entry not found.', 16, 1);
             RETURN;
         END;
 
 
         ------------------------------------------------------------
-        -- 2. History-Eintrag löschen
+        -- 2. Lock the Coin
+        --
+        -- All PriceHistory modifications for the same Coin
+        -- use the Coin row as the synchronization point.
+        ------------------------------------------------------------
+
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[Coins] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [CoinId] = @CoinId
+        )
+        BEGIN
+            ROLLBACK TRANSACTION;
+            RAISERROR ('Coin not found.', 16, 1);
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 3. Lock the PriceHistory entry
+        ------------------------------------------------------------
+
+        IF NOT EXISTS
+        (
+            SELECT 1
+            FROM [dbo].[PriceHistory] WITH (UPDLOCK, HOLDLOCK)
+            WHERE [PriceHistoryId] = @PriceHistoryId
+        )
+        BEGIN
+            ROLLBACK TRANSACTION;
+            RAISERROR ('Price history entry not found.', 16, 1);
+            RETURN;
+        END;
+
+
+        ------------------------------------------------------------
+        -- 4. Delete PriceHistory entry
         ------------------------------------------------------------
 
         DELETE FROM [dbo].[PriceHistory]
@@ -40,12 +73,12 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 3. Neuesten verbleibenden History-Eintrag ermitteln
+        -- 5. Determine the newest remaining PriceHistory entry
         --
-        -- Regel:
-        --   1. höchstes PriceDate
-        --   2. bei gleichem PriceDate:
-        --      höchste PriceHistoryId
+        -- Rule:
+        --   1. highest PriceDate
+        --   2. if PriceDate is equal:
+        --      highest PriceHistoryId
         ------------------------------------------------------------
 
         DECLARE
@@ -65,10 +98,9 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 4. Coins.CurrentPrice synchronisieren
+        -- 6. Synchronize Coins.CurrentPrice
         --
-        -- Wenn keine History mehr vorhanden ist,
-        -- werden alle drei Werte NULL.
+        -- If no PriceHistory remains, all three values become NULL.
         ------------------------------------------------------------
 
         UPDATE [dbo].[Coins]
@@ -80,14 +112,14 @@ BEGIN
 
 
         ------------------------------------------------------------
-        -- 5. Commit
+        -- 7. Commit
         ------------------------------------------------------------
 
         COMMIT TRANSACTION;
 
 
         ------------------------------------------------------------
-        -- 6. Gelöschte ID zurückgeben
+        -- 8. Return deleted ID
         ------------------------------------------------------------
 
         SELECT
