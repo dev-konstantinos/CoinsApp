@@ -125,7 +125,7 @@
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_MintId.sql" />
     <Build Include="Indexes\IX_Coins_MaterialId.sql" />
-    <Build Include="Indexes\IX_Sales_CoinId.sql" />
+    <Build Include="Indexes\IX_Sales_CoinId_SaleDate.sql" />
     <Build Include="Indexes\IX_Coins_CollectionId.sql" />
     <Build Include="Indexes\IX_CoinImages_CoinId.sql" />
     <Build Include="Indexes\IX_Coins_CountryId_CurrencyId.sql" />
@@ -136,6 +136,7 @@
     <Build Include="Indexes\IX_CatalogEntries_CoinId.sql" />
     <Build Include="Indexes\IX_CountryCurrencies_CurrencyId.sql" />
     <Build Include="Indexes\IX_PriceHistory_CoinId_PriceDate_PriceHistoryId.sql" />
+    <Build Include="Indexes\IX_Purchases_CoinId_PurchaseDate_PurchaseId.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetAll.sql" />
     <Build Include="StoredProcedures\Coins\Coins_GetById.sql" />
     <Build Include="StoredProcedures\Coins\Coins_Create.sql" />
@@ -222,6 +223,10 @@
     <Build Include="StoredProcedures\Users\Users_Update.sql" />
     <Build Include="StoredProcedures\Users\Users_SetPassword.sql" />
     <Build Include="StoredProcedures\Users\Users_Delete.sql" />
+    <Build Include="Indexes\IX_Coins_InitialOwnerId.sql" />
+    <Build Include="Indexes\IX_Purchases_SellerId.sql" />
+    <Build Include="Indexes\IX_Sales_BuyerId.sql" />
+    <Build Include="Indexes\IX_Sales_PreviousOwnerId.sql" />
   </ItemGroup>
   <Target Name="CopyResetArtifacts" AfterTargets="Build">
     <ItemGroup>
