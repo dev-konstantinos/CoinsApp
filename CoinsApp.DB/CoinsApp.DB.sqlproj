@@ -120,8 +120,6 @@
     <Build Include="Tables\CoinImages.sql" />
     <Build Include="Tables\CountryCurrencies.sql" />
     <Build Include="Indexes\UX_Users_Email.sql" />
-    <Build Include="Indexes\IX_Coins_CountryId.sql" />
-    <Build Include="Indexes\IX_Coins_CurrencyId.sql" />
     <Build Include="Indexes\IX_Coins_DenominationId.sql" />
     <Build Include="Indexes\IX_Coins_MintId.sql" />
     <Build Include="Indexes\IX_Coins_MaterialId.sql" />
